@@ -23,11 +23,31 @@
  */
 
 (function() {
-
+	/**
+	 * TicketController provides functions to control the Ticket Viewer page.
+	 *
+	 * @param options
+	 * @constructor
+	 */
 	function TicketController(options) {
 		this.options = $.extend(true, {}, TicketController._defaultOptions, options);
 		this.queueAssForms = {};
 		this.currentTicketId = null;
+
+		/**
+		 * Appends the given html to the ticket table row for the given id.
+		 *
+		 * @param id
+		 * @param html
+		 */
+		this.appendHistory = function(id, html)
+		{
+			var historyRows = $(this.getTicketRowSelector(id)).filter(this.options.ticketHistoryFilter);
+			if ($(historyRows).length) {
+				historyRows.remove();
+			}
+			$(this.getTicketRowSelector(id)).after(html);
+		}
 	}
 
 	TicketController._defaultOptions = {
@@ -39,9 +59,17 @@
 		queueTemplateSelector: '#ticketcontroller-queue-select-template',
 		queueAssignmentPlaceholderSelector: '#queue-assignment-placeholder',
 		ticketHistoryFilter: ".history",
-		getTicketHistoryURI: "/PatientTicketing/default/getTicketTableRowHistory/"
+		getTicketHistoryURI: "/PatientTicketing/default/getTicketTableRowHistory/",
+		takeTicketURI: "/PatientTicketing/default/takeTicket/",
+		releaseTicketURI: "/PatientTicketing/default/releaseTicket/"
 	};
 
+	/**
+	 * Convenience function to construct the table row selector for the given ticket id
+	 *
+	 * @param id
+	 * @returns {string}
+	 */
 	TicketController.prototype.getTicketRowSelector = function(id)
 	{
 		if (!id) {
@@ -167,15 +195,11 @@
 		}
 	}
 
-	TicketController.prototype.appendHistory = function(id, html)
-	{
-		var historyRows = $(this.getTicketRowSelector(id)).filter(this.options.ticketHistoryFilter);
-		if ($(historyRows).length) {
-			historyRows.remove();
-		}
-		$(this.getTicketRowSelector(id)).after(html);
-	}
-
+	/**
+	 * Toggles the history rows for the given ticket.
+	 *
+	 * @param ticketInfo
+	 */
 	TicketController.prototype.toggleHistory = function(ticketInfo)
 	{
 		var historyRows = $(this.getTicketRowSelector(ticketInfo.id)).filter(this.options.ticketHistoryFilter);
@@ -197,8 +221,54 @@
 		}
 	}
 
+	/**
+	 * Have the currently logged in user take control of the given ticket and refreshes the table row for it.
+	 *
+	 * @param ticketInfo
+	 */
+	TicketController.prototype.takeTicket = function(ticketInfo)
+	{
+		$.ajax({
+			url: this.options.takeTicketURI + ticketInfo.id,
+			success: function(response) {
+				if (response.message) {
+					OpenEyes.Util.Alert(response.message).open();
+				}
+				this.reloadTicket(ticketInfo.id);
+			}.bind(this)
+		});
+	}
+
+	/**
+	 * Release the ticket for the currently logged in user and refreshes the table row for it.
+	 *
+	 * @param ticketInfo
+	 */
+	TicketController.prototype.releaseTicket = function(ticketInfo)
+	{
+		$.ajax({
+			url: this.options.releaseTicketURI + ticketInfo.id,
+			success: function(response) {
+				if (response.message) {
+					OpenEyes.Util.Alert(response.message).open();
+				}
+				this.reloadTicket(ticketInfo.id);
+			}.bind(this)
+		});
+	}
+
 	$(document).ready(function() {
 		var ticketController = new TicketController();
+
+		$(this).on('click', '.ticket-take', function(e) {
+			var ticketInfo = $(this).closest('tr').data('ticket-info');
+			ticketController.takeTicket(ticketInfo);
+		});
+
+		$(this).on('click', '.ticket-release', function(e) {
+			var ticketInfo = $(this).closest('tr').data('ticket-info');
+			ticketController.releaseTicket(ticketInfo);
+		});
 
 		$(this).on('click', '.ticket-move', function(e) {
 			var ticketInfo = $(this).closest('tr').data('ticket-info');

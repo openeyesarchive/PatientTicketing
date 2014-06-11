@@ -35,11 +35,11 @@
 		<?php if (!$ticket->is_complete()) {
 			if ($ticket->assignee) {
 				if ($ticket->assignee_user_id == Yii::app()->user->id) {
-					?><button id="release" class="small">Release</button><?php
+					?><button id="release" class="tiny ticket-release">Release</button><?php
 				}
 			}
 			else {
-				?><button id="take" class="tiny">Take</button><?php
+				?><button id="take" class="tiny ticket-take">Take</button><?php
 			}
 		?>
 		<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->currentQueue->getOutcomeData()) ?>">Move</button>

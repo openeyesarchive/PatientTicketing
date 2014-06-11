@@ -19,6 +19,33 @@
 
 namespace OEModule\PatientTicketing\models;
 
+/**
+ * This is the model class for table "patientticketing_ticket".
+ *
+ * The followings are the available columns in table:
+ * @property string $id
+ * @property integer $patient_id
+ * @property integer $priority_id
+ * @property string $report
+ * @property integer $assignee_user_id
+ * @property datetime $assignee_date
+ * @property string $outcome TODO: do we still need this?
+ * @property integer $created_user_id
+ * @property datetime $created_date
+ * @property integer $last_modified_user_id
+ * @property datetime $last_modified_date
+ * @property integer $event_id
+ *
+ *
+ * The followings are the available model relations:
+ *
+ * @property \Event $event
+ * @property \Patient $patient
+ * @property Priority $priority
+ * @property \User $assignee
+ * @property \User $user
+ * @property \User $usermodified
+ */
 
 class Ticket extends \BaseActiveRecordVersioned
 {

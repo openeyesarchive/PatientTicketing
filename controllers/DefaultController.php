@@ -159,4 +159,71 @@ class DefaultController extends \BaseModuleController
 					'assignments' => $assignments
 				), false, false);
 	}
+
+	public function actionTakeTicket($id)
+	{
+		if (!$ticket = models\Ticket::model()->with('currentQueue')->findByPk($id)) {
+			throw new \CHttpException(404, 'Invalid ticket id.');
+		}
+
+		$resp = array('status' => null);
+
+		if ($ticket->assignee_user_id) {
+			$resp['status'] = 0;
+			if ($ticket->assignee_user_id != Yii::app()->user->id) {
+				$resp['message'] = "Ticket has already been taken by " . $ticket->assignee->getFullName();
+			}
+			else {
+				$resp['message'] = "Ticket was already taken by you.";
+			}
+		}
+		else {
+			$ticket->assignee_user_id = Yii::app()->user->id;
+			$ticket->assignee_date = date('Y-m-d H:i:s');
+			if ($ticket->save()) {
+				$resp['status'] = 1;
+			}
+			else {
+				$resp['status'] = 0;
+				$resp['message'] = "Unable to take ticket at this time.";
+				Yii::log("Couldn't save ticket to take it: " . print_r($ticket->getErrors(), true),\CLogger::LEVEL_ERROR);
+			}
+		}
+		echo \CJSON::encode($resp);
+	}
+
+	/**
+	 * @TODO: admin users should be able to release a ticket they don't own.
+	 * @param $id
+	 * @throws \CHttpException
+	 */
+	public function actionReleaseTicket($id)
+	{
+		if (!$ticket = models\Ticket::model()->with('currentQueue')->findByPk($id)) {
+			throw new \CHttpException(404, 'Invalid ticket id.');
+		}
+
+		$resp = array('status' => null);
+		if (!$ticket->assignee_user_id) {
+			$resp['status'] = 0;
+			$resp['message'] = "A ticket that is not owned cannot be released.";
+		}
+		elseif ($ticket->assignee_user_id != Yii::app()->user->id) {
+			$resp['status'] = 0;
+			$resp['message'] = "You cannot release a ticket you don't own.";
+		}
+		else {
+			$ticket->assignee_user_id = null;
+			$ticket->assignee_date = null;
+			if ($ticket->save()) {
+				$resp['status'] = 1;
+			}
+			else {
+				$resp['status'] = 0;
+				$resp['message'] = "Unable to release ticket at this time.";
+				Yii::log("Couldn't save ticket to release it: " . print_r($ticket->getErrors(), true),\CLogger::LEVEL_ERROR);
+			}
+		}
+		echo \CJSON::encode($resp);
+	}
 }
