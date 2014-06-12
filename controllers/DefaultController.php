@@ -50,6 +50,20 @@ class DefaultController extends \BaseModuleController
 		return parent::beforeAction($action);
 	}
 
+	/**
+	 * List of print actions.
+	 * @return array:
+	 */
+	public function printActions()
+	{
+		return array('printTickets');
+	}
+
+	/**
+	 * Access rules for ticket actions
+	 *
+	 * @return array
+	 */
 	public function accessRules()
 	{
 		return array(
@@ -62,7 +76,7 @@ class DefaultController extends \BaseModuleController
 						'roles' => array('OprnPrint'),
 				),
 				array('allow',
-						'actions' => array('moveTicket', 'getQueueAssignmentForm'),
+						'actions' => array('moveTicket', 'getQueueAssignmentForm', 'takeTicket', 'releaseTicket'),
 						'roles' => array('OprnEditPatientTicket'),
 				),
 		);

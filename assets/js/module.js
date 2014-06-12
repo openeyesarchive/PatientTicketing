@@ -103,7 +103,7 @@
 		});
 		this.dialog.open();
 		this.dialog.on('ok', function() {this.submitTicketMove()}.bind(this));
-		this.dialog.on('cancel', function() {this.cancelTicketMove().bind(this)});
+		this.dialog.on('cancel', function() {this.cancelTicketMove()}.bind(this));
 	}
 
 	TicketController.prototype.cancelTicketMove = function()
