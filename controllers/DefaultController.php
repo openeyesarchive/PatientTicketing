@@ -44,6 +44,11 @@ class DefaultController extends \BaseModuleController
 		}
 	}
 
+	/**
+	 * @TODO: as above, this should be a part of the parent controller
+	 * @param \CAction $action
+	 * @return bool
+	 */
 	protected function beforeAction($action)
 	{
 		$this->setFirmFromSession();

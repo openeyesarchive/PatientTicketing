@@ -28,7 +28,7 @@
 	<td><a href="<?= $ticket->getSourceLink() ?>"><?= $ticket->getSourceLabel()?></a></td>
 	<td><?= Helper::convertDate2NHS($ticket->created_date)?></td>
 	<td><?= $ticket->getTicketFirm() ?></td>
-	<td>TBD</td>
+	<td><?= $ticket->report ? $ticket->report : "-"; ?></td>
 	<td><?= Yii::app()->format->Ntext($ticket->getNotes()) ?></td>
 	<td><?= $ticket->assignee ? $ticket->assignee->getFullName() : "-"?></td>
 	<td nowrap>

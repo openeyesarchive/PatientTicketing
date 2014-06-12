@@ -20,6 +20,8 @@
 namespace OEModule\PatientTicketing\models;
 
 
+use OEModule\PatientTicketing\components\Substitution;
+
 class Queue extends \BaseActiveRecordVersioned
 {
 	/**
@@ -113,6 +115,11 @@ class Queue extends \BaseActiveRecordVersioned
 		$ass->assignment_firm_id = $firm->id;
 		$ass->assignment_date = date('Y-m-d H:i:s');
 		$ass->notes = @$data['patientticketing__notes'];
+
+		if ($this->report_definition) {
+			$ticket->report = Substitution::replace($this->report_definition, $ticket->patient);
+			$ticket->save();
+		}
 		$ass->save();
 	}
 
