@@ -63,11 +63,16 @@ class DefaultController extends \BaseModuleController
 				),
 				array('allow',
 						'actions' => array('moveTicket', 'getQueueAssignmentForm'),
-						'roles' => array('oprnEditPatientTicket'),
+						'roles' => array('OprnEditPatientTicket'),
 				),
 		);
 	}
 
+	/**
+	 * Generate a list of current tickets
+	 *
+	 * @TODO: filtering
+	 */
 	public function actionIndex()
 	{
 		// build criteria
@@ -82,6 +87,12 @@ class DefaultController extends \BaseModuleController
 			));
 	}
 
+	/**
+	 * Generates the form for assigning a Ticket to the given Queue
+	 *
+	 * @param $id
+	 * @throws \CHttpException
+	 */
 	public function actionGetQueueAssignmentForm($id)
 	{
 		if (!$q = models\Queue::model()->findByPk($id)) {
@@ -98,6 +109,13 @@ class DefaultController extends \BaseModuleController
 		$this->renderPartial('form_queueassign', $template_vars, false, false);
 	}
 
+	/**
+	 * Handles the moving of a ticket to a new Queue.
+	 *
+	 * @TODO: handle errors in a way that the UI can display useful information (validation errors)
+	 * @param $id
+	 * @throws \CHttpException
+	 */
 	public function actionMoveTicket($id)
 	{
 		if (!$ticket = models\Ticket::model()->with('currentQueue')->findByPk($id)) {
@@ -132,6 +150,12 @@ class DefaultController extends \BaseModuleController
 		echo "1";
 	}
 
+	/**
+	 * Generate individual row for the given Ticket id
+	 *
+	 * @param $id
+	 * @throws \CHttpException
+	 */
 	public function actionGetTicketTableRow($id)
 	{
 		if (!$ticket = models\Ticket::model()->with('currentQueue')->findByPk($id)) {
@@ -143,6 +167,12 @@ class DefaultController extends \BaseModuleController
 				), false, false);
 	}
 
+	/**
+	 * Generate history rows for the given Ticket id
+	 *
+	 * @param $id
+	 * @throws \CHttpException
+	 */
 	public function actionGetTicketTableRowHistory($id)
 	{
 		if (!$ticket = models\Ticket::model()->with(array('queue_assignments', 'queue_assignments.queue'))->findByPk($id)) {
@@ -160,6 +190,12 @@ class DefaultController extends \BaseModuleController
 				), false, false);
 	}
 
+	/**
+	 * Method to take ownership of a ticket for the current user
+	 *
+	 * @param $id
+	 * @throws \CHttpException
+	 */
 	public function actionTakeTicket($id)
 	{
 		if (!$ticket = models\Ticket::model()->with('currentQueue')->findByPk($id)) {

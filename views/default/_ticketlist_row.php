@@ -32,18 +32,20 @@
 	<td><?= Yii::app()->format->Ntext($ticket->getNotes()) ?></td>
 	<td><?= $ticket->assignee ? $ticket->assignee->getFullName() : "-"?></td>
 	<td nowrap>
-		<?php if (!$ticket->is_complete()) {
-			if ($ticket->assignee) {
-				if ($ticket->assignee_user_id == Yii::app()->user->id) {
-					?><button id="release" class="tiny ticket-release">Release</button><?php
+		<?php
+		if ($this->checkAccess('oprnEditPatientTicket')) {
+			if (!$ticket->is_complete()) {
+				if ($ticket->assignee) {
+					if ($ticket->assignee_user_id == Yii::app()->user->id) {
+						?><button id="release" class="tiny ticket-release">Release</button><?php
+					}
 				}
-			}
-			else {
-				?><button id="take" class="tiny ticket-take">Take</button><?php
-			}
-		?>
-		<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->currentQueue->getOutcomeData()) ?>">Move</button>
-		<?php } ?>
+				else {
+					?><button id="take" class="tiny ticket-take">Take</button><?php
+				}?>
+				<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->currentQueue->getOutcomeData()) ?>">Move</button>
+		<?php }
+		} ?>
 		<?php if ($ticket->hasHistory()) {?>
 			<button class="tiny ticket-history">History</button>
 		<?php } ?>

@@ -5,12 +5,12 @@ class m140609_094657_initial_migration extends OEMigration
 	private $authitems = array(
 		array('name' => 'Patient Tickets', 'type' => 2),
 		array('name' => 'OprnViewPatientTickets', 'type' => 0),
-		array('name' => 'TaskEditPatientTicket', 'type' => 1)
+		array('name' => 'OprnEditPatientTicket', 'type' => 0)
 	);
 
 	private $parents = array(
 		'OprnViewPatientTickets' => 'Patient Tickets',
-		'TaskEditPatientTicket' => 'TaskEditPatientData',
+		'OprnEditPatientTicket' => 'TaskEditPatientData',
 	);
 
 	public function up()
