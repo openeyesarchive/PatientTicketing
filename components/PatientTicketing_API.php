@@ -129,5 +129,4 @@ class PatientTicketing_API extends \BaseAPI
 	{
 		return Queue::model()->findByPk($id);
 	}
-
 }

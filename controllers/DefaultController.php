@@ -90,12 +90,32 @@ class DefaultController extends \BaseModuleController
 	/**
 	 * Generate a list of current tickets
 	 *
-	 * @TODO: filtering
 	 */
 	public function actionIndex()
 	{
+		if (empty($_POST)) {
+			$filter_options = Yii::app()->session['patientticket_filter'];
+		}
+		else {
+			$filter_options = $_POST;
+		}
+
 		// build criteria
+		// TODO: we probably don't want to have such a gnarly approach to this, we might want to denormalise so that we are able to do eager loading
+		// That being said, we might get away with setting together false on the with to do this filtering (multiple query eager loading).
 		$criteria = new \CDbCriteria();
+		$criteria->join = "JOIN " . models\TicketQueueAssignment::model()->tableName() . " cqa ON cqa.ticket_id = t.id and cqa.id = (SELECT id from " . models\TicketQueueAssignment::model()->tableName() . " qa2 WHERE qa2.ticket_id = t.id order by qa2.created_date desc limit 1)";
+
+		if (@$filter_options['queue-id']) {
+			$criteria->addColumnCondition(array('cqa.queue_id' => $filter_options['queue-id']));
+		}
+		if (@$filter_options['firm-id']) {
+			$criteria->addColumnCondition(array('cqa.assignment_firm_id' => $filter_options['firm-id']));
+		}
+		elseif (@$filter_options['subspecialty-id']) {
+			$criteria->join .= "JOIN " . \Firm::model()->tableName() . " f ON f.id = cqa.assignment_firm_id JOIN " . \ServiceSubspecialtyAssignment::model()->tableName() . " ssa ON ssa.id = f.service_subspecialty_assignment_id";
+			$criteria->addColumnCondition(array('ssa.subspecialty_id' => $filter_options['subspecialty-id']));
+		}
 
 		// get tickets that match criteria
 		$tickets = models\Ticket::model()->findAll($criteria);

@@ -20,7 +20,7 @@
 
 <tr data-ticket-id="<?= $ticket->id?>" data-ticket-info="<?= CHtml::encode($ticket->getInfoData()) ?>">
 	<td><?= $ticket->currentQueue->name ?></td>
-	<td><?= $ticket->patient->hos_num ?></td>
+	<td><a href="<?= $this->createURL('/patient/view/', array('id' => $ticket->patient->id));?>"><?= $ticket->patient->hos_num ?></a></td>
 	<td><?= $ticket->patient->first_name ?></td>
 	<td><?= $ticket->patient->last_name ?></td>
 	<td><?= $ticket->patient->age ?></td>

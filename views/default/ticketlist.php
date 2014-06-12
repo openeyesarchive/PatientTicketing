@@ -33,6 +33,64 @@
 		</div>
 	</div>
 
+	<div class="search-filters theatre-diaries">
+		<?php $this->beginWidget('CActiveForm', array(
+						'id'=>'ticket-filter',
+						'htmlOptions'=>array(
+								'class' => 'row'
+						),
+						'enableAjaxValidation'=>false
+				))?>
+		<div class="large-12 column">
+			<div class="panel">
+				<div class="row">
+					<div class="large-6 column">
+
+						<table class="grid">
+							<thead>
+							<tr>
+								<th>Queue:</th>
+								<th>Subspecialty:</th>
+								<th>Firm:</th>
+								<th>&nbsp;</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr>
+								<td>
+									<?php echo CHtml::dropDownList('queue-id', @$_POST['queue-id'], CHtml::listData(OEModule\PatientTicketing\models\Queue::model()->findAll(), 'id', 'name'), array('empty'=>'All queues'))?>
+								</td>
+								<td>
+									<?php echo CHtml::dropDownList('subspecialty-id', @$_POST['subspecialty-id'], Subspecialty::model()->getList(), array('empty'=>'All specialties', 'disabled' => (@$_POST['emergency_list']==1 ? 'disabled' : '')))?>
+								</td>
+								<td>
+									<?php if (!@$_POST['subspecialty-id']) {?>
+										<?php echo CHtml::dropDownList('firm-id', '', array(), array('empty'=>'All firms', 'disabled' => 'disabled'))?>
+									<?php } else {?>
+										<?php echo CHtml::dropDownList('firm-id', @$_POST['firm-id'], Firm::model()->getList(@$_POST['subspecialty-id']), array('empty'=>'All firms', 'disabled' => (@$_POST['emergency_list']==1 ? 'disabled' : '')))?>
+									<?php }?>
+								</td>
+								<td>
+									<span style="width: 30px;">
+							<img class="loader" src="<?php echo Yii::app()->assetManager->createUrl('img/ajax-loader.gif')?>" alt="loading..." style="display: none;" />
+						</span>
+
+									<button id="search_button" class="secondary small" type="submit">
+										Search
+									</button>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+		<?php $this->endWidget()?>
+	</div>
+
 	<?php $this->renderPartial('_ticketlist', array('tickets' => $tickets)); ?>
 
 </div>
