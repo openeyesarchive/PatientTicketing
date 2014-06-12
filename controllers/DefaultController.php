@@ -89,16 +89,24 @@ class DefaultController extends \BaseModuleController
 
 	/**
 	 * Generate a list of current tickets
-	 *
 	 */
 	public function actionIndex()
 	{
+		$filter_keys = array('queue-id', 'subspecialty-id', 'firm-id');
+		$filter_options = array();
+
 		if (empty($_POST)) {
 			$filter_options = Yii::app()->session['patientticket_filter'];
 		}
 		else {
-			$filter_options = $_POST;
+			foreach ($filter_keys as $k) {
+				if (isset($_POST[$k])) {
+					$filter_options[$k] = $_POST[$k];
+				}
+			}
 		}
+
+		Yii::app()->session['patientticket_filter'] = $filter_options;
 
 		// build criteria
 		// TODO: we probably don't want to have such a gnarly approach to this, we might want to denormalise so that we are able to do eager loading
