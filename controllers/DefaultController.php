@@ -97,6 +97,9 @@ class DefaultController extends \BaseModuleController
 
 		if (empty($_POST)) {
 			$filter_options = Yii::app()->session['patientticket_filter'];
+			foreach ($filter_options as $k => $v) {
+				$_POST[$k] = $v;
+			}
 		}
 		else {
 			foreach ($filter_keys as $k) {
@@ -131,6 +134,7 @@ class DefaultController extends \BaseModuleController
 		// render
 		$this->render('ticketlist', array(
 				'tickets' => $tickets,
+				'filter_options' => $filter_options
 			));
 	}
 
