@@ -50,6 +50,7 @@
 							<thead>
 							<tr>
 								<th>Queue:</th>
+								<th>Priority:</th>
 								<th>Subspecialty:</th>
 								<th>Firm:</th>
 								<th nowrap>My Tickets:</th>
@@ -60,6 +61,9 @@
 							<tr>
 								<td>
 									<?php echo CHtml::dropDownList('queue-id', @$_POST['queue-id'], CHtml::listData(OEModule\PatientTicketing\models\Queue::model()->findAll(), 'id', 'name'), array('empty'=>'All queues'))?>
+								</td>
+								<td>
+									<?php echo CHtml::dropDownList('priority-id', @$_POST['priority-id'], CHtml::listData(OEModule\PatientTicketing\models\Priority::model()->findAll(), 'id', 'name'), array('empty'=>'All priorities'))?>
 								</td>
 								<td>
 									<?php echo CHtml::dropDownList('subspecialty-id', @$_POST['subspecialty-id'], Subspecialty::model()->getList(), array('empty'=>'All specialties', 'disabled' => (@$_POST['emergency_list']==1 ? 'disabled' : '')))?>

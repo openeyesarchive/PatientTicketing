@@ -92,7 +92,7 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionIndex()
 	{
-		$filter_keys = array('queue-id', 'subspecialty-id', 'firm-id', 'my-tickets');
+		$filter_keys = array('queue-id', 'priority-id', 'subspecialty-id', 'firm-id', 'my-tickets');
 		$filter_options = array();
 
 		if (empty($_POST)) {
@@ -120,6 +120,9 @@ class DefaultController extends \BaseModuleController
 		if (@$filter_options['my-tickets']) {
 			$criteria->addColumnCondition(array('assignee_user_id' => Yii::app()->user->id));
 		}
+		if (@$filter_options['priority-id']) {
+			$criteria->addColumnCondition(array('priority_id' => $filter_options['priority-id']));
+		}
 		if (@$filter_options['queue-id']) {
 			$criteria->addColumnCondition(array('cqa.queue_id' => $filter_options['queue-id']));
 		}
@@ -130,6 +133,8 @@ class DefaultController extends \BaseModuleController
 			$criteria->join .= "JOIN " . \Firm::model()->tableName() . " f ON f.id = cqa.assignment_firm_id JOIN " . \ServiceSubspecialtyAssignment::model()->tableName() . " ssa ON ssa.id = f.service_subspecialty_assignment_id";
 			$criteria->addColumnCondition(array('ssa.subspecialty_id' => $filter_options['subspecialty-id']));
 		}
+
+		$criteria->order = 't.created_date desc';
 
 		// get tickets that match criteria
 		$tickets = models\Ticket::model()->findAll($criteria);
