@@ -80,7 +80,7 @@
 								</td>
 								<td>
 									<button id="search_button" class="secondary small" type="submit">
-										Search
+										<?php if ($patient_filter) {?>Apply<? } else {?>Search<?php } ?>
 									</button>
 								</td>
 							</tr>
@@ -94,6 +94,11 @@
 		</div>
 		<?php $this->endWidget()?>
 	</div>
+	<?php if ($patient_filter) {?>
+		<div class="large-12 column">
+			<div class="alert-box warning">Filtering for <?= $patient_filter->getFullName() ?></div>
+		</div>
+	<?php } ?>
 
 	<?php $this->renderPartial('_ticketlist', array('tickets' => $tickets)); ?>
 
