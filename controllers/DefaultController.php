@@ -96,7 +96,7 @@ class DefaultController extends \BaseModuleController
 		$filter_options = array();
 
 		if (empty($_POST)) {
-			$filter_options = Yii::app()->session['patientticket_filter'];
+			$filter_options = (Yii::app()->session['patientticket_filter']) ? (Yii::app()->session['patientticket_filter']) : array();
 			foreach ($filter_options as $k => $v) {
 				$_POST[$k] = $v;
 			}
