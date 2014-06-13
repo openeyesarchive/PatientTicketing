@@ -19,3 +19,8 @@
 tr.history {
   background-color: #ccc !important;
 }
+
+/* line 21, ../sass/components/_ticket_table.scss */
+tr.disabled {
+  opacity: 0.6;
+}

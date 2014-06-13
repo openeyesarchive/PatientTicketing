@@ -92,7 +92,7 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionIndex()
 	{
-		$filter_keys = array('queue-id', 'subspecialty-id', 'firm-id');
+		$filter_keys = array('queue-id', 'subspecialty-id', 'firm-id', 'my-tickets');
 		$filter_options = array();
 
 		if (empty($_POST)) {
@@ -117,6 +117,9 @@ class DefaultController extends \BaseModuleController
 		$criteria = new \CDbCriteria();
 		$criteria->join = "JOIN " . models\TicketQueueAssignment::model()->tableName() . " cqa ON cqa.ticket_id = t.id and cqa.id = (SELECT id from " . models\TicketQueueAssignment::model()->tableName() . " qa2 WHERE qa2.ticket_id = t.id order by qa2.created_date desc limit 1)";
 
+		if (@$filter_options['my-tickets']) {
+			$criteria->addColumnCondition(array('assignee_user_id' => Yii::app()->user->id));
+		}
 		if (@$filter_options['queue-id']) {
 			$criteria->addColumnCondition(array('cqa.queue_id' => $filter_options['queue-id']));
 		}
@@ -133,8 +136,7 @@ class DefaultController extends \BaseModuleController
 
 		// render
 		$this->render('ticketlist', array(
-				'tickets' => $tickets,
-				'filter_options' => $filter_options
+				'tickets' => $tickets
 			));
 	}
 

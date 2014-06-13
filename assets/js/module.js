@@ -77,6 +77,32 @@
 		}
 		return this.options.ticketRowSelectorPrefix+id+this.options.ticketRowSelectorPostfix;
 	}
+
+	/**
+	 * Convenience function to provide visual cue that an interaction is taking place on the ticket row.
+	 *
+	 * @param id
+	 */
+	TicketController.prototype.maskTicketRow = function(id)
+	{
+		var rowSelector = this.getTicketRowSelector(id);
+		disableButtons(rowSelector + ' button,.button');
+		$(rowSelector).addClass('disabled');
+	}
+
+	/**
+	 * Convenience function to remove ticket row interaction visual cues.
+	 * (doesn't always need to be called as ticket reloading will reset the css on the reloaded row)
+	 *
+	 * @param id
+	 */
+	TicketController.prototype.unmaskTicketRow = function(id)
+	{
+		var rowSelector = this.getTicketRowSelector(id);
+		enableButtons(rowSelector + ' button,.button');
+		$(rowSelector).removeClass('disabled');
+	}
+
 	/**
 	 * Creates the popup for the given Ticket definition to move it to a new Queue (based on the given outcomes)
 	 *
@@ -117,16 +143,17 @@
 	{
 		// do some basic form validation here, and either display an error or begin the ajax request.
 		// should disable the table row for the ticket being updated
-		var rowSelector = this.getTicketRowSelector();
-		disableButtons(rowSelector);
-		$(rowSelector).addClass('disabled');
+		this.maskTicketRow();
 		$.ajax({
 			url: this.options.ticketMoveURI + this.currentTicketId,
 			data: $(this.dialog.content).find('form').serialize(),
 			type: 'POST',
 			success: function(response) {this.reloadTicket(this.currentTicketId); this.currentTicketId = null;}.bind(this),
 			error: function(jqXHR, status, error) {
-				enableButtons(rowSelector);
+				enableButtons(this.getTicketRowSelector());
+				new OpenEyes.UI.Dialog.Alert({content: 'Could not move ticket'}).open();
+				this.reloadTicket(this.currentTicketId);
+				this.currentTicketId = null;
 			}.bind(this)
 		})
 		// then reload the table row for that ticket so it is refreshed.
@@ -137,14 +164,23 @@
 	 */
 	TicketController.prototype.reloadTicket = function(id)
 	{
+		var rowSelector = this.getTicketRowSelector(id);
 		$.ajax({
 			url: this.options.getTicketRowURI + id,
 			success: function(response) {
-				if ($(this.getTicketRowSelector(id)).filter(this.options.ticketHistoryFilter).length) {
-					$(this.getTicketRowSelector(id)).filter(this.options.ticketHistoryFilter).slideUp().remove();
+				if ($(rowSelector).filter(this.options.ticketHistoryFilter).length) {
+					$(rowSelector).filter(this.options.ticketHistoryFilter).slideUp("slow", function() {
+						$(rowSelector).fadeOut("slow", function (){ $(rowSelector).replaceWith(response).fadeIn('slow')});
+					}).remove();
 				}
-				$(this.getTicketRowSelector(id)).slideUp().replaceWith(response).slideDown();
-			}.bind(this)
+				else {
+					$(rowSelector).fadeOut("slow", function (){ $(rowSelector).replaceWith(response).fadeIn('slow')});
+				}
+			}.bind(this),
+			error: function() {
+				$(this.getTicketRowSelector(id)).remove();
+				new OpenEyes.UI.Dialog.Alert("Unable to reload ticket").open();
+			}
 		});
 	}
 
@@ -212,11 +248,18 @@
 			}
 		}
 		else {
+			this.maskTicketRow(ticketInfo.id);
 			$.ajax({
 				url: this.options.getTicketHistoryURI + ticketInfo.id,
 				success: function(response) {
 					this.appendHistory(ticketInfo.id, response);
-				}.bind(this)
+					this.unmaskTicketRow(ticketInfo.id);
+				}.bind(this),
+				error: function() {
+					new OpenEyes.UI.Dialog.Alert({content: "Could not load history for ticket."}).open();
+					this.unmaskTicketRow(ticketInfo.id);
+				}
+
 			});
 		}
 	}
@@ -228,14 +271,19 @@
 	 */
 	TicketController.prototype.takeTicket = function(ticketInfo)
 	{
+		this.maskTicketRow(ticketInfo.id);
 		$.ajax({
 			url: this.options.takeTicketURI + ticketInfo.id,
 			success: function(response) {
 				if (response.message) {
-					OpenEyes.Util.Alert(response.message).open();
+					new OpenEyes.UI.Dialog.Alert(response.message).open();
 				}
 				this.reloadTicket(ticketInfo.id);
-			}.bind(this)
+			}.bind(this),
+			error: function() {
+				new OpenEyes.UI.Dialog.Alert('Unable to take ticket').open();
+				this.reloadTicket(ticketInfo.id);
+			}
 		});
 	}
 
@@ -246,14 +294,19 @@
 	 */
 	TicketController.prototype.releaseTicket = function(ticketInfo)
 	{
+		this.maskTicketRow(ticketInfo.id);
 		$.ajax({
 			url: this.options.releaseTicketURI + ticketInfo.id,
 			success: function(response) {
 				if (response.message) {
-					OpenEyes.Util.Alert(response.message).open();
+					new OpenEyes.UI.Dialog.Alert(response.message).open();
 				}
 				this.reloadTicket(ticketInfo.id);
-			}.bind(this)
+			}.bind(this),
+			error: function() {
+				new OpenEyes.UI.Dialog.Alert('Unable to release ticket').open();
+				this.reloadTicket(ticketInfo.id);
+			}
 		});
 	}
 
