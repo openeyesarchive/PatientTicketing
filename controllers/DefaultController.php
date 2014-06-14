@@ -26,6 +26,7 @@ class DefaultController extends \BaseModuleController
 	public $layout='//layouts/main';
 	public $renderPatientPanel = false;
 	protected $firm;
+	protected $page_size = 10;
 
 	/**
 	 * Sets the firm property on the controller from the session
@@ -96,9 +97,10 @@ class DefaultController extends \BaseModuleController
 		$filter_options = array();
 
 		if (empty($_POST)) {
-			$filter_options = Yii::app()->session['patientticket_filter'];
-			foreach ($filter_options as $k => $v) {
-				$_POST[$k] = $v;
+			if ($filter_options = Yii::app()->session['patientticket_filter']) {
+				foreach ($filter_options as $k => $v) {
+					$_POST[$k] = $v;
+				}
 			}
 		}
 		else {
@@ -145,6 +147,12 @@ class DefaultController extends \BaseModuleController
 
 		$criteria->order = 't.created_date desc';
 
+		$count = models\Ticket::model()->count($criteria);
+		$pages = new \CPagination($count);
+
+		$pages->pageSize = $this->page_size;
+		$pages->applyLimit($criteria);
+
 		// get tickets that match criteria
 		$tickets = models\Ticket::model()->findAll($criteria);
 
@@ -152,6 +160,7 @@ class DefaultController extends \BaseModuleController
 		$this->render('ticketlist', array(
 				'tickets' => $tickets,
 				'patient_filter' => $patient_filter,
+				'pages' => $pages
 			));
 	}
 

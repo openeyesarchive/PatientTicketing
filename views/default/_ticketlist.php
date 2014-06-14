@@ -19,6 +19,7 @@
 ?>
 
 <div class="row">
+
 	<div class="large-12 column">
 		<div class="box generic">
 			<?php
@@ -28,7 +29,8 @@
 				</div>
 			<?php
 			} else {?>
-				<div class="pagination"></div>
+				<div class="pagination">
+				</div>
 				<table class="grid audit-logs">
 					<thead>
 					<tr>
@@ -53,7 +55,12 @@
 					}?>
 					</tbody>
 				</table>
-				<div class="pagination last"></div>
+				<div class="text-center pagination last">
+					<?php $this->widget('CLinkPager', array(
+									'pages' => $pages,
+									'header' => ''
+							)) ?>
+				</div>
 			<?php }?>
 		</div>
 	</div>

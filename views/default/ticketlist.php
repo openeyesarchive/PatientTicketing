@@ -39,7 +39,8 @@
 						'htmlOptions'=>array(
 								'class' => 'row'
 						),
-						'enableAjaxValidation'=>false
+						'enableAjaxValidation'=>false,
+						'action' => $this->createUrl('//PatientTicketing/default')
 				))?>
 		<div class="large-12 column">
 			<div class="panel">
@@ -100,7 +101,7 @@
 		</div>
 	<?php } ?>
 
-	<?php $this->renderPartial('_ticketlist', array('tickets' => $tickets)); ?>
+	<?php $this->renderPartial('_ticketlist', array('tickets' => $tickets, 'pages' => $pages)); ?>
 
 </div>
 
