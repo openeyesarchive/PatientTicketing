@@ -45,7 +45,7 @@
 		<div class="large-12 column">
 			<div class="panel">
 				<div class="row">
-					<div class="large-6 column">
+					<div class="large-8 column">
 
 						<table class="grid">
 							<thead>
@@ -59,9 +59,16 @@
 							</tr>
 							</thead>
 							<tbody>
-							<tr>
+							<tr class="filter-row">
 								<td>
-									<?php echo CHtml::dropDownList('queue-id', @$_POST['queue-id'], CHtml::listData(OEModule\PatientTicketing\models\Queue::model()->findAll(), 'id', 'name'), array('empty'=>'All queues'))?>
+									<?php $this->widget('application.widgets.MultiSelectList', array(
+											'field' => 'queue-ids',
+											'default_options' => @$_POST['queue-ids'],
+											'options' => CHtml::listData(OEModule\PatientTicketing\models\Queue::model()->findAll(),'id','name'),
+											'htmlOptions' => array('empty' => '- Please Select -', 'nowrapper' => true),
+											'noSelectionsMessage' => 'All Queues')
+											) ?>
+
 								</td>
 								<td>
 									<?php echo CHtml::dropDownList('priority-id', @$_POST['priority-id'], CHtml::listData(OEModule\PatientTicketing\models\Priority::model()->findAll(), 'id', 'name'), array('empty'=>'All priorities'))?>

@@ -24,3 +24,8 @@ tr.history {
 tr.disabled {
   opacity: 0.6;
 }
+
+/* line 17, ../sass/components/_filter_table.scss */
+.filter-row td {
+  vertical-align: top;
+}

@@ -93,7 +93,7 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionIndex()
 	{
-		$filter_keys = array('queue-id', 'priority-id', 'subspecialty-id', 'firm-id', 'my-tickets');
+		$filter_keys = array('queue-ids', 'priority-id', 'subspecialty-id', 'firm-id', 'my-tickets');
 		$filter_options = array();
 
 		if (empty($_POST)) {
@@ -133,8 +133,8 @@ class DefaultController extends \BaseModuleController
 			if (@$filter_options['priority-id']) {
 				$criteria->addColumnCondition(array('priority_id' => $filter_options['priority-id']));
 			}
-			if (@$filter_options['queue-id']) {
-				$criteria->addColumnCondition(array('cqa.queue_id' => $filter_options['queue-id']));
+			if (@$filter_options['queue-ids']) {
+				$criteria->addInCondition('cqa.queue_id', $filter_options['queue-ids']);
 			}
 			if (@$filter_options['firm-id']) {
 				$criteria->addColumnCondition(array('cqa.assignment_firm_id' => $filter_options['firm-id']));
