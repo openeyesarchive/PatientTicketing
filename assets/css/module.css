@@ -25,6 +25,11 @@ tr.disabled {
   opacity: 0.6;
 }
 
+/* line 25, ../sass/components/_ticket_table.scss */
+#ticket-list td {
+  vertical-align: top;
+}
+
 /* line 17, ../sass/components/_filter_table.scss */
 .filter-row td {
   vertical-align: top;
