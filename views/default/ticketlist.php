@@ -22,6 +22,7 @@
 
 <div class="box content">
 
+	<!--
 	<div class="panel panel actions row">
 
 		<div class="large-12 column">
@@ -32,6 +33,7 @@
 			<?php }?>
 		</div>
 	</div>
+	-->
 
 	<div class="search-filters theatre-diaries">
 		<?php $this->beginWidget('CActiveForm', array(
