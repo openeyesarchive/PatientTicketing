@@ -93,7 +93,7 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionIndex()
 	{
-		$filter_keys = array('queue-ids', 'priority-id', 'subspecialty-id', 'firm-id', 'my-tickets');
+		$filter_keys = array('queue-ids', 'priority-ids', 'subspecialty-id', 'firm-id', 'my-tickets');
 		$filter_options = array();
 
 		if (empty($_POST)) {
@@ -130,8 +130,8 @@ class DefaultController extends \BaseModuleController
 			if (@$filter_options['my-tickets']) {
 				$criteria->addColumnCondition(array('assignee_user_id' => Yii::app()->user->id));
 			}
-			if (@$filter_options['priority-id']) {
-				$criteria->addColumnCondition(array('priority_id' => $filter_options['priority-id']));
+			if (@$filter_options['priority-ids']) {
+				$criteria->addInCondition('priority_id', $filter_options['priority-ids']);
 			}
 			if (@$filter_options['queue-ids']) {
 				$criteria->addInCondition('cqa.queue_id', $filter_options['queue-ids']);

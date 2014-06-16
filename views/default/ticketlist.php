@@ -71,7 +71,13 @@
 
 								</td>
 								<td>
-									<?php echo CHtml::dropDownList('priority-id', @$_POST['priority-id'], CHtml::listData(OEModule\PatientTicketing\models\Priority::model()->findAll(), 'id', 'name'), array('empty'=>'All priorities'))?>
+									<?php $this->widget('application.widgets.MultiSelectList', array(
+													'field' => 'priority-ids',
+													'default_options' => @$_POST['priority-ids'],
+													'options' => CHtml::listData(OEModule\PatientTicketing\models\Priority::model()->findAll(), 'id', 'name'),
+													'htmlOptions' => array('empty' => '- Please Select -', 'nowrapper' => true),
+													'noSelectionsMessage' => 'All Priorities')
+									) ?>
 								</td>
 								<td>
 									<?php echo CHtml::dropDownList('subspecialty-id', @$_POST['subspecialty-id'], Subspecialty::model()->getList(), array('empty'=>'All specialties', 'disabled' => (@$_POST['emergency_list']==1 ? 'disabled' : '')))?>
