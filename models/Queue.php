@@ -22,8 +22,33 @@ namespace OEModule\PatientTicketing\models;
 
 use OEModule\PatientTicketing\components\Substitution;
 
+/**
+ * This is the model class for table "patientticketing_queue".
+ *
+ * The followings are the available columns in table:
+ * @property string $id
+ * @property string $name
+ * @property string $description
+ * @property boolean $active
+ * @property string $report_definition
+ * @property boolean $is_initial
+ * @property string assignment_fields
+ * @property integer $created_user_id
+ * @property datetime $created_date
+ * @property integer $last_modified_user_id
+ * @property datetime $last_modified_date
+ *
+ * The followings are the available model relations:
+ *
+ * @property \User $user
+ * @property \User $usermodified
+ * @property \OEModule\PatientTicketing\models\Outcome[] $outcomes
+ * @property \OEModule\PatientTicketing\models\Queue[] $outcome_queues
+ */
 class Queue extends \BaseActiveRecordVersioned
 {
+	protected static $FIELD_PREFIX = "patientticketing_";
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return OphTrOperationnote_GlaucomaTube_PlatePosition the static model class
@@ -99,12 +124,11 @@ class Queue extends \BaseActiveRecordVersioned
 
 	/**
 	 * Add the given ticket to the Queue for the user and firm
-	 * @TODO: handle note data
-	 * @TODO: handle 'details' field, which I think is going to be json blob of some kind (tbc)
 	 *
 	 * @param Ticket $ticket
 	 * @param \CWebUser $user
 	 * @param \Firm $firm
+	 * @param $data
 	 */
 	public function addTicket(Ticket $ticket, \CWebUser $user, \Firm $firm, $data)
 	{
@@ -114,10 +138,32 @@ class Queue extends \BaseActiveRecordVersioned
 		$ass->assignment_user_id = $user->id;
 		$ass->assignment_firm_id = $firm->id;
 		$ass->assignment_date = date('Y-m-d H:i:s');
-		$ass->notes = @$data['patientticketing__notes'];
+		$ass->notes = @$data[self::$FIELD_PREFIX . '_notes'];
 
+		if ($ass_flds = $this->getAssignmentFieldDefinitions()) {
+			$details = array();
+			foreach ($ass_flds as $ass_fld) {
+				if ($val = @$data[$ass_fld['form_name']]) {
+					if (@$ass_fld['choices']) {
+						foreach ($ass_fld['choices'] as $k => $v) {
+							if ($k == $val) {
+								$val = $v;
+								break;
+							}
+						}
+
+					}
+					$details[] = array(
+						'id' => $ass_fld['id'],
+						'value' => $val,
+					);
+				}
+			}
+			$ass->details = json_encode($details);
+		}
 		if ($this->report_definition) {
-			$ticket->report = Substitution::replace($this->report_definition, $ticket->patient);
+			$report = $ass->replaceAssignmentCodes($this->report_definition);
+			$ticket->report = Substitution::replace($report, $ticket->patient);
 			$ticket->save();
 		}
 		$ass->save();
@@ -141,22 +187,51 @@ class Queue extends \BaseActiveRecordVersioned
 		return $res;
 	}
 
+	protected function getAssignmentFieldDefinitions()
+	{
+		$flds = array();
+		if ($ass_fields = \CJSON::decode($this->assignment_fields)) {
+			foreach ($ass_fields as $ass_fld) {
+				$flds[] = array(
+						'id' => "{$ass_fld['id']}",
+						'form_name' => self::$FIELD_PREFIX . $ass_fld['id'],
+						'required' => $ass_fld['required'],
+						'type' => @$ass_fld['type'],
+						'label' => $ass_fld['label'],
+						'choices' => @$ass_fld['choices']
+				);
+			}
+		}
+		return $flds;
+	}
+
 	/**
 	 * Function to return a list of the fields that we are expecting an assignment form to contain for this queue
 	 *
-	 * @return array(fieldname => required)
+	 * @return array(array('id' => string, 'required' => boolean, 'choices' => array(), 'label' => string, 'type' => string))
 	 */
 	public function getFormFields()
 	{
 		$flds = array();
-		$prefix = "patientticketing_";
 
 		// priority and notes are reserved fields and so get additional _ prefix for the field name
 		if ($this->is_initial) {
-			$flds["{$prefix}_priority"] = true;
+			$flds[] = array(
+				'id' => "_priority",
+				'form_name' => self::$FIELD_PREFIX . "_priority",
+				'required' => true,
+				'choices' => \CHtml::listData(Priority::model()->findAll(), 'id', 'name'),
+				'label' => 'Priority',
+			);
 		}
-		$flds["{$prefix}_notes"] = false;
+		$flds[] = array(
+			'id' => "_notes",
+			'form_name' => self::$FIELD_PREFIX . "_notes",
+			'required' => false,
+			'type' => 'textarea',
+			'label' => 'Notes');
 
-		return $flds;
+		return array_merge($flds, $this->getAssignmentFieldDefinitions());
 	}
 }
+

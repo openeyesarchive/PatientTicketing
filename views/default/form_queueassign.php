@@ -19,23 +19,20 @@
 ?>
 
 <div>
-	<fieldset class="field-row row">
-		<?php if ($queue->is_initial) {?>
+	<?php foreach ($queue->getFormFields() as $fld) {?>
+		<fieldset class="field-row row">
 			<div class="large-<?= $label_width ?> column">
-				<label for="patientticketing__priority">Priority:</label>
+				<label for="<?= $fld['form_name']?>"><?= $fld['label'] ?>:</label>
 			</div>
 			<div class="large-<?= $field_width ?> column end">
-				<?php echo CHtml::dropDownList('patientticketing__priority',null, CHtml::listData(OEModule\PatientTicketing\models\Priority::model()->findAll(), 'id', 'name'), array('empty' => ' - Please Select - ')) ?>
+			<?php if (@$fld['choices']) {
+				echo CHtml::dropDownList($fld['form_name'], null, $fld['choices'], array('empty' => ' - Please Select - '));
+			} else {
+				//may need to expand this beyond textarea and select in the future.
+			?>
+				<textarea id="<?= $fld['form_name']?>" name="<?= $fld['form_name']?>"></textarea>
+			<?php }?>
 			</div>
-		<?php } ?>
-	</fieldset>
-	<fieldset class="field-row row">
-		<div class="large-<?= $label_width ?> column">
-			<label for="queue-ass-notes">Notes:</label>
-		</div>
-		<div class="large-<?= $field_width ?> column end">
-			<textarea id="queue-ass-notes" name="patientticketing__notes"></textarea>
-		</div>
-		<!-- TODO: implement the dynamic additional data fields for queue assignment -->
-	</fieldset>
+		</fieldset>
+	<?php }?>
 </div>

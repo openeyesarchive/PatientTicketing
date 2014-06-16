@@ -90,4 +90,28 @@ class TicketQueueAssignment extends \BaseActiveRecordVersioned
 		));
 	}
 
+	/**
+	 * Searches for string patterns to replace with assignment data and returns the resultant string.
+	 *
+	 * @param string $text
+	 * @return string $replaced_text
+	 */
+	public function replaceAssignmentCodes($text)
+	{
+		if ($this->details) {
+			$flds = json_decode($this->details, false);
+			$by_id = array();
+			foreach ($flds as $fld) {
+				$by_id[$fld->id] = $fld->value;
+			}
+			// match for ticketing fields
+			preg_match_all('/\[pt_([a-z]+)\]/is',$text,$m);
+
+			foreach ($m[1] as $el) {
+				$text = preg_replace('/\[pt_' . $el . '\]/is', @$by_id[$el] ? $by_id[$el] : 'Unknown', $text);
+			}
+
+			return $text;
+		}
+	}
 }

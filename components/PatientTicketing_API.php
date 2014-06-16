@@ -58,10 +58,25 @@ class PatientTicketing_API extends \BaseAPI
 		$errs = array();
 		$p = new \CHtmlPurifier();
 
-		foreach ($queue->getFormFields() as $field_name => $required) {
+		foreach ($queue->getFormFields() as $field) {
+			$field_name = $field['form_name'];
 			$res[$field_name] = $p->purify(@$data[$field_name]);
-			if ($validate && $required && !@$data[$field_name]) {
-				$errs[$field_name] = $queue->getAttributeLabel($field_name) . " is required";
+			if ($validate) {
+				if ($field['required'] && !@$data[$field_name]) {
+					$errs[$field_name] = $field['label'] . " is required";
+				}
+				elseif (@$field['choices'] && @$data[$field_name]) {
+					$match = false;
+					foreach ($field['choices'] as $k => $v) {
+						if ($data[$field_name] == $k) {
+							$match = true;
+							break;
+						}
+					}
+					if (!$match) {
+						$errs[$field_name] = $field['label'] .": invalid choice";
+					}
+				}
 			}
 		}
 
