@@ -18,6 +18,7 @@
  */
 
 namespace OEModule\PatientTicketing\models;
+use Yii;
 
 /**
  * This is the model class for table "patientticketing_ticket".
@@ -45,6 +46,10 @@ namespace OEModule\PatientTicketing\models;
  * @property \User $assignee
  * @property \User $user
  * @property \User $usermodified
+ * @property TicketQueueAssignment[] queue_assignments
+ * @property TicketQueueAssignment initial_queue_assignment
+ * @property TicketQueueAssignment current_queue_assignment
+ * @property Queue currentQueue
  */
 
 class Ticket extends \BaseActiveRecordVersioned
@@ -132,16 +137,20 @@ class Ticket extends \BaseActiveRecordVersioned
 	public function getSourceLink()
 	{
 		if ($this->event) {
-			return "/" . $this->event->eventType->class_name . "/default/view/" . $this->event_id;
+			if ($this->initial_queue_assignment->queue->summary_link) {
+				return Yii::app()->createUrl('/patient/episode/view/', array('id' => $this->event->episode_id));
+			}
+			return Yii::app()->createURL("/" . $this->event->eventType->class_name . "/default/view/", array('id' => $this->event_id));
 		}
-		else {
-			return "/patient/view/" . $this->patient_id;
-		}
+		return Yii::app()->createURL("/patient/view/", array('id' => $this->patient_id));
 	}
 
 	public function getSourceLabel()
 	{
 		if ($this->event) {
+			if ($this->initial_queue_assignment->queue->summary_link) {
+				return $this->initial_queue_assignment->assignment_firm->getSubspecialtyText() . " Episode";
+			}
 			return $this->event->eventType->name;
 		}
 		else {

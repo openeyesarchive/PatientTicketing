@@ -32,6 +32,7 @@ use OEModule\PatientTicketing\components\Substitution;
  * @property boolean $active
  * @property string $report_definition
  * @property boolean $is_initial
+ * @property boolean $summary_link - if true, tickets should link to the source event episode summary, rather than the event itself.
  * @property string assignment_fields
  * @property integer $created_user_id
  * @property datetime $created_date
@@ -47,6 +48,7 @@ use OEModule\PatientTicketing\components\Substitution;
  */
 class Queue extends \BaseActiveRecordVersioned
 {
+	// used to prevent form field name conflicts
 	protected static $FIELD_PREFIX = "patientticketing_";
 
 	/**
@@ -140,6 +142,7 @@ class Queue extends \BaseActiveRecordVersioned
 		$ass->assignment_date = date('Y-m-d H:i:s');
 		$ass->notes = @$data[self::$FIELD_PREFIX . '_notes'];
 
+		// store the assignment field values to the assignment object.
 		if ($ass_flds = $this->getAssignmentFieldDefinitions()) {
 			$details = array();
 			foreach ($ass_flds as $ass_fld) {
@@ -161,6 +164,8 @@ class Queue extends \BaseActiveRecordVersioned
 			}
 			$ass->details = json_encode($details);
 		}
+
+		// generate the report field on the ticket.
 		if ($this->report_definition) {
 			$report = $ass->replaceAssignmentCodes($this->report_definition);
 			$ticket->report = Substitution::replace($report, $ticket->patient);
@@ -187,6 +192,11 @@ class Queue extends \BaseActiveRecordVersioned
 		return $res;
 	}
 
+	/**
+	 * Returns the fields that have been defined for this Queue when a ticket is assigned to it.
+	 *
+	 * @return array
+	 */
 	protected function getAssignmentFieldDefinitions()
 	{
 		$flds = array();

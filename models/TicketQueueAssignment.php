@@ -19,7 +19,32 @@
 
 namespace OEModule\PatientTicketing\models;
 
-
+/**
+ * This is the model class for table "patientticketing_ticketqueue_assignment". THis is the link table between tickets and queues
+ *
+ * The followings are the available columns in table:
+ * @property string $id
+ * @property integer $ticket_id
+ * @property integer $queue_id
+ * @property datetime $assignment_date
+ * @property integer $assignment_user_id
+ * @property integer $assigment_firm_id
+ * @property string $notes
+ * @property string $details
+ * @property integer $created_user_id
+ * @property datetime $created_date
+ * @property integer $last_modified_user_id
+ * @property datetime $last_modified_date
+ *
+ * The followings are the available model relations:
+ *
+ * @property Ticket $ticket
+ * @property Queue $queue
+ * @property \User $assignment_user
+ * @property \Firm $assignment_firm
+ * @property \User $user
+ * @property \User $usermodified
+ */
 class TicketQueueAssignment extends \BaseActiveRecordVersioned
 {
 	/**
