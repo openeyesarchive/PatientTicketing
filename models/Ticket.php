@@ -95,6 +95,7 @@ class Ticket extends \BaseActiveRecordVersioned
 			'queue_assignments' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id'),
 			'initial_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'initial_queue_assignment.assignment_date'),
 			'current_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'current_queue_assignment.assignment_date desc'),
+			'initial_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'initial_queue_assignment'),
 			'currentQueue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'queue_assignments', 'order' => 'queue_assignments.assignment_date desc')
 		);
 	}
@@ -106,13 +107,6 @@ class Ticket extends \BaseActiveRecordVersioned
 	{
 		return array(
 			'event_id' => 'Source Event',
-		);
-	}
-
-	public function behaviors()
-	{
-		return array(
-				'LookupTable' => 'LookupTable',
 		);
 	}
 
@@ -134,6 +128,11 @@ class Ticket extends \BaseActiveRecordVersioned
 		));
 	}
 
+	/**
+	 * Get the URL to link to the source of the ticket.
+	 *
+	 * @return mixed
+	 */
 	public function getSourceLink()
 	{
 		if ($this->event) {
@@ -145,6 +144,11 @@ class Ticket extends \BaseActiveRecordVersioned
 		return Yii::app()->createURL("/patient/view/", array('id' => $this->patient_id));
 	}
 
+	/**
+	 * Get the text to describe the source of this ticket
+	 *
+	 * @return string
+	 */
 	public function getSourceLabel()
 	{
 		if ($this->event) {
@@ -158,12 +162,22 @@ class Ticket extends \BaseActiveRecordVersioned
 		}
 	}
 
+	/**
+	 * Gets the firm that was being used when this ticket was created
+	 *
+	 * @return string
+	 */
 	public function getTicketFirm()
 	{
 		$ass = $this->initial_queue_assignment;
 		return $ass->assignment_firm->getNameAndSubspecialty();
 	}
 
+	/**
+	 * Returns true if this ticket was previously in a different queue. False otherwise
+	 *
+	 * @return bool
+	 */
 	public function hasHistory()
 	{
 		return count($this->queue_assignments) > 1;

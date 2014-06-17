@@ -26,11 +26,11 @@
 			</div>
 			<div class="large-<?= $field_width ?> column end">
 			<?php if (@$fld['choices']) {
-				echo CHtml::dropDownList($fld['form_name'], null, $fld['choices'], array('empty' => ' - Please Select - '));
+				echo CHtml::dropDownList($fld['form_name'], @$_POST[$fld['form_name']], $fld['choices'], array('empty' => ' - Please Select - '));
 			} else {
 				//may need to expand this beyond textarea and select in the future.
 			?>
-				<textarea id="<?= $fld['form_name']?>" name="<?= $fld['form_name']?>"></textarea>
+				<textarea id="<?= $fld['form_name']?>" name="<?= $fld['form_name']?>"><?=@$_POST[$fld['form_name']]?></textarea>
 			<?php }?>
 			</div>
 		</fieldset>
