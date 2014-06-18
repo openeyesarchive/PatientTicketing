@@ -165,6 +165,7 @@ class Queue extends \BaseActiveRecordVersioned
 			$ass->details = json_encode($details);
 		}
 
+
 		// generate the report field on the ticket.
 		if ($this->report_definition) {
 			$report = $ass->replaceAssignmentCodes($this->report_definition);

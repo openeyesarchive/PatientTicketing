@@ -16,12 +16,24 @@
  * @copyright Copyright (c) 2011-2014, OpenEyes Foundation
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
-?>
 
-<?php
-$this->widget('OEModule\PatientTicketing\widgets\QueueAssign', array(
-	'queue_id' => $queue_id,
-	'label_width' => $label_width,
-	'data_width' => $data_width)
-);
-?>
+namespace OEModule\PatientTicketing\widgets;
+use OEModule\PatientTicketing\models;
+/**
+ * Class QueueAssign
+ *
+ * Widget to generate the assignment form for a Queue
+ *
+ * @package OEModule\PatientTicketing\widgets
+ */
+class QueueAssign extends \CWidget {
+	public $queue_id;
+	public $label_width = 2;
+	public $data_width = 4;
+
+	public function run()
+	{
+		$queue = models\Queue::model()->findByPk($this->queue_id);
+		$this->render('QueueAssign', array('queue' => $queue));
+	}
+}

@@ -176,10 +176,10 @@ class DefaultController extends \BaseModuleController
 			throw new \CHttpException(404, 'Invalid queue id.');
 		}
 
-		$template_vars = array('queue' => $q);
+		$template_vars = array('queue_id' => $id);
 		$p = new \CHtmlPurifier();
 
-		foreach (array('label_width' => 2, 'field_width' => 8) as $id => $default) {
+		foreach (array('label_width' => 2, 'data_width' => 8) as $id => $default) {
 			$template_vars[$id] = @$_GET[$id] ? $p->purify($_GET[$id]) : $default;
 		}
 

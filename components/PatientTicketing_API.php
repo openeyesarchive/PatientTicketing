@@ -27,6 +27,7 @@ class PatientTicketing_API extends \BaseAPI
 {
 
 	public static $TICKET_SUMMARY_WIDGET = 'OEModule\PatientTicketing\widgets\TicketSummary';
+	public static $QUEUE_ASSIGNMENT_WIDGET = 'OEModule\PatientTicketing\widgets\QueueAssign';
 	/**
 	 * Simple function to standardise access to the retrieving the Queue Assignment Form
 	 *

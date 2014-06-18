@@ -18,10 +18,23 @@
  */
 ?>
 
-<?php
-$this->widget('OEModule\PatientTicketing\widgets\QueueAssign', array(
-	'queue_id' => $queue_id,
-	'label_width' => $label_width,
-	'data_width' => $data_width)
-);
-?>
+<?php if ($queue) {?>
+	<div>
+		<?php foreach ($queue->getFormFields() as $fld) {?>
+			<fieldset class="field-row row">
+				<div class="large-<?= $this->label_width ?> column">
+					<label for="<?= $fld['form_name']?>"><?= $fld['label'] ?>:</label>
+				</div>
+				<div class="large-<?= $this->data_width ?> column end">
+					<?php if (@$fld['choices']) {
+						echo CHtml::dropDownList($fld['form_name'], @$_POST[$fld['form_name']], $fld['choices'], array('empty' => ' - Please Select - '));
+					} else {
+						//may need to expand this beyond textarea and select in the future.
+						?>
+						<textarea id="<?= $fld['form_name']?>" name="<?= $fld['form_name']?>"><?=@$_POST[$fld['form_name']]?></textarea>
+					<?php }?>
+				</div>
+			</fieldset>
+		<?php }?>
+	</div>
+<?php } ?>
