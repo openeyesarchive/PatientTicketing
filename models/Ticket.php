@@ -235,5 +235,5 @@ class Ticket extends \BaseActiveRecordVersioned
 	{
 		return $this->current_queue_assignment->notes;
 	}
-	
+
 }

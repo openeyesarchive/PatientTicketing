@@ -165,14 +165,18 @@ class Queue extends \BaseActiveRecordVersioned
 			$ass->details = json_encode($details);
 		}
 
-
 		// generate the report field on the ticket.
 		if ($this->report_definition) {
 			$report = $ass->replaceAssignmentCodes($this->report_definition);
 			$ticket->report = Substitution::replace($report, $ticket->patient);
-			$ticket->save();
+			if (!$ticket->save()) {
+				throw new Exception("Unable to update Ticket report field");
+			}
 		}
-		$ass->save();
+		if (!$ass->save()) {
+			throw new Exception("Unable to save queue assignment");
+		}
+		return true;
 	}
 
 	/**

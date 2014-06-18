@@ -222,7 +222,26 @@ class DefaultController extends \BaseModuleController
 			throw new \CHttpException(400, "Missing required field(s) " . implode(",", array_keys($errs)));
 		}
 
-		$to_queue->addTicket($ticket, Yii::app()->user, $this->firm, $data);
+		$transaction = Yii::app()->db->beginTransaction();
+
+		try {
+			if ($to_queue->addTicket($ticket, Yii::app()->user, $this->firm, $data)) {
+				if ($ticket->assignee) {
+					$ticket->assignee_user_id = null;
+					$ticket->assignee_date = null;
+					$ticket->save();
+				}
+				$transaction->commit();
+			}
+			else {
+				throw new Exception("unable to assign ticket to queue");
+			}
+		}
+		catch (Exception $e) {
+			$transaction->rollback();
+			throw $e;
+		}
+
 
 		echo "1";
 	}
