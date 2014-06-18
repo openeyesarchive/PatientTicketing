@@ -25,6 +25,8 @@ use OEModule\PatientTicketing\models\Ticket;
 
 class PatientTicketing_API extends \BaseAPI
 {
+
+	public static $TICKET_SUMMARY_WIDGET = 'OEModule\PatientTicketing\widgets\TicketSummary';
 	/**
 	 * Simple function to standardise access to the retrieving the Queue Assignment Form
 	 *

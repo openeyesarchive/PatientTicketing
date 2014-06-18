@@ -49,7 +49,7 @@ use Yii;
  * @property TicketQueueAssignment[] queue_assignments
  * @property TicketQueueAssignment initial_queue_assignment
  * @property TicketQueueAssignment current_queue_assignment
- * @property Queue currentQueue
+ * @property Queue current_queue
  */
 
 class Ticket extends \BaseActiveRecordVersioned
@@ -96,7 +96,7 @@ class Ticket extends \BaseActiveRecordVersioned
 			'initial_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'initial_queue_assignment.assignment_date'),
 			'current_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'current_queue_assignment.assignment_date desc'),
 			'initial_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'initial_queue_assignment'),
-			'currentQueue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'queue_assignments', 'order' => 'queue_assignments.assignment_date desc')
+			'current_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'queue_assignments', 'order' => 'queue_assignments.assignment_date desc')
 		);
 	}
 
@@ -184,6 +184,19 @@ class Ticket extends \BaseActiveRecordVersioned
 	}
 
 	/**
+	 * Get the past Queue Assignments for the ticket
+	 *
+	 * @return array
+	 */
+	public function getPastQueueAssignments()
+	{
+		if ($ass_size = count($this->queue_assignments)) {
+			return array_slice($this->queue_assignments, 0, $ass_size - 1);
+		}
+		return array();
+	}
+
+	/**
 	 * Get a data structure containing information about this ticket
 	 *
 	 * @param bool $json
@@ -194,8 +207,8 @@ class Ticket extends \BaseActiveRecordVersioned
 		$res = array(
 			'id' => $this->id,
 			'patient_name' => $this->patient->getFullName(),
-			'current_queue_name' => $this->currentQueue->name,
-			'current_queue_id' => $this->currentQueue->id
+			'current_queue_name' => $this->current_queue->name,
+			'current_queue_id' => $this->current_queue->id
 		);
 		if ($json) {
 			return \CJSON::encode($res);
@@ -210,7 +223,7 @@ class Ticket extends \BaseActiveRecordVersioned
 	 */
 	public function is_complete()
 	{
-		return count($this->currentQueue->outcomes) == 0;
+		return count($this->current_queue->outcomes) == 0;
 	}
 
 	/**

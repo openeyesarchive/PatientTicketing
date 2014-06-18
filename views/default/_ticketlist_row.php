@@ -19,7 +19,7 @@
 ?>
 
 <tr data-ticket-id="<?= $ticket->id?>" data-ticket-info="<?= CHtml::encode($ticket->getInfoData()) ?>">
-	<td><?= $ticket->currentQueue->name ?></td>
+	<td><?= $ticket->current_queue->name ?></td>
 	<td><a href="<?= $this->createURL('/patient/view/', array('id' => $ticket->patient->id));?>"><?= $ticket->patient->hos_num ?></a></td>
 	<td><?= $ticket->patient->first_name ?></td>
 	<td><?= $ticket->patient->last_name ?></td>
@@ -43,7 +43,7 @@
 				else {
 					?><button id="take" class="tiny ticket-take">Take</button><?php
 				}?>
-				<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->currentQueue->getOutcomeData()) ?>">Move</button>
+				<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->current_queue->getOutcomeData()) ?>">Move</button>
 		<?php }
 		} ?>
 		<?php if ($ticket->hasHistory()) {?>

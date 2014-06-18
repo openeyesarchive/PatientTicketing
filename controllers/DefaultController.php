@@ -195,7 +195,7 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionMoveTicket($id)
 	{
-		if (!$ticket = models\Ticket::model()->with('currentQueue')->findByPk($id)) {
+		if (!$ticket = models\Ticket::model()->with('current_queue')->findByPk($id)) {
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
 
@@ -205,7 +205,7 @@ class DefaultController extends \BaseModuleController
 			}
 		}
 
-		if ($ticket->currentQueue->id != $_POST['from_queue_id']) {
+		if ($ticket->current_queue->id != $_POST['from_queue_id']) {
 			//TODO: handle this as a different response rather than exception
 			throw new \CHttpException(409, "Ticket has already moved to a different queue");
 		}
@@ -235,7 +235,7 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionGetTicketTableRow($id)
 	{
-		if (!$ticket = models\Ticket::model()->with('currentQueue')->findByPk($id)) {
+		if (!$ticket = models\Ticket::model()->with('current_queue')->findByPk($id)) {
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
 
@@ -256,14 +256,9 @@ class DefaultController extends \BaseModuleController
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
 
-		$assignments = array();
-		for ($i = 0; $i < count($ticket->queue_assignments) - 1; $i++) {
-			$assignments[] = $ticket->queue_assignments[$i];
-		}
-
 		$this->renderPartial('_ticketlist_history', array(
 					'ticket' => $ticket,
-					'assignments' => $assignments
+					'assignments' => $ticket->getPastQueueAssignments()
 				), false, false);
 	}
 
@@ -275,7 +270,7 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionTakeTicket($id)
 	{
-		if (!$ticket = models\Ticket::model()->with('currentQueue')->findByPk($id)) {
+		if (!$ticket = models\Ticket::model()->with('current_queue')->findByPk($id)) {
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
 
@@ -312,7 +307,7 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionReleaseTicket($id)
 	{
-		if (!$ticket = models\Ticket::model()->with('currentQueue')->findByPk($id)) {
+		if (!$ticket = models\Ticket::model()->with('current_queue')->findByPk($id)) {
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
 
