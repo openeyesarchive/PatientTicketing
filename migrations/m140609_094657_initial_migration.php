@@ -29,7 +29,6 @@ class m140609_094657_initial_migration extends OEMigration
 					'report' => 'text',
 					'assignee_user_id' => 'int(10) unsigned',
 					'assignee_date' => 'datetime',
-					'outcome' => 'string',
 					'event_id' => 'int(10) unsigned'
 				), true);
 

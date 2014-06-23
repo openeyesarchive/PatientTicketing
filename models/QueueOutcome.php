@@ -45,6 +45,7 @@ class QueueOutcome extends \BaseActiveRecordVersioned
 	public function rules()
 	{
 		return array(
+			array('queue_id', 'required')
 		);
 	}
 

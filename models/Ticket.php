@@ -30,7 +30,6 @@ use Yii;
  * @property string $report
  * @property integer $assignee_user_id
  * @property datetime $assignee_date
- * @property string $outcome TODO: do we still need this?
  * @property integer $created_user_id
  * @property datetime $created_date
  * @property integer $last_modified_user_id
@@ -77,6 +76,7 @@ class Ticket extends \BaseActiveRecordVersioned
 	public function rules()
 	{
 		return array(
+				array('patient_id, priority_id', 'required'),
 		);
 	}
 

@@ -70,6 +70,7 @@ class TicketQueueAssignment extends \BaseActiveRecordVersioned
 	public function rules()
 	{
 		return array(
+				array('ticket_id, queue_id, assignment_date, assignment_user_id, assignment_firm_id', 'required'),
 		);
 	}
 

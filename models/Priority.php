@@ -50,6 +50,7 @@ class Priority extends \BaseActiveRecordVersioned
 	public function rules()
 	{
 		return array(
+				array('name, display_order', 'required')
 		);
 	}
 

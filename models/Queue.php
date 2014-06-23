@@ -74,6 +74,7 @@ class Queue extends \BaseActiveRecordVersioned
 	public function rules()
 	{
 		return array(
+			array('name', 'required')
 		);
 	}
 

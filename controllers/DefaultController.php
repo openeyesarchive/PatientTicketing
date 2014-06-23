@@ -189,7 +189,6 @@ class DefaultController extends \BaseModuleController
 	/**
 	 * Handles the moving of a ticket to a new Queue.
 	 *
-	 * @TODO: handle errors in a way that the UI can display useful information (validation errors)
 	 * @param $id
 	 * @throws \CHttpException
 	 */
@@ -206,7 +205,6 @@ class DefaultController extends \BaseModuleController
 		}
 
 		if ($ticket->current_queue->id != $_POST['from_queue_id']) {
-			//TODO: handle this as a different response rather than exception
 			throw new \CHttpException(409, "Ticket has already moved to a different queue");
 		}
 
@@ -218,7 +216,6 @@ class DefaultController extends \BaseModuleController
 		list($data, $errs) = $api->extractQueueData($to_queue, $_POST, true);
 
 		if (count($errs)) {
-			//TODO: handle assignment form validation errors
 			throw new \CHttpException(400, "Missing required field(s) " . implode(",", array_keys($errs)));
 		}
 
@@ -320,7 +317,8 @@ class DefaultController extends \BaseModuleController
 	}
 
 	/**
-	 * @TODO: admin users should be able to release a ticket they don't own.
+	 * Release a ticket from assignment
+	 *
 	 * @param $id
 	 * @throws \CHttpException
 	 */
