@@ -25,28 +25,11 @@ class DefaultController extends \BaseModuleController
 {
 	public $layout='//layouts/main';
 	public $renderPatientPanel = false;
-	protected $firm;
 	protected $page_size = 10;
 
 	/**
-	 * Sets the firm property on the controller from the session
+	 * Ensures firm is set on the controller.
 	 *
-	 * @TODO: this is from BaseEventTypeController - it should be moved to BaseModuleController, and possibly even BaseController as firm
-	 * is site wide, not limited to events
-	 * @throws HttpException
-	 */
-	protected function setFirmFromSession()
-	{
-		if (!$firm_id = Yii::app()->session->get('selected_firm_id')) {
-			throw new \HttpException('Firm not selected');
-		}
-		if (!$this->firm || $this->firm->id != $firm_id) {
-			$this->firm = \Firm::model()->findByPk($firm_id);
-		}
-	}
-
-	/**
-	 * @TODO: as above, this should be a part of the parent controller
 	 * @param \CAction $action
 	 * @return bool
 	 */
