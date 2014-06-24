@@ -74,7 +74,9 @@ class Queue extends \BaseActiveRecordVersioned
 	public function rules()
 	{
 		return array(
-			array('name', 'required')
+			array('name', 'required'),
+			array('assignment_fields', 'validJSON'),
+			array('name, description, is_active, summary_link, assignment_fields, report_definition', 'safe'),
 		);
 	}
 
@@ -88,15 +90,6 @@ class Queue extends \BaseActiveRecordVersioned
 			'usermodified' => array(self::BELONGS_TO, 'User', 'last_modified_user_id'),
 			'outcomes' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\QueueOutcome', 'queue_id'),
 			'outcome_queues' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\Queue', 'outcome_queue_id', 'through' => 'outcomes')
-		);
-	}
-
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels()
-	{
-		return array(
 		);
 	}
 
@@ -123,6 +116,20 @@ class Queue extends \BaseActiveRecordVersioned
 		return new CActiveDataProvider(get_class($this), array(
 				'criteria' => $criteria,
 		));
+	}
+
+	/**
+	 * Checks the given attribute is valid JSON
+	 *
+	 * @param $attribute
+	 */
+	public function validJSON($attribute)
+	{
+		if ($this->$attribute) {
+			if (!\CJSON::decode($this->$attribute)) {
+				$this->addError($attribute, $this->getAttributeLabel($attribute) . " must be valid JSON");
+			}
+		}
 	}
 
 	/**
@@ -248,6 +255,21 @@ class Queue extends \BaseActiveRecordVersioned
 			'label' => 'Notes');
 
 		return array_merge($flds, $this->getAssignmentFieldDefinitions());
+	}
+
+	/**
+	 * Get the root queue for this particular queue
+	 * (Note: this assumes that all queues are only in one path, if that model changes this will not work)
+	 *
+	 * @return $this
+	 */
+	public function getRootQueue()
+	{
+		if ($this->is_initial) {
+			return $this;
+		}
+		$outcome = QueueOutcome::model()->findbyAttributes(array('outcome_queue_id' => $this->id));
+		return $outcome->queue->getRootQueue();
 	}
 }
 

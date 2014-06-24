@@ -3,7 +3,7 @@
  * OpenEyes
  *
  * (C) Moorfields Eye Hospital NHS Foundation Trust, 2008-2011
- * (C) OpenEyes Foundation, 2011-2013
+ * (C) OpenEyes Foundation, 2011-2014
  * This file is part of OpenEyes.
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -13,28 +13,29 @@
  * @link http://www.openeyes.org.uk
  * @author OpenEyes <info@openeyes.org.uk>
  * @copyright Copyright (c) 2008-2011, Moorfields Eye Hospital NHS Foundation Trust
- * @copyright Copyright (c) 2011-2013, OpenEyes Foundation
+ * @copyright Copyright (c) 2011-2014, OpenEyes Foundation
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
+?>
 
-return array(
-		'import' => array(
-		),
-		'params' => array(
-				'menu_bar_items' => array(
-						'virtual_clinic' => array(
-								'restricted' => array('OprnViewPatientTickets'),
-								'title' => 'Virtual Clinic',
-								'uri' => 'PatientTicketing/Default/index',
-								'position' => 5,
-						),
-				),
-				'admin_menu' => array(
-						'Queues' => '/PatientTicketing/admin/',
-				),
+<li class="queue">
+	<div><?= $queue->name ?></div>
+	<div class="actions" data-queue-id="<?=$queue->id?>">
+		<span class="edit admin-action" title="edit">e</span> |
+		<span class="add-child admin-action" title="add">+</span> |
+		<span class="deactivate admin-action" title="deactivate">-</span> |
+		<span class="expansion-controls">
+			<span class="show-children" style="display:none;">\/</span>
+			<span class="hide-children">/\</span>
+		</span>
+	</div>
 
-				'patient_summary_id_widgets' => array(
-					array('class' => 'OEModule\PatientTicketing\widgets\PatientSummaryId'),
-				)
-		),
-);
+	<?php if ($queue->outcome_queues) {?>
+		<ul>
+			<?php foreach ($queue->outcome_queues as $oc) { ?>
+				<?php $this->renderPartial("queue_as_list", array('queue' => $oc)); ?>
+			<?php }?>
+		</ul>
+	<?php } ?>
+
+</li>
