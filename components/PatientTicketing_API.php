@@ -19,7 +19,6 @@
 
 namespace OEModule\PatientTicketing\components;
 
-
 use OEModule\PatientTicketing\models\Queue;
 use OEModule\PatientTicketing\models\Ticket;
 
@@ -98,6 +97,7 @@ class PatientTicketing_API extends \BaseAPI
 	 * @param Queue $initial_queue
 	 * @param \CWebUser $user
 	 * @param \Firm $firm
+	 * @param $data
 	 * @throws \Exception
 	 * @return \OEModule\PatientTicketing\models\Ticket
 	 */
@@ -121,6 +121,7 @@ class PatientTicketing_API extends \BaseAPI
 	 * @param Queue $initial_queue
 	 * @param \CWebUser $user
 	 * @param \Firm $firm
+	 * @param $data
 	 * @return \OEModule\PatientTicketing\models\Ticket
 	 */
 	public function createTicketForPatient(\Patient $patient, Queue $initial_queue, \CWebUser $user, \Firm $firm, $data)
