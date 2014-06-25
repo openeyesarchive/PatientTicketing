@@ -13,7 +13,9 @@
 		'childSelector': '.child-queue',
 		'addQueueURI': '/PatientTicketing/admin/addQueue',
 		'editQueueURI': '/PatientTicketing/admin/updateQueue',
-		'loadQueueURI': '/PatientTicketing/admin/loadQueueAsList'
+		'loadQueueURI': '/PatientTicketing/admin/loadQueueAsList',
+		'deactivateQueueURI': '/PatientTicketing/admin/deactivateQueue',
+		'activateQueueURI': '/PatientTicketing/admin/activateQueue'
 	};
 
 	QueueAdmin.prototype.init = function() {
@@ -108,6 +110,21 @@
 		});
 	}
 
+	QueueAdmin.prototype.activeToggleQueue = function(queueId, active) {
+		$.ajax({
+			url: active ? this.options.deactivateQueueURI : this.options.activateQueueURI,
+			data: {id: queueId},
+			dataType: 'json',
+			success: function(resp) {
+				this.reloadQueue();
+			}.bind(this),
+			error: function(jqXHR, status, error) {
+				formDialog.close();
+				new OpenEyes.UI.Dialog.Alert({content: 'There was a problem changing queue state'}).open();
+			}
+		})
+	}
+
 	$(document).ready(function() {
 		var queueAdmin = new QueueAdmin();
 
@@ -123,7 +140,14 @@
 		$(this).on('click', '.edit', function() {
 			var queueId = $(this).parent('div').data('queue-id');
 			queueAdmin.editQueue(queueId);
-		})
+		});
+
+		$(this).on('click', '.active-toggle', function() {
+			var queueId = $(this).parent('div').data('queue-id');
+			var active = !$(this).closest('div.node').hasClass('inactive');
+			queueAdmin.activeToggleQueue(queueId, active);
+		});
+
 	});
 }());
 

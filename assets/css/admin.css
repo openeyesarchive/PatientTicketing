@@ -5,12 +5,26 @@
 	border 				: 5px solid black;
 	color 				: #000;
 	-moz-border-radius 	: 8px;
+	height: auto;
+	min-height: 60px;
+	position: relative;
 }
-.node p{
+
+.jOrgChart .node.inactive {
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+
+.jOrgChart .node p {
 	font-family 	: tahoma;
 	font-size 		: 10px;
 	line-height 	: 11px;
 	padding 		: 2px;
+}
+
+.jOrgChart .node .actions {
+	position: absolute;
+	bottom: 0px;
 }
 
 .jOrgChart table {

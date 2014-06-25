@@ -28,6 +28,7 @@ class PatientTicketing_API extends \BaseAPI
 
 	public static $TICKET_SUMMARY_WIDGET = 'OEModule\PatientTicketing\widgets\TicketSummary';
 	public static $QUEUE_ASSIGNMENT_WIDGET = 'OEModule\PatientTicketing\widgets\QueueAssign';
+
 	/**
 	 * Simple function to standardise access to the retrieving the Queue Assignment Form
 	 *
@@ -137,14 +138,28 @@ class PatientTicketing_API extends \BaseAPI
 
 	/**
 	 * Verifies that the provided queue id is an id for a Queue that the User can add to as the given Firm
-	 * At the moment, no verification takes place beyond the fact that the id is a valid one
+	 * At the moment, no verification takes place beyond the fact that the id is valid and active
 	 *
-	 * @param \User $user
+	 * @param \CWebUser $user
 	 * @param \Firm $firm
 	 * @param integer $id
 	 */
 	public function getQueueForUserAndFirm(\CWebUser $user, \Firm $firm, $id)
 	{
-		return Queue::model()->findByPk($id);
+		return Queue::model()->active()->findByPk($id);
 	}
+
+	/**
+	 * Returns the initial queues a patient ticket can be created against.
+	 *
+	 * @param \Firm $firm
+	 * @return Queue[]
+	 */
+	public function getInitialQueues(\Firm $firm)
+	{
+		$criteria = new \CDbCriteria();
+		$criteria->addColumnCondition( array('is_initial' => true));
+		return Queue::model()->active()->findAll($criteria);
+	}
+
 }

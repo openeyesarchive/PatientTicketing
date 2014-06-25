@@ -76,7 +76,7 @@ class Queue extends \BaseActiveRecordVersioned
 		return array(
 			array('name', 'required'),
 			array('assignment_fields', 'validJSON'),
-			array('name, description, is_active, summary_link, assignment_fields, report_definition', 'safe'),
+			array('name, description, active, summary_link, assignment_fields, report_definition', 'safe'),
 		);
 	}
 
@@ -89,7 +89,8 @@ class Queue extends \BaseActiveRecordVersioned
 			'user' => array(self::BELONGS_TO, 'User', 'created_user_id'),
 			'usermodified' => array(self::BELONGS_TO, 'User', 'last_modified_user_id'),
 			'outcomes' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\QueueOutcome', 'queue_id'),
-			'outcome_queues' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\Queue', 'outcome_queue_id', 'through' => 'outcomes')
+			'all_outcome_queues' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\Queue', 'outcome_queue_id', 'through' => 'outcomes'),
+			'outcome_queues' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\Queue', 'outcome_queue_id', 'through' => 'outcomes', 'on' => 'outcome_queues.active = 1')
 		);
 	}
 

@@ -136,4 +136,27 @@ class AdminController extends \ModuleAdminController {
 		echo \CJSON::encode($resp);
 	}
 
+	public function actionActivateQueue($id)
+	{
+		if (!$queue = models\Queue::model()->findByPk((int)$id)) {
+			throw new \CHttpException(404, "Queue not found with id {$id}");
+		}
+		$queue->active = true;
+		if (!$queue->save()) {
+			throw new \CHttpException(500, "Could not change queue state");
+		}
+		echo 1;
+	}
+
+	public function actionDeactivateQueue($id)
+	{
+		if (!$queue = models\Queue::model()->findByPk((int)$id)) {
+			throw new \CHttpException(404, "Queue not found with id {$id}");
+		}
+		$queue->active = false;
+		if (!$queue->save()) {
+			throw new \CHttpException(500, "Could not change queue state");
+		}
+		echo 1;
+	}
 }

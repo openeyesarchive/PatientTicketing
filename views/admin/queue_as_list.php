@@ -18,21 +18,21 @@
  */
 ?>
 
-<li class="queue">
+<li class="queue<?= $queue->active ? '' : ' inactive'?>">
 	<div><?= $queue->name ?></div>
 	<div class="actions" data-queue-id="<?=$queue->id?>">
-		<span class="edit admin-action" title="edit">e</span> |
-		<span class="add-child admin-action" title="add">+</span> |
-		<span class="deactivate admin-action" title="deactivate">-</span> |
+		<span class="edit admin-action" title="edit">e</span> -
+		<span class="add-child admin-action" title="add">+</span> -
+		<span class="active-toggle admin-action" title="deactivate"><?= $queue->active ? '|' : 'o' ?></span> -
 		<span class="expansion-controls">
 			<span class="show-children" style="display:none;">\/</span>
 			<span class="hide-children">/\</span>
 		</span>
 	</div>
 
-	<?php if ($queue->outcome_queues) {?>
+	<?php if ($queue->all_outcome_queues) {?>
 		<ul>
-			<?php foreach ($queue->outcome_queues as $oc) { ?>
+			<?php foreach ($queue->all_outcome_queues as $oc) { ?>
 				<?php $this->renderPartial("queue_as_list", array('queue' => $oc)); ?>
 			<?php }?>
 		</ul>

@@ -191,7 +191,7 @@ class DefaultController extends \BaseModuleController
 			throw new \CHttpException(409, "Ticket has already moved to a different queue");
 		}
 
-		if (!$to_queue = models\Queue::model()->findByPk($_POST['to_queue_id'])) {
+		if (!$to_queue = models\Queue::model()->active()->findByPk($_POST['to_queue_id'])) {
 			throw new \CHttpException(404, "Cannot find queue with id {$_POST['to_queue_id']}");
 		}
 
