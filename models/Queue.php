@@ -120,6 +120,42 @@ class Queue extends \BaseActiveRecordVersioned
 	}
 
 	/**
+	 * A scope to only return queues that have active outcomes.
+	 * NOTE: didn't seem to be able to do this with relation definitions
+	 *
+	 * @return $this
+	 */
+	public function notClosing()
+	{
+		$criteria = new \CDbCriteria();
+		$criteria->select = $this->getTableAlias(true) . ".*, count(oc.id)";
+		$criteria->join = "left outer join patientticketing_queueoutcome oc on " . $this->getTableAlias(true) .
+				".id = oc.queue_id left join patientticketing_queue oq on oc.outcome_queue_id = oq.id";
+		$criteria->condition = "oq.active = 1";
+		$criteria->group = $this->getTableAlias(true) . ".id";
+
+		$this->getDbCriteria()->mergeWith($criteria);
+		return $this;
+	}
+
+	/**
+	 * A scope to return queues that don't have outcomes
+	 *
+	 * @return $this
+	 */
+	public function closing()
+	{
+		$criteria = new \CDbCriteria();
+		$criteria->select = $this->getTableAlias(true) . ".*, count(oc.id) oc_ct";
+		$criteria->join = "left outer join patientticketing_queueoutcome oc on " . $this->getTableAlias(true) .
+				".id = oc.queue_id";
+		$criteria->group = $this->getTableAlias(true) . ".id";
+		$criteria->having = "oc_ct = 0";
+		$this->getDbCriteria()->mergeWith($criteria);
+
+		return $this;
+	}
+	/**
 	 * Checks the given attribute is valid JSON
 	 *
 	 * @param $attribute
@@ -271,6 +307,28 @@ class Queue extends \BaseActiveRecordVersioned
 		}
 		$outcome = QueueOutcome::model()->findbyAttributes(array('outcome_queue_id' => $this->id));
 		return $outcome->queue->getRootQueue();
+	}
+
+	/**
+	 * Get the tickets that are currently assigned to this queue
+	 *
+	 * @return array
+	 */
+	public function getCurrentTickets()
+	{
+		$criteria = new \CDbCriteria();
+		$criteria->addColumnCondition(array('t.queue_id' => $this->id));
+		$ass = TicketQueueAssignment::model()->with(
+				array('ticket' =>
+						array('with' => 'current_queue')
+				))->findAll($criteria);
+		$tickets = array();
+		foreach ($ass as $a) {
+			if ($a->ticket->current_queue->id == $this->id) {
+				$tickets[] = $a->ticket;
+			}
+		}
+		return $tickets;
 	}
 }
 

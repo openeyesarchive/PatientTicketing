@@ -32,6 +32,18 @@ class AdminController extends \ModuleAdminController {
 		}
 	}
 
+	/**
+	 * Define the actions limited to POST requests
+	 *
+	 * @return array
+	 */
+	public function filters() {
+		return array('postOnly + activateQueue, deactivateQueue, deleteQueue');
+	}
+
+	/**
+	 * Render the main admin screen
+	 */
 	public function actionIndex()
 	{
 		$criteria = new \CDbCriteria();
@@ -40,6 +52,12 @@ class AdminController extends \ModuleAdminController {
 		$this->render('index', array('queues' => models\Queue::model()->findAll($criteria), 'title' => 'Queues'));
 	}
 
+	/**
+	 * Create a new Queue with the optional given parent
+	 *
+	 * @param null $parent_id
+	 * @throws \CHttpException
+	 */
 	public function actionAddQueue($parent_id = null)
 	{
 		$parent = null;
@@ -69,6 +87,12 @@ class AdminController extends \ModuleAdminController {
 		}
 	}
 
+	/**
+	 * Update the given Queue
+	 *
+	 * @param $id
+	 * @throws \CHttpException
+	 */
 	public function actionUpdateQueue($id)
 	{
 		if (!$queue = models\Queue::model()->findByPk($id)) {
@@ -87,6 +111,13 @@ class AdminController extends \ModuleAdminController {
 		}
 	}
 
+	/**
+	 * Performs the update/create process on a Queue
+	 *
+	 * @param $queue
+	 * @param null $parent
+	 * @throws \CHttpException
+	 */
 	protected function saveQueue($queue, $parent = null)
 	{
 		// try and process form
@@ -123,6 +154,12 @@ class AdminController extends \ModuleAdminController {
 		}
 	}
 
+	/**
+	 * Generates an HTML list layout of the given Queue and its Outcome Queues
+	 *
+	 * @param $id
+	 * @throws \CHttpException
+	 */
 	public function actionLoadQueueAsList($id)
 	{
 		if (!$queue = models\Queue::model()->findByPk((int)$id)) {
@@ -136,9 +173,14 @@ class AdminController extends \ModuleAdminController {
 		echo \CJSON::encode($resp);
 	}
 
-	public function actionActivateQueue($id)
+	/**
+	 * Marks the given Queue as active
+	 *
+	 * @throws \CHttpException
+	 */
+	public function actionActivateQueue()
 	{
-		if (!$queue = models\Queue::model()->findByPk((int)$id)) {
+		if (!$queue = models\Queue::model()->findByPk((int)@$_POST['id'])) {
 			throw new \CHttpException(404, "Queue not found with id {$id}");
 		}
 		$queue->active = true;
@@ -148,15 +190,116 @@ class AdminController extends \ModuleAdminController {
 		echo 1;
 	}
 
-	public function actionDeactivateQueue($id)
+	/**
+	 * Marks the given Queue inactive
+	 *
+	 * @throws \CHttpException
+	 */
+	public function actionDeactivateQueue()
+	{
+		if (!$queue = models\Queue::model()->findByPk((int)@$_POST['id'])) {
+			throw new \CHttpException(404, "Queue not found with id {$id}");
+		}
+		$transaction = Yii::app()->db->beginTransaction();
+		try {
+			$this->deactivateQueue($queue);
+			$transaction->commit();
+		}
+		catch (Exception $e) {
+			$transaction->rollback();
+			throw new \CHttpException(500, "Could not change queue state");
+		}
+		echo 1;
+	}
+
+	/**
+	 * Deactivate a Queue, and if $cascade is true, then deactivate it's children
+	 *
+	 * @param $queue
+	 * @param bool $cascade
+	 */
+	protected function deactivateQueue($queue, $cascade = true)
+	{
+		$queue->active = false;
+		if ($cascade) {
+			foreach ($queue->outcome_queues as $oc) {
+				$this->deactivateQueue($oc);
+			}
+		}
+		$queue->save();
+	}
+
+	/**
+	 * Determines whether the given Queue or its children (outcome queues) currently has tickets
+	 * assigned to it.
+	 *
+	 * @TODO: this should be a ServiceLayer thing (as should various other bits in here)
+	 * @param $queue
+	 * @return bool
+	 */
+	protected function checkForTicketsOnQueue($queue)
+	{
+		if ($queue->getCurrentTickets()) {
+			return true;
+		}
+		foreach ($queue->outcome_queues as $oq) {
+			if ($this->checkForTicketsOnQueue($oq)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Retrieve the count of ticket assignments for the given Queue and whether it can be deleted
+	 *
+	 * @param $id
+	 * @throws \CHttpException
+	 */
+	public function actionGetQueueTicketCount($id)
 	{
 		if (!$queue = models\Queue::model()->findByPk((int)$id)) {
 			throw new \CHttpException(404, "Queue not found with id {$id}");
 		}
-		$queue->active = false;
-		if (!$queue->save()) {
-			throw new \CHttpException(500, "Could not change queue state");
+
+		$criteria = new \CDbCriteria();
+		$criteria->addColumnCondition(array('queue_id' => $queue->id));
+
+		$resp = array(
+				'current_count' => count($queue->getCurrentTickets()),
+				'can_delete' => !$this->checkForTicketsOnQueue($queue));
+
+		echo \CJSON::encode($resp);
+	}
+
+	/**
+	 * Will only successfully delete a Queue if no ticket has ever been assigned to it, otherwise will throw
+	 * an exception. Should only have been called when the values return by actionGetQueueTicketCount are zero
+	 * @throws \Exception
+	 * @throws Exception
+	 * @throws \CHttpException
+	 */
+	public function actionDeleteQueue()
+	{
+		if (!$queue = models\Queue::model()->findByPk((int)@$_POST['id'])) {
+			throw new \CHttpException(404, "Queue not found with id " . @$_POST['id']);
 		}
-		echo 1;
+
+		$transaction = Yii::app()->db->beginTransaction();
+		try {
+			if (models\QueueOutcome::model()->deleteAllByAttributes(array('outcome_queue_id' => $queue->id))
+				&& $queue->delete()) {
+				$transaction->commit();
+				echo 1;
+			}
+			else {
+				$transaction->rollback();
+				echo 0;
+			}
+		}
+		catch (Exception $e) {
+			$transaction->rollback();
+			throw $e;
+		}
 	}
 }

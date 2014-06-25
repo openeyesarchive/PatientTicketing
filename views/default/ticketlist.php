@@ -57,6 +57,7 @@
 								<th>Subspecialty:</th>
 								<th>Firm:</th>
 								<th nowrap>My Tickets:</th>
+								<th nowrap>Closed Tickets:</th>
 								<th>&nbsp;</th>
 							</tr>
 							</thead>
@@ -66,10 +67,11 @@
 									<?php $this->widget('application.widgets.MultiSelectList', array(
 											'field' => 'queue-ids',
 											'default_options' => @$_POST['queue-ids'],
-											'options' => CHtml::listData(OEModule\PatientTicketing\models\Queue::model()->findAll(),'id','name'),
+											'options' => CHtml::listData(OEModule\PatientTicketing\models\Queue::model()->active()->notClosing()->findAll(),'id','name'),
 											'htmlOptions' => array('empty' => '- Please Select -', 'nowrapper' => true),
 											'noSelectionsMessage' => 'All Queues')
-											) ?>
+											);
+									?>
 
 								</td>
 								<td>
@@ -93,6 +95,9 @@
 								</td>
 								<td align="middle">
 									<?php echo CHtml::checkBox('my-tickets', (@$_POST['my-tickets'] == 1))?>
+								</td>
+								<td align="middle">
+									<?php echo CHtml::checkBox('closed-tickets', (@$_POST['closed-tickets'] == 1))?>
 								</td>
 								<td>
 									<button id="search_button" class="secondary small" type="submit">

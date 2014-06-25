@@ -31,9 +31,16 @@
 	border-collapse: separate;
 	border: 0px;
 }
+
+.jOrgChart table {
+	background: #e1eef9 !important;
+}
+
+
 .jOrgChart table tr {
 	background: #e1eef9 !important;
 }
+
 .jOrgChart .left {
 	float: none !important;
 }
@@ -50,4 +57,8 @@
 
 .admin-action {
 	cursor: pointer;
+}
+
+.quicklook {
+	width: auto;
 }

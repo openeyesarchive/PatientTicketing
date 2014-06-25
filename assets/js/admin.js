@@ -5,6 +5,22 @@
 		this.options = $.extend(true, {}, QueueAdmin._defaultOptions, options);
 		this.init();
 		this.currentDisplayedQueueId = null;
+
+		this.ajaxPostAndReload = function(uri, data, description) {
+			data.YII_CSRF_TOKEN = YII_CSRF_TOKEN;
+			$.ajax({
+				url: uri,
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(resp) {
+					this.reloadQueue();
+				}.bind(this),
+				error: function(jqXHR, status, error) {
+					new OpenEyes.UI.Dialog.Alert({content: 'There was a problem ' + description}).open();
+				}
+			});
+		}
 	}
 
 	QueueAdmin._defaultOptions = {
@@ -15,7 +31,9 @@
 		'editQueueURI': '/PatientTicketing/admin/updateQueue',
 		'loadQueueURI': '/PatientTicketing/admin/loadQueueAsList',
 		'deactivateQueueURI': '/PatientTicketing/admin/deactivateQueue',
-		'activateQueueURI': '/PatientTicketing/admin/activateQueue'
+		'activateQueueURI': '/PatientTicketing/admin/activateQueue',
+		'deleteQueueURI': '/PatientTicketing/admin/deleteQueue',
+		'ticketCountURI': '/PatientTicketing/admin/getQueueTicketCount'
 	};
 
 	QueueAdmin.prototype.init = function() {
@@ -111,18 +129,40 @@
 	}
 
 	QueueAdmin.prototype.activeToggleQueue = function(queueId, active) {
-		$.ajax({
-			url: active ? this.options.deactivateQueueURI : this.options.activateQueueURI,
-			data: {id: queueId},
-			dataType: 'json',
-			success: function(resp) {
-				this.reloadQueue();
-			}.bind(this),
-			error: function(jqXHR, status, error) {
-				formDialog.close();
-				new OpenEyes.UI.Dialog.Alert({content: 'There was a problem changing queue state'}).open();
-			}
-		})
+		if (active) {
+			$.ajax({
+				url: this.options.ticketCountURI,
+				data: {id: queueId},
+				dataType: 'json',
+				success: function(resp) {
+					if (resp.can_delete) {
+						var deleteDialog = new OpenEyes.UI.Dialog.Confirm({
+							content: "There are no tickets assigned to this queue or its children, you may delete or deactive it.",
+							okButton: "Delete",
+							cancelButton: "Deactivate"
+						});
+						deleteDialog.open();
+						// manage form submission and response
+						deleteDialog.on('ok', function() {this.ajaxPostAndReload(this.options.deleteQueueURI, {id: queueId}, 'deleting queue')}.bind(this));
+						deleteDialog.on('cancel', function() {this.ajaxPostAndReload(this.options.deactivateQueueURI, {id: queueId}, 'changing queue state')}.bind(this));
+					}
+					else if (resp.current_count > 0) {
+						var deactivateDialog = new OpenEyes.UI.Dialog.Confirm({
+							title: "Queue has current tickets",
+							content: "There are currently tickets assigned to this queue. Are you sure want to deactivate it?"
+						});
+						deactivateDialog.on('ok', function() {this.ajaxPostAndReload(this.options.deactivateQueueURI, {id: queueId}, "changing queue state")}.bind(this));
+						deactivateDialog.open();
+					}
+					else {
+						this.ajaxPostAndReload(this.options.deactivateQueueURI, {id: queueId}, "changing queue state");
+					}
+				}.bind(this)
+			});
+		}
+		else {
+			this.ajaxPostAndReload(this.options.activateQueueURI, {id: queueId}, "changing queue state");
+		}
 	}
 
 	$(document).ready(function() {
@@ -146,6 +186,27 @@
 			var queueId = $(this).parent('div').data('queue-id');
 			var active = !$(this).closest('div.node').hasClass('inactive');
 			queueAdmin.activeToggleQueue(queueId, active);
+		});
+
+		// ensure we display the tooltips for the admin controls on the nodes
+		var toolTip = new OpenEyes.UI.Tooltip({
+			offset: {
+				x: 10,
+				y: 10
+			},
+			viewPortOffset: {
+				x: 0,
+				y: 32 // height of sticky footer
+			}
+		});
+		$(this).on('mouseover', '.has-tooltip', function() {
+			if ($(this).data('tooltip').length) {
+				toolTip.setContent($(this).data('tooltip'));
+				var offsets = $(this).offset();
+				toolTip.show(offsets.left, offsets.top);
+			}
+		}).mouseout(function (e) {
+			toolTip.hide();
 		});
 
 	});

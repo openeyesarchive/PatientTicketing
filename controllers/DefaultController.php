@@ -76,7 +76,7 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionIndex()
 	{
-		$filter_keys = array('queue-ids', 'priority-ids', 'subspecialty-id', 'firm-id', 'my-tickets');
+		$filter_keys = array('queue-ids', 'priority-ids', 'subspecialty-id', 'firm-id', 'my-tickets', 'closed-tickets');
 		$filter_options = array();
 
 		if (empty($_POST)) {
@@ -107,8 +107,30 @@ class DefaultController extends \BaseModuleController
 		else {
 			// TODO: we probably don't want to have such a gnarly approach to this, we might want to denormalise so that we are able to do eager loading
 			// That being said, we might get away with setting together false on the with to do this filtering (multiple query eager loading).
-
 			$criteria->join = "JOIN " . models\TicketQueueAssignment::model()->tableName() . " cqa ON cqa.ticket_id = t.id and cqa.id = (SELECT id from " . models\TicketQueueAssignment::model()->tableName() . " qa2 WHERE qa2.ticket_id = t.id order by qa2.created_date desc limit 1)";
+
+			// build queue id list
+			$queue_ids = array();
+			if (@$filter_options['queue-ids']) {
+				$queue_ids = $filter_options['queue-ids'];
+				if (@$filter_options['closed-tickets']) {
+					// get all closed tickets regardless of whether queue is active or not
+					foreach (models\Queue::model()->closing()->findAll() as $closed_queue) {
+						$queue_ids[] = $closed_queue->id;
+					}
+				}
+			}
+			else {
+				foreach (models\Queue::model()->active()->notClosing()->findAll() as $open_queue) {
+					$queue_ids[] = $open_queue->id;
+				}
+				if (@$filter_options['closed-tickets']) {
+					// get all closed tickets regardless of whether queue is active or not
+					foreach (models\Queue::model()->closing()->findAll() as $active_queues) {
+						$queue_ids[] = $active_queues->id;
+					}
+				}
+			}
 
 			if (@$filter_options['my-tickets']) {
 				$criteria->addColumnCondition(array('assignee_user_id' => Yii::app()->user->id));
@@ -116,8 +138,8 @@ class DefaultController extends \BaseModuleController
 			if (@$filter_options['priority-ids']) {
 				$criteria->addInCondition('priority_id', $filter_options['priority-ids']);
 			}
-			if (@$filter_options['queue-ids']) {
-				$criteria->addInCondition('cqa.queue_id', $filter_options['queue-ids']);
+			if (count($queue_ids)) {
+				$criteria->addInCondition('cqa.queue_id', $queue_ids);
 			}
 			if (@$filter_options['firm-id']) {
 				$criteria->addColumnCondition(array('cqa.assignment_firm_id' => $filter_options['firm-id']));
