@@ -116,7 +116,6 @@ class PatientTicketing_API extends \BaseAPI
 	}
 
 	/**
-	 * @TODO: fix the priority assignment for the ticket
 	 * @param \Patient $patient
 	 * @param Queue $initial_queue
 	 * @param \CWebUser $user

@@ -77,6 +77,7 @@ class Queue extends \BaseActiveRecordVersioned
 			array('name', 'required'),
 			array('assignment_fields', 'validJSON'),
 			array('name, description, active, summary_link, assignment_fields, report_definition', 'safe'),
+			array('id, name', 'search'),
 		);
 	}
 
@@ -107,14 +108,12 @@ class Queue extends \BaseActiveRecordVersioned
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
-		$criteria = new CDbCriteria;
+		$criteria = new \CDbCriteria;
 
 		$criteria->compare('id', $this->id, true);
+		$criteria->compare('name', $this->name, true);
 
-		return new CActiveDataProvider(get_class($this), array(
+		return new \CActiveDataProvider(get_class($this), array(
 				'criteria' => $criteria,
 		));
 	}
@@ -311,25 +310,44 @@ class Queue extends \BaseActiveRecordVersioned
 	}
 
 	/**
-	 * Get the tickets that are currently assigned to this queue
+	 * Get the number of tickets that are currently assigned to this queue
 	 *
 	 * @return array
 	 */
-	public function getCurrentTickets()
+	public function getCurrentTicketCount()
 	{
 		$criteria = new \CDbCriteria();
-		$criteria->addColumnCondition(array('t.queue_id' => $this->id));
-		$ass = TicketQueueAssignment::model()->with(
-				array('ticket' =>
-						array('with' => 'current_queue')
-				))->findAll($criteria);
-		$tickets = array();
-		foreach ($ass as $a) {
-			if ($a->ticket->current_queue->id == $this->id) {
-				$tickets[] = $a->ticket;
+		$criteria->addCondition('queue_assignments.id = (select id from ' . TicketQueueAssignment::model()->tableName() . ' cass where cass.ticket_id = t.id order by cass.assignment_date desc limit 1) and queue_assignments.queue_id = :qid');
+		$criteria->params = array(':qid' => $this->id);
+
+		return Ticket::model()->with('queue_assignments')->count($criteria);
+	}
+
+	/**
+	 * Get the ids of queues that depend solely on this queue for tickets to be assigned to them.
+	 *
+	 * @param array $dependent_ids
+	 * @return array
+	 */
+	public function getDependentQueueIds($dependent_ids = array())
+	{
+		$dependents = array();
+		foreach ($this->outcome_queues as $oc) {
+			$criteria = new \CDbCriteria();
+			$criteria->addNotInCondition('queue_id', array_unique(array_merge($dependent_ids, array($this->id))));
+			$criteria->addColumnCondition(array('outcome_queue_id' => $oc->id));
+
+			$ct = QueueOutcome::model()->count($criteria);
+			if ($ct == 0) {
+				$dependents[] = $oc;
+				$dependent_ids[] = $oc->id;
 			}
+
 		}
-		return $tickets;
+		foreach ($dependents as $dependent) {
+			$dependent_ids = array_unique(array_merge($dependent_ids, $dependent->getDependentQueueIds($dependent_ids)));
+		}
+		return $dependent_ids;
 	}
 }
 

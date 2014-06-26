@@ -49,7 +49,7 @@
 		'deactivateQueueURI': '/PatientTicketing/admin/deactivateQueue',
 		'activateQueueURI': '/PatientTicketing/admin/activateQueue',
 		'deleteQueueURI': '/PatientTicketing/admin/deleteQueue',
-		'ticketCountURI': '/PatientTicketing/admin/getQueueTicketCount'
+		'ticketStatusURI': '/PatientTicketing/admin/getQueueTicketStatus'
 	};
 
 	QueueAdmin.prototype.init = function() {
@@ -155,7 +155,7 @@
 	QueueAdmin.prototype.activeToggleQueue = function(queueId, active) {
 		if (active) {
 			$.ajax({
-				url: this.options.ticketCountURI,
+				url: this.options.ticketStatusURI,
 				data: {id: queueId},
 				dataType: 'json',
 				success: function(resp) {

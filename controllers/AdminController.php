@@ -23,6 +23,9 @@ use Yii;
 
 class AdminController extends \ModuleAdminController {
 
+	public static $TICKET_SERVICE = 'PatientTicketing_Ticket';
+	public static $QUEUE_SERVICE = 'PatientTicketing_Queue';
+
 	protected function beforeAction($action)
 	{
 		if (parent::beforeAction($action)) {
@@ -237,44 +240,19 @@ class AdminController extends \ModuleAdminController {
 	}
 
 	/**
-	 * Determines whether the given Queue or its children (outcome queues) currently has tickets
-	 * assigned to it.
-	 *
-	 * @TODO: this should be a ServiceLayer thing (as should various other bits in here)
-	 * @param $queue
-	 * @return bool
-	 */
-	protected function checkForTicketsOnQueue($queue)
-	{
-		if ($queue->getCurrentTickets()) {
-			return true;
-		}
-		foreach ($queue->outcome_queues as $oq) {
-			if ($this->checkForTicketsOnQueue($oq)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * Retrieve the count of ticket assignments for the given Queue and whether it can be deleted
 	 *
 	 * @param $id
 	 * @throws \CHttpException
 	 */
-	public function actionGetQueueTicketCount($id)
+	public function actionGetQueueTicketStatus($id)
 	{
-		if (!$queue = models\Queue::model()->findByPk((int)$id)) {
-			throw new \CHttpException(404, "Queue not found with id {$id}");
-		}
-
-		$criteria = new \CDbCriteria();
-		$criteria->addColumnCondition(array('queue_id' => $queue->id));
+		$qs = Yii::app()->service->getService(self::$QUEUE_SERVICE);
+		$qr = $qs->read((int)$id);
 
 		$resp = array(
-				'current_count' => count($queue->getCurrentTickets()),
-				'can_delete' => !$this->checkForTicketsOnQueue($queue));
+				'current_count' => $qs->getCurrentTicketCount($qr->getId()),
+				'can_delete' => $qs->canDeleteQueue($qr->getId()));
 
 		echo \CJSON::encode($resp);
 	}
@@ -282,55 +260,16 @@ class AdminController extends \ModuleAdminController {
 	/**
 	 * Will only successfully delete a Queue if no ticket has ever been assigned to it, otherwise will throw
 	 * an exception. Should only have been called when the values return by actionGetQueueTicketCount are zero
+	 *
 	 * @throws \Exception
-	 * @throws Exception
 	 * @throws \CHttpException
 	 */
 	public function actionDeleteQueue()
 	{
-		if (!$queue = models\Queue::model()->findByPk((int)@$_POST['id'])) {
-			throw new \CHttpException(404, "Queue not found with id " . @$_POST['id']);
-		}
+		$qs = Yii::app()->service->getService(self::$QUEUE_SERVICE);
+		$qr = $qs->read((int)@$_POST['id']);
 
-		$transaction = Yii::app()->db->beginTransaction();
-		try {
-			if ($this->deleteQueue($queue)) {
-				$transaction->commit();
-				echo 1;
-			}
-			else {
-				$transaction->rollback();
-				echo 0;
-			}
-		}
-		catch (Exception $e) {
-			$transaction->rollback();
-			throw $e;
-		}
-	}
-
-	/**
-	 * Recursive function to delete a Queue and any Qeueues that are only related to it. Note that an integrity constraint
-	 * will cause this to fail if any tickets are assigned to any Queues that are to be deleted by it.
-	 *
-	 * @TODO: move to service layer
-	 * @param $queue
-	 * @return bool
-	 */
-	private function deleteQueue($queue)
-	{
-		foreach ($queue->outcomes as $o) {
-			$criteria = new \CDbCriteria();
-			$criteria->addColumnCondition(array('outcome_queue_id' => $o->outcome_queue_id));
-			if (models\QueueOutcome::model()->count($criteria) == 1) {
-				// the outcome queue is not an outcome from anywhere else
-				if (!$this->deleteQueue($o->outcome_queue)) {
-					return false;
-				}
-				$o->delete();
-			}
-		}
-		models\QueueOutcome::model()->deleteAllByAttributes(array('outcome_queue_id' => $queue->id));
-		return $queue->delete();
+		$qs->deleteQueue($qr->getId());
+		echo 1;
 	}
 }
