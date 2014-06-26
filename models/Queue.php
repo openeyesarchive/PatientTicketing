@@ -155,6 +155,7 @@ class Queue extends \BaseActiveRecordVersioned
 
 		return $this;
 	}
+
 	/**
 	 * Checks the given attribute is valid JSON
 	 *
@@ -177,7 +178,7 @@ class Queue extends \BaseActiveRecordVersioned
 	 * @param \Firm $firm
 	 * @param $data
 	 */
-	public function addTicket(Ticket $ticket, \CWebUser $user, \Firm $firm, $data)
+	public function addTicket(Ticket $ticket, $user, \Firm $firm, $data)
 	{
 		$ass = new TicketQueueAssignment();
 		$ass->queue_id = $this->id;

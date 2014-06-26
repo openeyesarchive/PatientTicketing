@@ -19,7 +19,7 @@
 ?>
 
 <li class="queue<?= $queue->active ? '' : ' inactive'?>">
-	<div><?= $queue->name ?></div>
+	<div class="description"><?= $queue->name ?></div>
 	<div class="actions" data-queue-id="<?=$queue->id?>">
 		<span class="edit admin-action has-tooltip" data-tooltip="edit">e</span> -
 		<span class="add-child admin-action has-tooltip" data-tooltip="add">+</span> -

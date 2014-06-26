@@ -6,7 +6,6 @@
 	color 				: #000;
 	-moz-border-radius 	: 8px;
 	height: auto;
-	min-height: 60px;
 	position: relative;
 }
 
@@ -22,6 +21,10 @@
 	padding 		: 2px;
 }
 
+.jOrgChart .node .description {
+	min-height: 60px;
+	padding-bottom: 18px;
+}
 .jOrgChart .node .actions {
 	position: absolute;
 	bottom: 0px;
@@ -61,4 +64,20 @@
 
 .quicklook {
 	width: auto;
+}
+
+ul.queue-list {
+	list-style: none;
+}
+
+ul.queue-list li {
+	margin: 3px;
+	padding: 2px;
+	background: #ccc;
+	border-radius: 3px;
+}
+
+ul.queue-list li:hover {
+	background: #e1eef9;
+	cursor: pointer;
 }

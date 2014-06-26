@@ -16,32 +16,12 @@
  * @copyright Copyright (c) 2011-2014, OpenEyes Foundation
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
+
 ?>
 
-<div class="box admin">
-	<header class="box-header">
-		<h2 class="box-title"><?php echo $title ?></h2>
-		<div class="box-actions">
-
-		</div>
-	</header>
-
-	<div class="row">
-		<div class="column large-4">
-
-			<div class="row">
-			<ul class="queue-list" id="queue-nav">
-			<?php
-			foreach ($queues as $q) {
-				$this->renderPartial("queue_nav_item", array('queue' => $q));
-			}
-			?>
-			</ul>
-			</div>
-			<div class="row right"><button id="add-initial-queue" class="secondary small">Add queue</button></div>
-
-		</div>
-
-		<div id="chart" class="column large-8 end orgChart"></div>
-	</div>
-</div>
+<li class="queue-item" data-queue-id="<?=$queue->id?>" id="queue-nav-<?=$queue->id?>">
+	<span class="queue-link"><?=$queue->name?></span>
+	<ul class="queue-set" id="queue-container-<?=$queue->id?>" style="display: none;">
+		<?php $this->renderPartial("queue_as_list", array('queue' => $queue)); ?>
+	</ul>
+</li>

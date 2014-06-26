@@ -6,7 +6,16 @@
 		this.init();
 		this.currentDisplayedQueueId = null;
 
-		this.ajaxPostAndReload = function(uri, data, description) {
+		/**
+		 * POSTs the given data to the given URI. if a removeNavId is provided, will strip that item from the queue nav,
+		 * otherwise will call reloadQueue to redisplay the current queue.
+		 *
+		 * @param uri
+		 * @param data
+		 * @param description
+		 * @param removeNavId
+		 */
+		this.ajaxPostAndReload = function(uri, data, description, removeNavId) {
 			data.YII_CSRF_TOKEN = YII_CSRF_TOKEN;
 			$.ajax({
 				url: uri,
@@ -14,7 +23,14 @@
 				data: data,
 				dataType: 'json',
 				success: function(resp) {
-					this.reloadQueue();
+					if (removeNavId) {
+						$('#chart').html('');
+						this.currentDisplayedQueueId = null;
+						$('#queue-nav-'+removeNavId).remove();
+					}
+					else {
+						this.reloadQueue();
+					}
 				}.bind(this),
 				error: function(jqXHR, status, error) {
 					new OpenEyes.UI.Dialog.Alert({content: 'There was a problem ' + description}).open();
@@ -29,7 +45,7 @@
 		'childSelector': '.child-queue',
 		'addQueueURI': '/PatientTicketing/admin/addQueue',
 		'editQueueURI': '/PatientTicketing/admin/updateQueue',
-		'loadQueueURI': '/PatientTicketing/admin/loadQueueAsList',
+		'loadQueueURI': '/PatientTicketing/admin/loadQueueNav',
 		'deactivateQueueURI': '/PatientTicketing/admin/deactivateQueue',
 		'activateQueueURI': '/PatientTicketing/admin/activateQueue',
 		'deleteQueueURI': '/PatientTicketing/admin/deleteQueue',
@@ -52,14 +68,22 @@
 		this.currentDisplayedQueueId = queueId;
 	}
 
-	QueueAdmin.prototype.reloadQueue = function() {
+	QueueAdmin.prototype.reloadQueue = function(queueId) {
 		$('#chart').html('');
+		if (!queueId) {
+			queueId = this.currentDisplayedQueueId;
+		}
 		$.ajax({
 			url: this.options.loadQueueURI,
-			data: {id: this.currentDisplayedQueueId},
+			data: {id: queueId},
 			dataType: "json",
 			success: function(resp) {
-				$('#queue-container-'+resp.rootid).html(resp.list);
+				if ($('#queue-nav-'+resp.rootid).replaceWith(resp.nav).length) {
+					$('#queue-nav-'+resp.rootid).replaceWith(resp.nav);
+				}
+				else {
+					$('#queue-nav').append(resp.nav);
+				}
 				this.displayQueue(resp.rootid)
 			}.bind(this),
 			error: function(jqXHR, status, error) {
@@ -115,7 +139,7 @@
 			success: function(resp) {
 				if (resp.success) {
 					formDialog.close();
-					this.reloadQueue();
+					this.reloadQueue(resp.queueId);
 				}
 				else {
 					formDialog.setContent(resp.form);
@@ -143,7 +167,12 @@
 						});
 						deleteDialog.open();
 						// manage form submission and response
-						deleteDialog.on('ok', function() {this.ajaxPostAndReload(this.options.deleteQueueURI, {id: queueId}, 'deleting queue')}.bind(this));
+						var removeId = null;
+						if (this.currentDisplayedQueueId == queueId) {
+							// we're removing the root queue, so we need to remove it from the nav when successful
+							removeId = queueId;
+						}
+						deleteDialog.on('ok', function() {this.ajaxPostAndReload(this.options.deleteQueueURI, {id: queueId}, 'deleting queue', removeId)}.bind(this));
 						deleteDialog.on('cancel', function() {this.ajaxPostAndReload(this.options.deactivateQueueURI, {id: queueId}, 'changing queue state')}.bind(this));
 					}
 					else if (resp.current_count > 0) {
@@ -168,7 +197,11 @@
 	$(document).ready(function() {
 		var queueAdmin = new QueueAdmin();
 
-		$('.queue-link').on('click', function() {
+		$(this).on('click', '#add-initial-queue', function() {
+			queueAdmin.addQueue();
+		});
+
+		$(this).on('click', '.queue-item', function() {
 			queueAdmin.displayQueue($(this).data('queue-id'));
 		});
 

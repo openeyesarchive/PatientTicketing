@@ -122,6 +122,9 @@ class AdminController extends \ModuleAdminController {
 	{
 		// try and process form
 		$queue->attributes = $_POST;
+		if (!$parent) {
+			$queue->is_initial = true;
+		}
 		if (!$queue->validate()) {
 			$resp = array(
 					'success' => false,
@@ -143,8 +146,12 @@ class AdminController extends \ModuleAdminController {
 					$outcome->outcome_queue_id = $queue->id;
 					$outcome->save();
 				}
+
 				$transaction->commit();
-				$resp = array('success' => true);
+				$resp = array(
+						'success' => true,
+						'queueId' => $queue->id
+				);
 				echo \CJSON::encode($resp);
 			}
 			catch (Exception $e) {
@@ -160,7 +167,7 @@ class AdminController extends \ModuleAdminController {
 	 * @param $id
 	 * @throws \CHttpException
 	 */
-	public function actionLoadQueueAsList($id)
+	public function actionLoadQueueNav($id)
 	{
 		if (!$queue = models\Queue::model()->findByPk((int)$id)) {
 			throw new \CHttpException(404, "Queue not found with id {$id}");
@@ -168,7 +175,7 @@ class AdminController extends \ModuleAdminController {
 		$root = $queue->getRootQueue();
 		$resp = array(
 				'rootid' => $root->id,
-				'list' => $this->renderPartial("queue_as_list", array('queue' => $root), true)
+				'nav' => $this->renderPartial("queue_nav_item", array('queue' => $root), true)
 		);
 		echo \CJSON::encode($resp);
 	}
@@ -287,8 +294,7 @@ class AdminController extends \ModuleAdminController {
 
 		$transaction = Yii::app()->db->beginTransaction();
 		try {
-			if (models\QueueOutcome::model()->deleteAllByAttributes(array('outcome_queue_id' => $queue->id))
-				&& $queue->delete()) {
+			if ($this->deleteQueue($queue)) {
 				$transaction->commit();
 				echo 1;
 			}
@@ -301,5 +307,30 @@ class AdminController extends \ModuleAdminController {
 			$transaction->rollback();
 			throw $e;
 		}
+	}
+
+	/**
+	 * Recursive function to delete a Queue and any Qeueues that are only related to it. Note that an integrity constraint
+	 * will cause this to fail if any tickets are assigned to any Queues that are to be deleted by it.
+	 *
+	 * @TODO: move to service layer
+	 * @param $queue
+	 * @return bool
+	 */
+	private function deleteQueue($queue)
+	{
+		foreach ($queue->outcomes as $o) {
+			$criteria = new \CDbCriteria();
+			$criteria->addColumnCondition(array('outcome_queue_id' => $o->outcome_queue_id));
+			if (models\QueueOutcome::model()->count($criteria) == 1) {
+				// the outcome queue is not an outcome from anywhere else
+				if (!$this->deleteQueue($o->outcome_queue)) {
+					return false;
+				}
+				$o->delete();
+			}
+		}
+		models\QueueOutcome::model()->deleteAllByAttributes(array('outcome_queue_id' => $queue->id));
+		return $queue->delete();
 	}
 }
