@@ -176,6 +176,10 @@ class AdminController extends \ModuleAdminController {
 			throw new \CHttpException(404, "Queue not found with id {$id}");
 		}
 		$root = $queue->getRootQueue();
+		if (is_array($root)) {
+			throw new \CHttpException(501, "Don't currently support queues with multiple roots");
+		}
+		
 		$resp = array(
 				'rootid' => $root->id,
 				'nav' => $this->renderPartial("queue_nav_item", array('queue' => $root), true)
@@ -191,7 +195,7 @@ class AdminController extends \ModuleAdminController {
 	public function actionActivateQueue()
 	{
 		if (!$queue = models\Queue::model()->findByPk((int)@$_POST['id'])) {
-			throw new \CHttpException(404, "Queue not found with id {$id}");
+			throw new \CHttpException(404, "Queue not found with id " . @$_POST['id']);
 		}
 		$queue->active = true;
 		if (!$queue->save()) {
@@ -208,7 +212,7 @@ class AdminController extends \ModuleAdminController {
 	public function actionDeactivateQueue()
 	{
 		if (!$queue = models\Queue::model()->findByPk((int)@$_POST['id'])) {
-			throw new \CHttpException(404, "Queue not found with id {$id}");
+			throw new \CHttpException(404, "Queue not found with id " . @$_POST['id']);
 		}
 		$transaction = Yii::app()->db->beginTransaction();
 		try {

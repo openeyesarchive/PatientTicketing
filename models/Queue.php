@@ -294,6 +294,26 @@ class Queue extends \BaseActiveRecordVersioned
 		return array_merge($flds, $this->getAssignmentFieldDefinitions());
 	}
 
+	private function mergeRootQueues($root, $candidates)
+	{
+		if (!is_array($candidates)) {
+			$candidates = array($candidates);
+		}
+		foreach ($candidates as $c) {
+			$seen = false;
+			foreach ($root as $r) {
+				if ($r->id == $c->id) {
+					$seen = true;
+					break;
+				}
+			}
+			if (!$seen) {
+				$root[] = $c;
+			}
+		}
+		return $root;
+	}
+
 	/**
 	 * Get the root queue for this particular queue
 	 * (Note: this assumes that all queues are only in one path, if that model changes this will not work)
@@ -305,58 +325,14 @@ class Queue extends \BaseActiveRecordVersioned
 		if ($this->is_initial) {
 			return $this;
 		}
-		$root = null;
-
+		$root = array();
 		foreach (QueueOutcome::model()->findAllByAttributes(array('outcome_queue_id' => $this->id)) as $qo) {
 			$q = $qo->queue->getRootQueue();
-			if (is_array($q)) {
-				if ($root) {
-					foreach ($q as $candidate) {
-						if (is_array($root)) {
-							$seen = false;
-							foreach ($root as $r) {
-								if ($r->id == $candidate->id) {
-									$seen = true;
-									break;
-								}
-							}
-							if (!$seen) {
-								$root[] = $candidate;
-							}
-						}
-						else {
-							if ($root->id != $candidate->id) {
-								$root = array($root, $candidate);
-							}
-						}
-					}
-				}
-				else {
-					$root = $q;
-				}
-			}
-			else {
-				if ($root) {
-					if (is_array($root)) {
-						$seen = false;
-						foreach ($root as $r) {
-							if ($r->id == $q->id) {
-								$seen = true;
-								break;
-							}
-						}
-						if (!$seen) {
-							$root[] = $q;
-						}
-					}
-					elseif ($root->id != $q->id) {
-						$root = array($root, $q);
-					}
-				}
-				else {
-					$root = $q;
-				}
-			}
+			$root = $this->mergeRootQueues($root, $q);
+		}
+
+		if (count($root) == 1) {
+			return $root[0];
 		}
 		return $root;
 	}
