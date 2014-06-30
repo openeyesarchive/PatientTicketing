@@ -294,6 +294,13 @@ class Queue extends \BaseActiveRecordVersioned
 		return array_merge($flds, $this->getAssignmentFieldDefinitions());
 	}
 
+	/**
+	 * Helper method for handling the construction of the root node set
+	 * 
+	 * @param $root
+	 * @param $candidates
+	 * @return array
+	 */
 	private function mergeRootQueues($root, $candidates)
 	{
 		if (!is_array($candidates)) {
