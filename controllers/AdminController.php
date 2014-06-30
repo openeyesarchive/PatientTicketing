@@ -273,7 +273,7 @@ class AdminController extends \ModuleAdminController {
 		$qs = Yii::app()->service->getService(self::$QUEUE_SERVICE);
 		$qr = $qs->read((int)@$_POST['id']);
 
-		$qs->deleteQueue($qr->getId());
+		$qs->delete($qr->getId());
 		echo 1;
 	}
 }

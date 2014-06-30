@@ -23,7 +23,7 @@ use Yii;
 
 class PatientTicketing_QueueService extends \services\ModelService {
 
-	static protected $operations = array(self::OP_READ, self::OP_SEARCH);
+	static protected $operations = array(self::OP_READ, self::OP_SEARCH, self::OP_DELETE);
 
 	static protected $primary_model = 'OEModule\PatientTicketing\models\Queue';
 
@@ -64,7 +64,7 @@ class PatientTicketing_QueueService extends \services\ModelService {
 	 */
 	public function getCurrentTicketCount($queue_id)
 	{
-		$queue = $this->model->findByPk($queue_id);
+		$queue = $this->readModel($queue_id);
 		return $queue->getCurrentTicketCount();
 	}
 
@@ -79,7 +79,7 @@ class PatientTicketing_QueueService extends \services\ModelService {
 		if ($this->getCurrentTicketCount($queue_id)) {
 			return false;
 		}
-		$queue = $this->model->findByPk($queue_id);
+		$queue = $this->readModel($queue_id);
 		foreach ($queue->getDependentQueueIds() as $dep_id) {
 			if ($this->getCurrentTicketCount($dep_id)) {
 				return false;
@@ -95,14 +95,14 @@ class PatientTicketing_QueueService extends \services\ModelService {
 	 * @throws \Exception
 	 * @throws Exception
 	 */
-	public function deleteQueue($queue_id)
+	public function delete($queue_id)
 	{
 		$transaction = Yii::app()->db->getCurrentTransaction() === null
 				? Yii::app()->db->beginTransaction()
 				: false;
 
 		try {
-			$queue = $this->model->findByPk($queue_id);
+			$queue = $this->readModel($queue_id);
 			// remove dependendent outcomes
 			$remove_ids = $queue->getDependentQueueIds();
 			$remove_ids[] = $queue_id;

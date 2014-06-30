@@ -296,7 +296,7 @@ class Queue extends \BaseActiveRecordVersioned
 
 	/**
 	 * Helper method for handling the construction of the root node set
-	 * 
+	 *
 	 * @param $root
 	 * @param $candidates
 	 * @return array
