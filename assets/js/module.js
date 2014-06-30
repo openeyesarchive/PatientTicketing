@@ -120,16 +120,23 @@
 		this.currentTicketId = ticketInfo.id;
 		var templateVals = $.extend(true, {}, ticketInfo, {CSRF_TOKEN: YII_CSRF_TOKEN});
 		templateVals.outcome_options = '';
+		var firstSelect = '';
+		if (outcomes.length == 1) {
+			firstSelect = ' selected';
+		}
 		for (var i = 0; i < outcomes.length; i++) {
-			templateVals.outcome_options += '<option value="'+outcomes[i].id+'">'+outcomes[i].name+'</option>';
+			templateVals.outcome_options += '<option value="'+outcomes[i].id+'"'+firstSelect+'>'+outcomes[i].name+'</option>';
 		}
 
 		this.dialog = new OpenEyes.UI.Dialog.Confirm({
 			content: Mustache.render(template, templateVals)
 		});
-		this.dialog.open();
 		this.dialog.on('ok', function() {this.submitTicketMove()}.bind(this));
 		this.dialog.on('cancel', function() {this.cancelTicketMove()}.bind(this));
+		this.dialog.open();
+		if (firstSelect.length) {
+			this.dialog.content.find('#to_queue_id').trigger('change');
+		}
 	}
 
 	TicketController.prototype.cancelTicketMove = function()
@@ -330,7 +337,7 @@
 		});
 
 		$(this).on('change', '#to_queue_id', function(e) {
-			ticketController.setQueueAssForm($(e.srcElement).val());
+			ticketController.setQueueAssForm($(e.target).val());
 		});
 
 		$(this).on('click', '.ticket-history', function(e) {

@@ -142,11 +142,14 @@
 			<div class="large-2 column">
 				<label for="to_queue_id">To:</label>
 			</div>
-			<div class="large-6 end">
+			<div class="large-6 column">
 			<select name="to_queue_id" id="to_queue_id">
 				<option value=""> - Please Select - </option>
 				{{{outcome_options}}}
 			</select>
+			</div>
+			<div class="large-1 column end">
+				<img class="loader" src="<?php echo Yii::app()->assetManager->createUrl('img/ajax-loader.gif')?>" alt="loading..." style="display: none;">
 			</div>
 		</fieldset>
 		</div>

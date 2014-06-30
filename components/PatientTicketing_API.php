@@ -44,7 +44,9 @@ class PatientTicketing_API extends \BaseAPI
 	 */
 	public function getTicketForEvent($event)
 	{
-		return Ticket::model()->findByAttributes(array('event_id' => $event->id));
+		if ($event->id) {
+			return Ticket::model()->findByAttributes(array('event_id' => $event->id));
+		}
 	}
 
 	/**

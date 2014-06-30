@@ -30,10 +30,16 @@ class QueueAssign extends \CWidget {
 	public $queue_id;
 	public $label_width = 2;
 	public $data_width = 4;
+	public $queue_select_label = 'Queue';
 
 	public function run()
 	{
-		$queue = models\Queue::model()->findByPk($this->queue_id);
+		if ($this->queue_id) {
+			$queue = models\Queue::model()->findByPk($this->queue_id);
+		}
+		else {
+			$queue = null;
+		}
 		$this->render('QueueAssign', array('queue' => $queue));
 	}
 }
