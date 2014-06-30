@@ -35,16 +35,13 @@
 					<thead>
 					<tr>
 						<th>Queue</th>
-						<th>Hospital Number</th>
-						<th>First Name</th>
-						<th>Last Name</th>
-						<th>Age</th>
+						<th>Patient</th>
 						<th>Priority</th>
-						<th>Source</th>
 						<th>Ticket Date</th>
 						<th>Firm</th>
+						<th>Created By</th>
 						<th>Ticket Info</th>
-						<th>Notes</th>
+						<th>Ticket Notes</th>
 						<th>Ticket Owner</th>
 						<th>Actions</th>
 					</tr>

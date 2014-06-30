@@ -20,14 +20,12 @@
 
 <tr data-ticket-id="<?= $ticket->id?>" data-ticket-info="<?= CHtml::encode($ticket->getInfoData()) ?>">
 	<td><?= $ticket->current_queue->name ?></td>
-	<td><a href="<?= $this->createURL('/patient/view/', array('id' => $ticket->patient->id));?>"><?= $ticket->patient->hos_num ?></a></td>
-	<td><?= $ticket->patient->first_name ?></td>
-	<td><?= $ticket->patient->last_name ?></td>
-	<td><?= $ticket->patient->age ?></td>
+	<td><a href="<?= $ticket->getSourceLink() ?>"><?= $ticket->patient->hos_num . " - " . $ticket->patient->getDisplayName() .
+			" (" . ($ticket->patient->isDeceased() ? "Deceased" : $ticket->patient->getAge()) . ")"; ?></a></td>
 	<td style="color: <?= $ticket->priority->colour ?>"><?= $ticket->priority->name ?></td>
-	<td><a href="<?= $ticket->getSourceLink() ?>"><?= $ticket->getSourceLabel()?></a></td>
 	<td><?= Helper::convertDate2NHS($ticket->created_date)?></td>
 	<td><?= $ticket->getTicketFirm() ?></td>
+	<td><?= $ticket->user->getFullName() ?></td>
 	<td><?= $ticket->report ? $ticket->report : "-"; ?></td>
 	<td><?= Yii::app()->format->Ntext($ticket->getNotes()) ?></td>
 	<td><?= $ticket->assignee ? $ticket->assignee->getFullName() : "-"?></td>
