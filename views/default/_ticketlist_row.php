@@ -31,7 +31,7 @@
 	<td><?= $ticket->assignee ? $ticket->assignee->getFullName() : "-"?></td>
 	<td nowrap>
 		<?php
-		if ($this->checkAccess('oprnEditPatientTicket')) {
+		if ($this->checkAccess('OprnEditPatientTicket')) {
 			if (!$ticket->is_complete()) {
 				if ($ticket->assignee) {
 					if ($ticket->assignee_user_id == Yii::app()->user->id) {
