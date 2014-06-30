@@ -298,15 +298,67 @@ class Queue extends \BaseActiveRecordVersioned
 	 * Get the root queue for this particular queue
 	 * (Note: this assumes that all queues are only in one path, if that model changes this will not work)
 	 *
-	 * @return $this
+	 * @return Queue[]|Queue
 	 */
 	public function getRootQueue()
 	{
 		if ($this->is_initial) {
 			return $this;
 		}
-		$outcome = QueueOutcome::model()->findbyAttributes(array('outcome_queue_id' => $this->id));
-		return $outcome->queue->getRootQueue();
+		$root = null;
+
+		foreach (QueueOutcome::model()->findAllByAttributes(array('outcome_queue_id' => $this->id)) as $qo) {
+			$q = $qo->queue->getRootQueue();
+			if (is_array($q)) {
+				if ($root) {
+					foreach ($q as $candidate) {
+						if (is_array($root)) {
+							$seen = false;
+							foreach ($root as $r) {
+								if ($r->id == $candidate->id) {
+									$seen = true;
+									break;
+								}
+							}
+							if (!$seen) {
+								$root[] = $candidate;
+							}
+						}
+						else {
+							if ($root->id != $candidate->id) {
+								$root = array($root, $candidate);
+							}
+						}
+					}
+				}
+				else {
+					$root = $q;
+				}
+			}
+			else {
+				if ($root) {
+					if (is_array($root)) {
+						$seen = false;
+						foreach ($root as $r) {
+							if ($r->id == $q->id) {
+								$seen = true;
+								break;
+							}
+						}
+						if (!$seen) {
+							$root[] = $q;
+						}
+					}
+					elseif ($root->id != $q->id) {
+						$root = array($root, $q);
+					}
+				}
+				else {
+					$root = $q;
+				}
+			}
+		}
+		return $root;
 	}
 
 	/**

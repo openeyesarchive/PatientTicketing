@@ -58,4 +58,15 @@ return array(
 				'queue_id' => 7,
 				'outcome_queue_id' => 8,
 		),
+		'9' => array(
+				'id' => 9,
+				'queue_id' => 9,
+				'outcome_queue_id' => 11,
+		),
+		'10' => array(
+				'id' => 10,
+				'queue_id' => 8,
+				'outcome_queue_id' => 11,
+		)
+
 );

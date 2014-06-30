@@ -28,9 +28,9 @@ class QueueTest extends \CDbTestCase {
 
 	public function dependentQueueIdsProvider() {
 		return array(
-			array(1, array(2,6,7,8,9)),
+			array(1, array(2,6,7,8,9,11)),
 			array(2, array()),
-			array(6, array(7,8,9)),
+			array(6, array(7,8,9,11)),
 			array(5, array()),
 			array(10, array()),
 			array(7, array(8))
@@ -45,5 +45,38 @@ class QueueTest extends \CDbTestCase {
 		$output = $test->getDependentQueueIds();
 		sort($output);
 		$this->assertEquals($res, $output);
+	}
+
+	public function rootQueueProvider() {
+		return array(
+			array(6, 1),
+			array(3, array(5,1)),
+			array(8,1),
+			array(10,10),
+			array(4, array(5,1)),
+			array(7, 1),
+			array(11, 1)
+		);
+	}
+
+	/**
+	 * @dataProvider rootQueueProvider
+	 */
+	public function testgetRootQueue($id, $res) {
+		$test = models\Queue::model()->findByPk($id);
+		$output = $test->getRootQueue();
+
+		if (is_array($res)) {
+			$this->assertTrue(is_array($output), "array output expected for multiple queue roots.");
+			$this->assertEquals(count($res), count($output));
+			foreach ($output as $q) {
+				$this->assertInstanceOf('OEModule\PatientTicketing\models\Queue', $q);
+				$this->assertTrue(in_array($q->id, $res));
+			}
+		}
+		else {
+			$this->assertInstanceOf('OEModule\PatientTicketing\models\Queue', $output);
+			$this->assertEquals($res, $output->id);
+		}
 	}
 }

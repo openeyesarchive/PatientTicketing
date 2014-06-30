@@ -77,5 +77,11 @@ return array(
 				'name' => 'Queue 10',
 				'active' => true,
 				'is_initial' => true
+		),
+		'queue11' => array(
+				'id' => 11,
+				'name' => 'Queue 11',
+				'active' => true,
+				'is_initial' => false
 		)
 );
