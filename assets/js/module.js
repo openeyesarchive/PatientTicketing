@@ -128,42 +128,54 @@
 			templateVals.outcome_options += '<option value="'+outcomes[i].id+'"'+firstSelect+'>'+outcomes[i].name+'</option>';
 		}
 
-		this.dialog = new OpenEyes.UI.Dialog.Confirm({
+		this.dialog = new OpenEyes.UI.Dialog({
 			content: Mustache.render(template, templateVals)
 		});
-		this.dialog.on('ok', function() {this.submitTicketMove()}.bind(this));
-		this.dialog.on('cancel', function() {this.cancelTicketMove()}.bind(this));
+		this.dialog.content.on('click', '.ok', this.submitTicketMove.bind(this));
+		this.dialog.content.on('click', '.cancel', this.dialog.close.bind(this.dialog));
 		this.dialog.open();
 		if (firstSelect.length) {
 			this.dialog.content.find('#to_queue_id').trigger('change');
 		}
 	}
 
-	TicketController.prototype.cancelTicketMove = function()
-	{
-		this.currentTicketId = null;
-	}
 	/**
 	 * process the Ticket Move form
 	 */
 	TicketController.prototype.submitTicketMove = function()
 	{
-		// do some basic form validation here, and either display an error or begin the ajax request.
-		// should disable the table row for the ticket being updated
-		this.maskTicketRow();
+		var form = $(this.dialog.content).find('form');
+		var errors = form.find('.alert-box');
+
+		if (!form.find('[name=to_queue_id]').val()) {
+			errors.text('Please select a destination queue').show()
+			return;
+		}
+
+		errors.hide();
 		$.ajax({
 			url: this.options.ticketMoveURI + this.currentTicketId,
-			data: $(this.dialog.content).find('form').serialize(),
+			data: form.serialize(),
 			type: 'POST',
-			success: function(response) {this.reloadTicket(this.currentTicketId); this.currentTicketId = null;}.bind(this),
+			dataType: 'json',
+			success: function (response) {
+				if (response.errors) {
+					errors.text('');
+					for (var i in response.errors) errors.append(response.errors[i] + "<br>");
+					errors.show();
+				} else {
+					this.dialog.close();
+					this.maskTicketRow();
+					this.reloadTicket(this.currentTicketId);
+				}
+			}.bind(this),
 			error: function(jqXHR, status, error) {
-				enableButtons(this.getTicketRowSelector());
-				new OpenEyes.UI.Dialog.Alert({content: 'Could not move ticket'}).open();
+				this.dialog.close();
+				this.maskTicketRow();
 				this.reloadTicket(this.currentTicketId);
-				this.currentTicketId = null;
+				new OpenEyes.UI.Dialog.Alert({content: 'Could not move ticket'}).open();
 			}.bind(this)
 		})
-		// then reload the table row for that ticket so it is refreshed.
 	}
 
 	/**

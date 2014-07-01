@@ -221,7 +221,8 @@ class DefaultController extends \BaseModuleController
 		list($data, $errs) = $api->extractQueueData($to_queue, $_POST, true);
 
 		if (count($errs)) {
-			throw new \CHttpException(400, "Missing required field(s) " . implode(",", array_keys($errs)));
+			echo json_encode(array("errors" => array_values($errs)));
+			Yii::app()->end();
 		}
 
 		$transaction = Yii::app()->db->beginTransaction();
@@ -244,8 +245,7 @@ class DefaultController extends \BaseModuleController
 			throw $e;
 		}
 
-
-		echo "1";
+		echo "{}";
 	}
 
 	/**

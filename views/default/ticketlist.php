@@ -154,6 +154,11 @@
 		</fieldset>
 		</div>
 		<div id="queue-assignment-placeholder"></div>
+		<div class="alert-box alert hidden"></div>
+		<div class="buttons">
+			<button class="secondary small ok" type="button">OK</button>
+			<button class="warning small cancel" type="button">Cancel</button>
+		</div>
 	</div>
 	</form>
 </script>
