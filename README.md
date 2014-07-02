@@ -9,11 +9,13 @@ Setup
 1. Place the module code in the usual modules directory (protected/modules)
 2. Add the module to the yii local config:
 
+    <p>
     'modules' => array(
         ...
-        'PatientTicketing' => array('class' => array('class' => '\OEModule\PatientTicketing\PatientTicketingModule'),
+        'PatientTicketing' => array('class' => '\OEModule\PatientTicketing\PatientTicketingModule'),
         ...
     )
+    </p>
 3. In user admin, give the users you want to have access to Patient Ticketing the Patient Ticket permission.
 4. Use the Patient Ticketing admin to setup one or more queue.
 
