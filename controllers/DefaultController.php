@@ -279,7 +279,7 @@ class DefaultController extends \BaseModuleController
 
 		$this->renderPartial('_ticketlist_history', array(
 					'ticket' => $ticket,
-					'assignments' => $ticket->getPastQueueAssignments()
+					'assignments' => array_reverse($ticket->queue_assignments)
 				), false, false);
 	}
 

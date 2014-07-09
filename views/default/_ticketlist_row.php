@@ -19,7 +19,7 @@
 ?>
 
 <tr data-ticket-id="<?= $ticket->id?>" data-ticket-info="<?= CHtml::encode($ticket->getInfoData()) ?>">
-	<td><?= $ticket->current_queue->name ?></td>
+	<!-- FIXME: OE-4470 <td><?= $ticket->current_queue->name ?></td> -->
 	<td><a href="<?= $ticket->getSourceLink() ?>"><?= $ticket->patient->hos_num . " - " . $ticket->patient->getDisplayName() .
 			" (" . ($ticket->patient->isDeceased() ? "Deceased" : $ticket->patient->getAge()) . ")"; ?></a></td>
 	<td style="color: <?= $ticket->priority->colour ?>"><?= $ticket->priority->name ?></td>
@@ -28,11 +28,12 @@
 	<td><?= $ticket->user->getFullName() ?></td>
 	<td><?= $ticket->report ? $ticket->report : "-"; ?></td>
 	<td><?= Yii::app()->format->Ntext($ticket->getNotes()) ?></td>
-	<td><?= $ticket->assignee ? $ticket->assignee->getFullName() : "-"?></td>
+	<!-- FIXME: OE-4470 <td><?= $ticket->assignee ? $ticket->assignee->getFullName() : "-"?></td> -->
 	<td nowrap>
 		<?php
 		if ($this->checkAccess('OprnEditPatientTicket')) {
 			if (!$ticket->is_complete()) {
+				/* FIXME: OE-4470
 				if ($ticket->assignee) {
 					if ($ticket->assignee_user_id == Yii::app()->user->id) {
 						?><button id="release" class="tiny ticket-release">Release</button><?php
@@ -40,7 +41,9 @@
 				}
 				else {
 					?><button id="take" class="tiny ticket-take">Take</button><?php
-				}?>
+				}
+				*/
+				?>
 				<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->current_queue->getOutcomeData()) ?>">Move</button>
 		<?php }
 		} ?>

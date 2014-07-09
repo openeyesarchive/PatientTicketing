@@ -34,15 +34,15 @@
 				<table class="grid audit-logs">
 					<thead>
 					<tr>
-						<th>Queue</th>
+						<!-- FIXME: OE-4470 <th>Queue</th> -->
 						<th>Patient</th>
 						<th>Priority</th>
-						<th>Ticket Date</th>
+						<th>Clinic Date</th>
 						<th>Firm</th>
 						<th>Created By</th>
 						<th>Ticket Info</th>
-						<th>Ticket Notes</th>
-						<th>Ticket Owner</th>
+						<th>Comments</th>
+					<!-- FIXME: OE-4470 <th>Ticket Owner</th> -->
 						<th>Actions</th>
 					</tr>
 					</thead>
