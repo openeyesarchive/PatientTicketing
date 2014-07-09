@@ -56,8 +56,10 @@
 								<th>Priority:</th>
 								<th>Subspecialty:</th>
 								<th>Firm:</th>
+								<!-- FIXME: OE-4470
 								<th nowrap>My Tickets:</th>
 								<th nowrap>Closed Tickets:</th>
+								-->
 								<th>&nbsp;</th>
 							</tr>
 							</thead>
@@ -93,12 +95,14 @@
 										<?php echo CHtml::dropDownList('firm-id', @$_POST['firm-id'], Firm::model()->getList(@$_POST['subspecialty-id']), array('empty'=>'All firms', 'disabled' => (@$_POST['emergency_list']==1 ? 'disabled' : '')))?>
 									<?php }?>
 								</td>
+								<!-- FIXME: OE-4470
 								<td align="middle">
 									<?php echo CHtml::checkBox('my-tickets', (@$_POST['my-tickets'] == 1))?>
 								</td>
 								<td align="middle">
 									<?php echo CHtml::checkBox('closed-tickets', (@$_POST['closed-tickets'] == 1))?>
 								</td>
+								-->
 								<td>
 									<button id="search_button" class="secondary small" type="submit">
 										<?php if ($patient_filter) {?>Apply<? } else {?>Search<?php } ?>

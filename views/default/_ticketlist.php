@@ -40,7 +40,7 @@
 						<th>Clinic Date</th>
 						<th>Firm</th>
 						<th>Created By</th>
-						<th>Ticket Info</th>
+						<th>Clinic Info</th>
 						<th>Comments</th>
 					<!-- FIXME: OE-4470 <th>Ticket Owner</th> -->
 						<th>Actions</th>
