@@ -18,5 +18,7 @@
  */
 ?>
 <?php if (count($tickets)) {?>
-<span><a href="<?= Yii::app()->createURL("//PatientTicketing/default/", array('patient_id' => $this->patient->id)) ?>">Q</a></span>
+	<a href="<?= Yii::app()->createURL("//PatientTicketing/default/", array('patient_id' => $this->patient->id)) ?>">
+		<span class="icon-alert-patient-ticketing"></span>
+	</a>
 <?php }?>
