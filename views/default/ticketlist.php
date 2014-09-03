@@ -67,7 +67,7 @@
 									<?php $this->widget('application.widgets.MultiSelectList', array(
 											'field' => 'queue-ids',
 											'default_options' => @$_POST['queue-ids'],
-											'options' => CHtml::listData(OEModule\PatientTicketing\models\Queue::model()->active()->notClosing()->findAll(),'id','name'),
+											'options' => CHtml::listData(OEModule\PatientTicketing\models\Queue::model()->active()/* ->notClosing() */->findAll(),'id','name'),
 											'htmlOptions' => array('empty' => '- Please Select -', 'nowrapper' => true),
 											'noSelectionsMessage' => 'All Queues')
 											);
