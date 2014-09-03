@@ -136,7 +136,8 @@ class Ticket extends \BaseActiveRecordVersioned
 	public function getSourceLink()
 	{
 		if ($this->event) {
-			if ($this->initial_queue_assignment->queue->summary_link) {
+			$qs = $this->initial_queue->queueset;
+			if ($qs->summary_link) {
 				return Yii::app()->createUrl('/patient/episode/view/', array('id' => $this->event->episode_id));
 			}
 			return Yii::app()->createURL("/" . $this->event->eventType->class_name . "/default/view/", array('id' => $this->event_id));

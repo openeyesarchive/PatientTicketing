@@ -83,5 +83,17 @@ return array(
 				'name' => 'Queue 11',
 				'active' => true,
 				'is_initial' => false
+		),
+		'queue12' => array(
+			'id' => 12,
+			'name' => 'Queue 12',
+			'active' => true,
+			'is_initial' => true,
+		),
+		'queue13' => array(
+				'id' => 13,
+				'name' => 'Queue 13',
+				'active' => true,
+				'is_initial' => false,
 		)
 );

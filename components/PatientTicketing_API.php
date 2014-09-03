@@ -19,14 +19,34 @@
 
 namespace OEModule\PatientTicketing\components;
 
+use OEModule\PatientTicketing\models\QueueSetCategory;
 use OEModule\PatientTicketing\models\Queue;
 use OEModule\PatientTicketing\models\Ticket;
+use Yii;
 
 class PatientTicketing_API extends \BaseAPI
 {
 
 	public static $TICKET_SUMMARY_WIDGET = 'OEModule\PatientTicketing\widgets\TicketSummary';
 	public static $QUEUE_ASSIGNMENT_WIDGET = 'OEModule\PatientTicketing\widgets\QueueAssign';
+	public static $QUEUESETCATEGORY_SERVICE = 'PatientTicketing_QueueSetCategory';
+
+	public function getMenuItems($position = 1)
+	{
+		$result = array();
+
+		$qsc_svc = Yii::app()->service->getService(self::$QUEUESETCATEGORY_SERVICE);
+		$user = Yii::app()->user;
+		foreach ($qsc_svc->getCategoriesForUser($user->id) as $qsc) {
+			$result[] = array(
+					'uri' => '/PatientTicketing/default/?cat_id='.$qsc->id,
+					'title' => $qsc->name,
+					'position' => $position++,
+			);
+		};
+
+		return $result;
+	}
 
 	/**
 	 * Simple function to standardise access to the retrieving the Queue Assignment Form
@@ -164,4 +184,8 @@ class PatientTicketing_API extends \BaseAPI
 		return Queue::model()->active()->findAll($criteria);
 	}
 
+	public function getQueueSets(\CWebUser $user)
+	{
+
+	}
 }

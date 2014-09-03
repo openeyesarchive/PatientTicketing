@@ -7,7 +7,8 @@ that have yet to be implemented. This document is intended to capture those requ
 Administration
 ==============
 
-1. Limiting users to be able to see tickets on specific pathways or only certain queues. When more pathways are configured, it will be necessary to provide a filtering of what queues users can see and operate on.
+1. Limiting users to be able to see tickets on specific pathways or only certain queues. When more pathways are configured,
+it will be necessary to provide a filtering of what queues users can see and operate on.
 
 2. Nested pathways. Whilst the data model supports it, the admin UI does not allow a queue to be reached from more than
 one queue, so pathways are linear. The admin needs to be updated to support multiple routes to the same queue.

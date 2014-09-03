@@ -18,6 +18,10 @@
  */
 ?>
 
+<?php
+	$qs_svc = Yii::app()->service->getService($this::$QUEUESET_SERVICE);
+	$can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yii::app()->user->id);
+?>
 <h1 class="badge">Patient Tickets</h1>
 
 <div class="box content">
@@ -42,7 +46,6 @@
 								'class' => 'row'
 						),
 						'enableAjaxValidation'=>false,
-						'action' => $this->createUrl('//PatientTicketing/default')
 				))?>
 		<div class="large-12 column">
 			<div class="panel">
@@ -64,10 +67,11 @@
 							<tbody>
 							<tr class="filter-row">
 								<td>
-									<?php $this->widget('application.widgets.MultiSelectList', array(
+									<?php
+									$this->widget('application.widgets.MultiSelectList', array(
 											'field' => 'queue-ids',
 											'default_options' => @$_POST['queue-ids'],
-											'options' => CHtml::listData(OEModule\PatientTicketing\models\Queue::model()->active()/* ->notClosing() */->findAll(),'id','name'),
+											'options' => CHtml::listData($qs_svc->getQueueSetQueues($queueset, Yii::app()->user->id, false),'id','name'),
 											'htmlOptions' => array('empty' => '- Please Select -', 'nowrapper' => true),
 											'noSelectionsMessage' => 'All Queues')
 											);
@@ -121,7 +125,7 @@
 		</div>
 	<?php } ?>
 
-	<?php $this->renderPartial('_ticketlist', array('tickets' => $tickets, 'pages' => $pages)); ?>
+	<?php $this->renderPartial('_ticketlist', array('tickets' => $tickets, 'pages' => $pages, 'can_process' => $can_process)); ?>
 
 </div>
 

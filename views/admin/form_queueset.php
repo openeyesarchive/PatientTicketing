@@ -20,18 +20,33 @@
 ?>
 
 <?php
-$queue = $queueset->initial_queue;
+$form = $this->beginWidget('BaseEventTypeCActiveForm', array(
+		'id'=>'queueset-form',
+		'enableAjaxValidation'=>false,
+		'layoutColumns' => array(
+				'label' => 3,
+				'field' => 8
+		)));
+
+$this->renderPartial('//elements/form_errors', array('errors' => $errors, 'bottom' => false));
+
 ?>
-<li class="queueset-item<?= $queueset->active ? '' : ' inactive'?>" data-queueset-id="<?=$queueset->id?>" data-initial-queue-id="<?=$queue->id?>" id="queue-nav-<?=$queue->id?>">
-	<span class="queueset-link"><?=$queueset->name?></span>
-	<span class="queueset-admin">
-		<span class="edit admin-action has-tooltip" data-tooltip="edit">e</span>
-		-
-		<span class="active-toggle admin-action has-tooltip" data-tooltip="<?= $queueset->active ? 'deactivate' : 'activate' ?>"><?= $queueset->active ? 'x' : 'o' ?></span>
-		-
-		<span class="permissions admin-action has-tooltip" data-tooltip="permissions">p</span>
-	</span>
-	<ul class="queue-set" id="queue-container-<?=$queue->id?>" style="display: none;">
-		<?php $this->renderPartial("queue_as_list", array('queue' => $queue)); ?>
-	</ul>
-</li>
+	<h3>Queue Set:</h3>
+	<div>
+		<?php echo $form->dropdownList($queueset, 'category_id', \CHtml::listData(OEModule\PatientTicketing\models\QueueSetCategory::model()->activeOrPk($queueset->category_id)->findAll(), 'id', 'name')); ?>
+		<?php echo $form->textField($queueset, 'name'); ?>
+		<?php echo $form->textArea($queueset, 'description'); ?>
+		<?php echo $form->radioBoolean($queueset, 'summary_link'); ?>
+	</div>
+	<?php if ($queue) {?>
+		<h3>Initial Queue:</h3>
+		<div>
+			<?php echo $form->textField($queue, 'name'); ?>
+			<?php echo $form->textArea($queue, 'description'); ?>
+			<?php echo $form->textArea($queue, 'report_definition'); ?>
+			<?php echo $form->textArea($queue, 'assignment_fields'); ?>
+		</div>
+	<?php } ?>
+
+<?php
+$this->endWidget();

@@ -25,6 +25,7 @@ class AdminController extends \ModuleAdminController {
 
 	public static $TICKET_SERVICE = 'PatientTicketing_Ticket';
 	public static $QUEUE_SERVICE = 'PatientTicketing_Queue';
+	public static $QUEUESET_SERVICE = 'PatientTicketing_QueueSet';
 
 	protected function beforeAction($action)
 	{
@@ -49,12 +50,159 @@ class AdminController extends \ModuleAdminController {
 	 */
 	public function actionIndex()
 	{
-		$criteria = new \CDbCriteria();
-		$criteria->addColumnCondition( array('is_initial' => true));
-
-		$this->render('index', array('queues' => models\Queue::model()->findAll($criteria), 'title' => 'Queues'));
+		$this->render('index', array('queuesets' => models\QueueSet::model()->findAll(), 'title' => 'Queue Sets'));
 	}
 
+	public function actionQueueSetCategories()
+	{
+		$this->genericAdmin(
+				'Edit Queue Set Categories',
+				'OEModule\PatientTicketing\models\QueueSetCategory'
+		);
+	}
+
+	/**
+	 * Create a new QueueSet along with its initial queue (cannot have a queue set without an initial queue)
+	 *
+	 * @throws \CHttpException
+	 */
+	public function actionAddQueueSet()
+	{
+		$queueset = new models\QueueSet('formCreate');
+		$queue = new models\Queue();
+		$queue->is_initial = true;
+		$errors = array();
+
+		if (!empty($_POST)) {
+			$queueset->attributes = $_POST[\CHtml::modelName($queueset)];
+			$queue->attributes = $_POST[\CHtml::modelName($queue)];
+			if (!$queueset->validate()) {
+				$errors['Queue Set'] = array();
+				foreach ($queueset->getErrors() as $errs) {
+					foreach ($errs as $e) {
+						$errors['Queue Set'][] = $e;
+					}
+				}
+			}
+			if (!$queue->validate()) {
+				$errors['Initial Queue'] = array_values($queue->getErrors());
+			}
+
+			if (!count($errors)) {
+				$transaction = Yii::app()->db->beginTransaction();
+				try {
+					$queue->save();
+					$queueset->initial_queue_id = $queue->id;
+					$queueset->setScenario('insert');
+					$queueset->save();
+
+					$transaction->commit();
+					$resp = array(
+						'success' => true,
+						'queuesetId' => $queueset->id,
+						'initialQueueId' => $queueset->initial_queue_id,
+					);
+					echo \CJSON::encode($resp);
+
+				}
+				catch (Exception $e) {
+					$transaction->rollback();
+					throw new \CHttpException(500, "Could not save queue set and/or initial queue");
+				}
+			}
+			else {
+				$resp = array(
+					'success' => false,
+					'form' => $this->renderPartial('form_queueset', array(
+						'queueset' => $queueset,
+						'queue' => $queue,
+						'errors' => $errors
+					), true)
+				);
+				echo \CJSON::encode($resp);
+			}
+		}
+		else {
+			$this->renderPartial('form_queueset', array(
+				'queueset' => $queueset,
+				'queue' => $queue,
+				'errors' => null
+			));
+		}
+	}
+
+	/**
+	 * Update the Queue Set specified by the id
+	 *
+	 * @param $id
+	 * @throws \CHttpException
+	 */
+	public function actionUpdateQueueSet($id)
+	{
+		if (!$queueset = models\QueueSet::model()->findByPk($id)) {
+			throw new \CHttpException(404, "Queue Set not found with id {$id}");
+		}
+
+		if (!empty($_POST)) {
+			$queueset->attributes = $_POST[\CHtml::modelName($queueset)];
+			if (!$queueset->validate()) {
+				$resp = array(
+						'success' => false,
+						'form' => $this->renderPartial('form_queue', array(
+												'queueset' => $queueset,
+												'queue' => null,
+												'errors' => $queueset->getErrors()
+										), true)
+				);
+				echo \CJSON::encode($resp);
+			}
+			else {
+				$transaction = Yii::app()->db->beginTransaction();
+				try {
+					$queueset->save();
+					$transaction->commit();
+					$resp = array(
+						'success' => true,
+						'queueSetId' => $queueset->id,
+						'initialQueueId' => $queueset->initial_queue_id,
+					);
+					echo \CJSON::encode($resp);
+				}
+				catch (Exception $e) {
+					$transaction->rollback();
+					throw new \CHttpException(500, "Unable to create queue");
+				}
+			}
+		}
+		else {
+			$this->renderPartial('form_queueset', array(
+				'queueset' => $queueset,
+				'queue' => null,
+				'errors' => null
+			));
+		}
+	}
+
+	public function actionQueueSetPermissions($id)
+	{
+		if (!$queueset = models\QueueSet::model()->findByPk($id)) {
+			throw new \CHttpException(404, "Queue Set not found with id {$id}");
+		}
+
+		if (Yii::app()->request->isPostRequest) {
+			$qssvc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
+			$ids = array();
+			foreach ($_POST['user_ids'] as $id) {
+				$ids[] = (int)$id;
+			}
+			$qssvc->setPermisssionedUsers($queueset->id, $ids);
+			Yii::app()->end();
+		}
+
+		$this->renderPartial('form_queueset_perms', array(
+					'queueset' => $queueset,
+				), false, true);
+	}
 	/**
 	 * Create a new Queue with the optional given parent
 	 *
@@ -180,9 +328,11 @@ class AdminController extends \ModuleAdminController {
 			throw new \CHttpException(501, "Don't currently support queues with multiple roots");
 		}
 
+		$queueset = models\QueueSet::model()->findByAttributes(array('initial_queue_id' => $queue->id));
+
 		$resp = array(
 				'rootid' => $root->id,
-				'nav' => $this->renderPartial("queue_nav_item", array('queue' => $root), true)
+				'nav' => $this->renderPartial("queue_nav_item", array('queueset' => $queueset, 'queue' => $root), true)
 		);
 		echo \CJSON::encode($resp);
 	}

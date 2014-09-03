@@ -67,6 +67,11 @@ return array(
 				'id' => 10,
 				'queue_id' => 8,
 				'outcome_queue_id' => 11,
+		),
+		'11' => array(
+			'id' => 11,
+			'queue_id' => 12,
+			'outcome_queue_id' => 13,
 		)
 
 );

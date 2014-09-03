@@ -30,15 +30,15 @@
 		<div class="column large-4">
 
 			<div class="row">
-			<ul class="queue-list" id="queue-nav">
+			<ul class="queueset-list" id="queue-nav">
 			<?php
-			foreach ($queues as $q) {
-				$this->renderPartial("queue_nav_item", array('queue' => $q));
+			foreach ($queuesets as $qs) {
+				$this->renderPartial("queue_nav_item", array('queueset' => $qs));
 			}
 			?>
 			</ul>
 			</div>
-			<div class="row right"><button id="add-initial-queue" class="secondary small">Add queue</button></div>
+			<div class="row right"><button id="add-queueset" class="secondary small">Add Queue Set</button></div>
 
 		</div>
 

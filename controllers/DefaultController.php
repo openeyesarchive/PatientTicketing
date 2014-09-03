@@ -26,6 +26,11 @@ class DefaultController extends \BaseModuleController
 	public $layout='//layouts/main';
 	public $renderPatientPanel = false;
 	protected $page_size = 10;
+	public static $QUEUESETCATEGORY_SERVICE = 'PatientTicketing_QueueSetCategory';
+	public static $QUEUESET_SERVICE = 'PatientTicketing_QueueSet';
+
+	protected $ticket;
+	protected $queueset;
 
 	/**
 	 * Ensures firm is set on the controller.
@@ -58,43 +63,23 @@ class DefaultController extends \BaseModuleController
 		return array(
 				array('allow',
 						'actions' => array('index', 'getTicketTableRow', 'getTicketTableRowHistory'),
-						'roles' => array('OprnViewPatientTickets'),
+						'roles' => array('OprnViewQueueSet'),
 				),
 				array('allow',
 						'actions' => $this->printActions(),
 						'roles' => array('OprnPrint'),
 				),
+				// these will have additional checks in the action methods
+				// TODO: detemine cleaner way of defining this.
 				array('allow',
 						'actions' => array('moveTicket', 'getQueueAssignmentForm', 'takeTicket', 'releaseTicket'),
-						'roles' => array('OprnEditPatientTicket'),
+						'roles' => array('OprnViewQueueSet'),
 				),
 		);
 	}
 
-	/**
-	 * Generate a list of current tickets
-	 */
-	public function actionIndex()
+	protected function buildTicketFilterCriteria($filter_options)
 	{
-		$filter_keys = array('queue-ids', 'priority-ids', 'subspecialty-id', 'firm-id', 'my-tickets', 'closed-tickets');
-		$filter_options = array();
-
-		if (empty($_POST)) {
-			if ($filter_options = Yii::app()->session['patientticket_filter']) {
-				foreach ($filter_options as $k => $v) {
-					$_POST[$k] = $v;
-				}
-			}
-		}
-		else {
-			foreach ($filter_keys as $k) {
-				if (isset($_POST[$k])) {
-					$filter_options[$k] = $_POST[$k];
-				}
-			}
-		}
-
-		Yii::app()->session['patientticket_filter'] = $filter_options;
 		$patient_filter = null;
 		// build criteria
 		$criteria = new \CDbCriteria();
@@ -152,17 +137,83 @@ class DefaultController extends \BaseModuleController
 
 		$criteria->order = 't.created_date desc';
 
-		$count = models\Ticket::model()->count($criteria);
-		$pages = new \CPagination($count);
+		return array($criteria, $patient_filter);
+	}
 
-		$pages->pageSize = $this->page_size;
-		$pages->applyLimit($criteria);
+	/**
+	 * Generate a list of current tickets
+	 */
+	public function actionIndex()
+	{
+		if (!@$_GET['cat_id']) {
+			throw new \CHttpException(404, 'Category ID required');
+		}
 
-		// get tickets that match criteria
-		$tickets = models\Ticket::model()->findAll($criteria);
+		$qsc_svc = Yii::app()->service->getService(self::$QUEUESETCATEGORY_SERVICE);
+
+		if (!$category = $qsc_svc->readActive((int)$_GET['cat_id'])) {
+			throw new \CHttpException(404, 'Invalid category id');
+		}
+
+		$queueset = null;
+		$tickets = null;
+		$pages = null;
+		$patient_filter = null;
+
+		if ($queuesets = $qsc_svc->getCategoryQueueSetsForUser($category, Yii::app()->user->id)) {
+			// default to the single queueset if that is all that is available to the user
+			if (count($queuesets) > 1) {
+				if ($qs_id = @$_POST['queueset_id']) {
+					foreach ($queuesets as $qs) {
+						if ($qs->getID() == $qs_id) {
+							$queueset = $qs;
+							break;
+						}
+					}
+				}
+			}
+			else {
+				$queueset = $queuesets[0];
+			}
+
+			// build the filter
+			$filter_keys = array('queue-ids', 'priority-ids', 'subspecialty-id', 'firm-id', 'my-tickets', 'closed-tickets');
+			$filter_options = array();
+
+			if (empty($_POST)) {
+				if (($filter_options = Yii::app()->session['patientticket_filter'])
+						&& @$filter_options['category-id'] == $category->getID()) {
+					foreach ($filter_options as $k => $v) {
+						$_POST[$k] = $v;
+					}
+				}
+			}
+			else {
+				foreach ($filter_keys as $k) {
+					if (isset($_POST[$k])) {
+						$filter_options[$k] = $_POST[$k];
+					}
+				}
+				$filter_options['category-id'] = $category->getID();
+			}
+
+			Yii::app()->session['patientticket_filter'] = $filter_options;
+
+			list($criteria, $patient_filter) = $this->buildTicketFilterCriteria($filter_options);
+
+			$count = models\Ticket::model()->count($criteria);
+			$pages = new \CPagination($count);
+
+			$pages->pageSize = $this->page_size;
+			$pages->applyLimit($criteria);
+
+			// get tickets that match criteria
+			$tickets = models\Ticket::model()->findAll($criteria);
+		};
 
 		// render
 		$this->render('ticketlist', array(
+				'queueset' => $queueset,
 				'tickets' => $tickets,
 				'patient_filter' => $patient_filter,
 				'pages' => $pages
@@ -179,6 +230,13 @@ class DefaultController extends \BaseModuleController
 	{
 		if (!$q = models\Queue::model()->findByPk($id)) {
 			throw new \CHttpException(404, 'Invalid queue id.');
+		}
+
+		$qs_svc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
+		$queueset = $qs_svc->getQueueSetForQueue($q->id);
+
+		if (!$this->checkQueueSetProcessAccess($queueset)) {
+			throw new \CHttpException(403, 'Not authorised to take ticket');
 		}
 
 		$template_vars = array('queue_id' => $id);
@@ -201,6 +259,13 @@ class DefaultController extends \BaseModuleController
 	{
 		if (!$ticket = models\Ticket::model()->with('current_queue')->findByPk($id)) {
 			throw new \CHttpException(404, 'Invalid ticket id.');
+		}
+
+		$qs_svc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
+		$queueset = $qs_svc->getQueueSetForTicket($ticket->id);
+
+		if (!$this->checkQueueSetProcessAccess($queueset)) {
+			throw new \CHttpException(403, 'Not authorised to take ticket');
 		}
 
 		foreach(array('from_queue_id', 'to_queue_id') as $required_field) {
@@ -260,8 +325,14 @@ class DefaultController extends \BaseModuleController
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
 
+		$qs_svc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
+		$queueset = $qs_svc->getQueueSetForTicket($ticket->id);
+
+		$can_process = $qs_svc->isQueueSetPermissionedForUser($queueset, Yii::app()->user->id);
+
 		$this->renderPartial('_ticketlist_row', array(
-					'ticket' => $ticket
+					'ticket' => $ticket,
+					'can_process' => $can_process,
 				), false, false);
 	}
 
@@ -291,8 +362,15 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionTakeTicket($id)
 	{
-		if (!$ticket = models\Ticket::model()->with('current_queue')->findByPk($id)) {
+		if (!$ticket = models\Ticket::model()->with('current_queue')->findByPk($_REQUEST['id'])) {
 			throw new \CHttpException(404, 'Invalid ticket id.');
+		}
+
+		$qs_svc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
+		$queueset = $qs_svc->getQueueSetForTicket($ticket->id);
+
+		if (!$this->checkQueueSetProcessAccess($queueset)) {
+			throw new \CHttpException(403, 'Not authorised to take ticket');
 		}
 
 		$resp = array('status' => null);
@@ -333,6 +411,13 @@ class DefaultController extends \BaseModuleController
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
 
+		$qs_svc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
+		$queueset = $qs_svc->getQueueSetForTicket($ticket->id);
+
+		if (!$this->checkQueueSetProcessAccess($queueset)) {
+			throw new \CHttpException(403, 'Not authorised to take ticket');
+		}
+
 		$resp = array('status' => null);
 		if (!$ticket->assignee_user_id) {
 			$resp['status'] = 0;
@@ -355,5 +440,11 @@ class DefaultController extends \BaseModuleController
 			}
 		}
 		echo \CJSON::encode($resp);
+	}
+
+	public function checkQueueSetProcessAccess($queueset)
+	{
+		$qs_svc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
+		return $qs_svc->isQueueSetPermissionedForUser($queueset, Yii::app()->user->id);
 	}
 }

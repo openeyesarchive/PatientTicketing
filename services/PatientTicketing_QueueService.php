@@ -41,13 +41,13 @@ class PatientTicketing_QueueService extends \services\ModelService {
 	/**
 	 * Pass through wrapper to generate Queue Resource
 	 *
-	 * @param \services\BaseActiveRecord $queue
+	 * @param OEModule\PatientTicketing\models\Queue $queue
 	 * @return Resource
 	 */
 	public function modelToResource($queue)
 	{
 		$res = parent::modelToResource($queue);
-		foreach (array('name', 'description', 'active', 'is_initial', 'summary_link') as $pass_thru) {
+		foreach (array('name', 'description', 'active', 'is_initial') as $pass_thru) {
 			$res->$pass_thru = $queue->$pass_thru;
 		}
 		if ($queue->assignment_fields) {
@@ -89,11 +89,42 @@ class PatientTicketing_QueueService extends \services\ModelService {
 	}
 
 	/**
+	 * Get the dependent queues for given Queue resource
+	 *
+	 * @param PatientTicketing_Queue $qr
+	 * @param bool $include_closing
+	 * @return models\Queue[]
+	 * @todo: return resources instead of models
+	 */
+	public function getDependentQueues(PatientTicketing_Queue $qr, $include_closing = true)
+	{
+		$queue = $this->readModel($qr->getId());
+		$res = array();
+		$d_ids = $queue->getDependentQueueIds();
+		$dependents = $include_closing ?
+				$this->model->active()->findAllByPk($d_ids)
+				: $this->model->active()->notClosing()->findAllByPk($d_ids);
+		return $dependents;
+		/*
+		foreach ($dependents as $dq) {
+			$res[] = $this->modelToResource($dq);
+		}
+		return $res;
+		*/
+	}
+
+	public function getRootQueue($queue_id)
+	{
+		$queue = $this->readModel($queue_id);
+		return $queue->getRootQueue();
+	}
+
+	/**
 	 * Delete the queue and the queues that are are solely dependent on it.
 	 *
 	 * @param $queue_id
 	 * @throws \Exception
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function delete($queue_id)
 	{
@@ -132,7 +163,7 @@ class PatientTicketing_QueueService extends \services\ModelService {
 				$transaction->commit();
 			}
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 			if ($transaction) {
 				$transaction->rollback();
 			}

@@ -44,14 +44,6 @@
 		</fieldset>
 		<fieldset class="field-row row">
 			<div class="large-3 column">
-				<label for="summary_link">Link to summary:</label>
-			</div>
-			<div class="large-8 column end left">
-				<?php echo CHtml::checkBox('summary_link', $queue->summary_link); ?>
-			</div>
-		</fieldset>
-		<fieldset class="field-row row">
-			<div class="large-3 column">
 				<label for="report_definition">Report Definition:</label>
 			</div>
 			<div class="large-8 column end left">

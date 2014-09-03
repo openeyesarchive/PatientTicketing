@@ -19,19 +19,7 @@
 
 ?>
 
-<?php
-$queue = $queueset->initial_queue;
-?>
-<li class="queueset-item<?= $queueset->active ? '' : ' inactive'?>" data-queueset-id="<?=$queueset->id?>" data-initial-queue-id="<?=$queue->id?>" id="queue-nav-<?=$queue->id?>">
-	<span class="queueset-link"><?=$queueset->name?></span>
-	<span class="queueset-admin">
-		<span class="edit admin-action has-tooltip" data-tooltip="edit">e</span>
-		-
-		<span class="active-toggle admin-action has-tooltip" data-tooltip="<?= $queueset->active ? 'deactivate' : 'activate' ?>"><?= $queueset->active ? 'x' : 'o' ?></span>
-		-
-		<span class="permissions admin-action has-tooltip" data-tooltip="permissions">p</span>
-	</span>
-	<ul class="queue-set" id="queue-container-<?=$queue->id?>" style="display: none;">
-		<?php $this->renderPartial("queue_as_list", array('queue' => $queue)); ?>
-	</ul>
+<li>
+	<?= $fullname . " (" . $username . ")" ?>
+	<input type="hidden" name="user_ids[]" value="<?=$id?>" />
 </li>

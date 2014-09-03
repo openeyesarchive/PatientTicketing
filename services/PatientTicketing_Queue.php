@@ -27,6 +27,4 @@ class PatientTicketing_Queue extends \services\Resource {
 	public $active;
 	public $is_initial;
 	public $assignment_fields = array();
-	public $summary_link;
-
 }

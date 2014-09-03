@@ -66,18 +66,34 @@
 	width: auto;
 }
 
-ul.queue-list {
+ul.queueset-list {
 	list-style: none;
 }
 
-ul.queue-list li {
+ul.queueset-list li {
 	margin: 3px;
 	padding: 2px;
 	background: #ccc;
 	border-radius: 3px;
 }
 
-ul.queue-list li:hover {
+ul.queueset-list li:hover {
 	background: #e1eef9;
+}
+
+ul.queueset-list .queueset-link:hover {
 	cursor: pointer;
+}
+
+li.queueset-item .queueset-admin {
+	float: right;
+}
+
+li.queueset-item .queueset-admin .admin-action:hover {
+	cursor:pointer;
+}
+
+li.queueset-item.inactive {
+	opacity: 0.5;
+	filter: alpha(opacity=50);
 }

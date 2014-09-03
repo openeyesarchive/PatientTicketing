@@ -43,6 +43,9 @@
 		'setSelector': '.queue-set',
 		'parentSelector': '.initial-queue',
 		'childSelector': '.child-queue',
+		'addQueueSetURI': '/PatientTicketing/admin/addQueueSet',
+		'editQueueSetURI': '/PatientTicketing/admin/updateQueueSet',
+		'editQueueSetPermissionsURI': '/PatientTicketing/admin/queueSetPermissions',
 		'addQueueURI': '/PatientTicketing/admin/addQueue',
 		'editQueueURI': '/PatientTicketing/admin/updateQueue',
 		'loadQueueURI': '/PatientTicketing/admin/loadQueueNav',
@@ -90,6 +93,59 @@
 				new OpenEyes.UI.Dialog.Alert({content: 'There was a problem reloading the queue data'}).open();
 			}
 		});
+	}
+
+	QueueAdmin.prototype.addQueueSet = function() {
+		$.ajax({
+			url: this.options.addQueueSetURI,
+			success: function(content) {
+				var formDialog = new OpenEyes.UI.Dialog.Confirm({
+					title: "Add Queue Set",
+					'content': content,
+					'okButton': 'Save'
+				});
+				formDialog.open();
+				// suppress default ok behaviour
+				formDialog.content.off('click', '.ok');
+				// manage form submission and response
+				formDialog.content.on('click', '.ok', function() {this.submitQueueSetForm(formDialog, this.options.addQueueSetURI)}.bind(this));
+			}.bind(this)
+		})
+	}
+
+	QueueAdmin.prototype.editQueueSet = function(queueSetId) {
+		$.ajax({
+			url: this.options.editQueueSetURI,
+			data: {id: queueSetId},
+			dataType: 'html',
+			success: function(content) {
+				var formDialog = new OpenEyes.UI.Dialog.Confirm({
+					title: "Edit Queue Set",
+					content: content,
+					okButton: 'Save'
+				});
+				formDialog.open();
+				// suppress default ok behaviour
+				formDialog.content.off('click', '.ok');
+				// manage form submission and response
+				formDialog.content.on('click', '.ok', function() {this.submitQueueSetForm(formDialog, this.options.editQueueSetURI + '?id=' + queueSetId)}.bind(this));
+			}.bind(this)
+		});
+	}
+
+	QueueAdmin.prototype.editQueueSetPermissions = function(queueSetId) {
+		var formDialog = new OpenEyes.UI.Dialog.Confirm({
+			title: "Edit Queue Set Permissions",
+			okButton: 'Save',
+			url: this.options.editQueueSetPermissionsURI,
+			data: {id: queueSetId}
+		});
+		formDialog.open();
+		// suppress default ok behaviour
+		formDialog.content.off('click', '.ok');
+		// manage form submission and response
+		formDialog.content.on('click', '.ok', function() {this.submitQueueSetForm(formDialog, this.options.editQueueSetPermissionsURI + '?id=' + queueSetId)}.bind(this));
+
 	}
 
 	QueueAdmin.prototype.addQueue = function(queueId) {
@@ -152,6 +208,28 @@
 		});
 	}
 
+	QueueAdmin.prototype.submitQueueSetForm = function(formDialog, submitURI) {
+		$.ajax({
+			url: submitURI,
+			data: formDialog.content.find('form').serialize(),
+			type: 'POST',
+			dataType: 'json',
+			success: function(resp) {
+				if (resp.success) {
+					formDialog.close();
+					this.reloadQueue(resp.initialQueueId);
+				}
+				else {
+					formDialog.setContent(resp.form);
+				}
+			}.bind(this),
+			error: function(jqXHR, status, error) {
+				formDialog.close();
+				new OpenEyes.UI.Dialog.Alert({content: 'There was a problem saving the queue set'}).open();
+			}
+		});
+	}
+
 	QueueAdmin.prototype.activeToggleQueue = function(queueId, active) {
 		if (active) {
 			$.ajax({
@@ -197,12 +275,18 @@
 	$(document).ready(function() {
 		var queueAdmin = new QueueAdmin();
 
-		$(this).on('click', '#add-initial-queue', function() {
-			queueAdmin.addQueue();
+		$(this).on('click', '#add-queueset', function() {
+			queueAdmin.addQueueSet();
 		});
 
-		$(this).on('click', '.queue-item', function() {
-			queueAdmin.displayQueue($(this).data('queue-id'));
+		$(this).on('click', '.queueset-link', function() {
+			queueAdmin.displayQueue($(this).parents('li').data('initial-queue-id'));
+		});
+
+		$(this).on('click', '.queueset-admin .permissions', function() {
+			var queueSetId = $(this).parents('li').data('queueset-id');
+			queueAdmin.editQueueSetPermissions(queueSetId);
+			queueAdmin.displayQueue($(this).parents('li').data('initial-queue-id'));
 		});
 
 		$(this).on('click','.add-child', function(e) {
@@ -210,7 +294,13 @@
 			queueAdmin.addQueue(queueId);
 		});
 
-		$(this).on('click', '.edit', function() {
+		$(this).on('click', '.queueset-admin .edit', function() {
+			var queueSetId = $(this).parents('li').data('queueset-id');
+			queueAdmin.editQueueSet(queueSetId);
+			queueAdmin.displayQueue($(this).parents('li').data('initial-queue-id'));
+		});
+
+		$(this).on('click', '.queue .edit', function() {
 			var queueId = $(this).parent('div').data('queue-id');
 			queueAdmin.editQueue(queueId);
 		});
@@ -220,6 +310,7 @@
 			var active = !$(this).closest('div.node').hasClass('inactive');
 			queueAdmin.activeToggleQueue(queueId, active);
 		});
+
 
 		// ensure we display the tooltips for the admin controls on the nodes
 		var toolTip = new OpenEyes.UI.Tooltip({

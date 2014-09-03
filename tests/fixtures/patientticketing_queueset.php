@@ -17,21 +17,17 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
 
-?>
-
-<?php
-$queue = $queueset->initial_queue;
-?>
-<li class="queueset-item<?= $queueset->active ? '' : ' inactive'?>" data-queueset-id="<?=$queueset->id?>" data-initial-queue-id="<?=$queue->id?>" id="queue-nav-<?=$queue->id?>">
-	<span class="queueset-link"><?=$queueset->name?></span>
-	<span class="queueset-admin">
-		<span class="edit admin-action has-tooltip" data-tooltip="edit">e</span>
-		-
-		<span class="active-toggle admin-action has-tooltip" data-tooltip="<?= $queueset->active ? 'deactivate' : 'activate' ?>"><?= $queueset->active ? 'x' : 'o' ?></span>
-		-
-		<span class="permissions admin-action has-tooltip" data-tooltip="permissions">p</span>
-	</span>
-	<ul class="queue-set" id="queue-container-<?=$queue->id?>" style="display: none;">
-		<?php $this->renderPartial("queue_as_list", array('queue' => $queue)); ?>
-	</ul>
-</li>
+return array(
+	'queueset1' => array(
+		'id' => 1,
+		'name' => 'QueueSet 1',
+		'active' => true,
+		'initial_queue_id' => 1,
+	),
+	'queueset2' => array(
+		'id' => 2,
+		'name' => 'QueueSet 2',
+		'active' => 1,
+		'initial_queue_id' => 12,
+	)
+);

@@ -23,14 +23,13 @@ return array(
 	'params' => array(
 			'menu_bar_items' => array(
 					'virtual_clinic' => array(
-							'restricted' => array('OprnViewPatientTickets'),
-							'title' => 'Virtual Clinic',
-							'uri' => 'PatientTicketing/Default/index',
-							'position' => 5,
+							'api' => 'PatientTicketing',
+							'position' => 5
 					),
 			),
 			'admin_menu' => array(
-					'Queues' => '/PatientTicketing/admin/',
+				'Queue Set Categories' => '/PatientTicketing/admin/queueSetCategories',
+				'Queue Sets' => '/PatientTicketing/admin/',
 			),
 
 			'patient_summary_id_widgets' => array(
@@ -41,6 +40,8 @@ return array(
 		'service' => array(
 			'internal_services' => array(
 				'OEModule\PatientTicketing\services\PatientTicketing_QueueService',
+				'OEModule\PatientTicketing\services\PatientTicketing_QueueSetService',
+				'OEModule\PatientTicketing\services\PatientTicketing_QueueSetCategoryService',
 			)
 		)
 	)

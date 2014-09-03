@@ -384,5 +384,24 @@ class Queue extends \BaseActiveRecordVersioned
 		}
 		return $dependent_ids;
 	}
+
+	/**
+	 * Get the QueueSet this Queue belongs to.
+	 *
+	 * @return QueueSet
+	 */
+	public function getQueueSet()
+	{
+		$root = $this->getRootQueue();
+		if (is_array($root)) {
+			throw new Exception("shitballs!" . print_r($root, true));
+			$rid = $root[0]->id;
+		}
+		else {
+			$rid = $root->id;
+		}
+		return QueueSet::model()->findByAttributes(array('initial_queue_id' => $rid));
+
+	}
 }
 

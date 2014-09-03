@@ -24,9 +24,11 @@ class QueueTest extends \CDbTestCase {
 	public $fixtures = array(
 			'queues' => 'OEModule\PatientTicketing\models\Queue',
 			'queue_outcomes' => 'OEModule\PatientTicketing\models\QueueOutcome',
+			'queuesets' => 'OEModule\PatientTicketing\models\QueueSet',
 	);
 
-	public function dependentQueueIdsProvider() {
+	public function dependentQueueIdsProvider()
+	{
 		return array(
 			array(1, array(2,6,7,8,9,11)),
 			array(2, array()),
@@ -40,14 +42,16 @@ class QueueTest extends \CDbTestCase {
 	/**
 	 * @dataProvider dependentQueueIdsProvider
 	 */
-	public function testgetDependentQueueIds($id, $res) {
+	public function testgetDependentQueueIds($id, $res)
+	{
 		$test = models\Queue::model()->findByPk($id);
 		$output = $test->getDependentQueueIds();
 		sort($output);
 		$this->assertEquals($res, $output);
 	}
 
-	public function rootQueueProvider() {
+	public function rootQueueProvider()
+	{
 		return array(
 			array(6, 1),
 			array(3, array(5,1)),
@@ -62,7 +66,8 @@ class QueueTest extends \CDbTestCase {
 	/**
 	 * @dataProvider rootQueueProvider
 	 */
-	public function testgetRootQueue($id, $res) {
+	public function testgetRootQueue($id, $res)
+	{
 		$test = models\Queue::model()->findByPk($id);
 		$output = $test->getRootQueue();
 
@@ -78,5 +83,25 @@ class QueueTest extends \CDbTestCase {
 			$this->assertInstanceOf('OEModule\PatientTicketing\models\Queue', $output);
 			$this->assertEquals($res, $output->id);
 		}
+	}
+
+	public function queueSetProvider()
+	{
+		return array(
+			array(1, 1),
+			array(6, 1),
+			array(12, 2),
+			array(13, 2)
+		);
+	}
+
+	/**
+	 * @dataProvider queueSetProvider
+	 */
+	public function testgetQueueSet($id, $res)
+	{
+		$test = models\Queue::model()->findByPk($id);
+		$qs = $test->getQueueSet();
+		$this->assertEquals($res, $qs->id, "Incorrect QueueSet returned");
 	}
 }
