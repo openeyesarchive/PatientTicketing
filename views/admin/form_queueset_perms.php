@@ -26,7 +26,31 @@ $form = $this->beginWidget('BaseEventTypeCActiveForm', array(
 						'label' => 3,
 						'field' => 8
 				)));
+
+$qs_svc = Yii::app()->service->getService($this::$QUEUESET_SERVICE);
+$roles = $qs_svc->getQueueSetRoles();
+
 ?>
+
+<div class="row">
+	<?php
+		if (count($roles) > 1) {
+	?>
+			<div class="alert-box issue">Support for multiple Patient Ticketing roles not yet implemented.</div>
+		<?php
+		} elseif (count($roles == 1)) {
+	?>
+		<div class="alert-box info">User(s) will be given the "<?=$roles[0]?>" role if not already setup.</div>
+		<input type="hidden" name="user_role" value="<?=$roles[0]?>" />
+	<?php
+		} else {
+	?>
+			<div>Error: At least one role must be configured for Patient Ticketing!</div>
+	<?php
+		}
+	?>
+</div>
+
 
 <div class="row">
 	<div id="current-users-col" class="column large-6">

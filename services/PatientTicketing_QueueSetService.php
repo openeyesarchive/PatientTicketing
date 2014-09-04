@@ -106,13 +106,30 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 		}
 		return array();
 	}
+
+	/**
+	 * Returns the roles configured to allow processing of queue sets
+	 *
+	 * @return array
+	 */
+	public function getQueueSetRoles()
+	{
+		$res = array();
+		// iterate through roles and pick out those that have the operation as a child
+		foreach (Yii::app()->authManager->getAuthItems(2) as $role) {
+			if ($role->hasChild('TaskProcessQueueSet'))  {
+				$res[] = $role->name;
+			}
+		}
+		return $res;
+	}
 	/**
 	 * @param integer $queueset_id
 	 * @param integer $user_ids[]
 	 *
 	 * @throws \Exception
 	 */
-	public function setPermisssionedUsers($queueset_id, $user_ids)
+	public function setPermisssionedUsers($queueset_id, $user_ids, $role = null)
 	{
 		$qs = $this->readModel($queueset_id);
 		$users = array();
@@ -122,6 +139,15 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 			}
 			$users[] = $user;
 		}
+
+		$role_item = null;
+		if ($role) {
+			$role_item = Yii::app()->authManager->getAuthItem($role);
+			if (!$role_item) {
+				throw new \Exception("Unrecognised role {$role} for permissioning");
+			}
+		}
+
 		$transaction = Yii::app()->db->getCurrentTransaction() === null
 				? Yii::app()->db->beginTransaction()
 				: false;
@@ -129,6 +155,13 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 		try {
 			$qs->permissioned_users = $users;
 			$qs->save();
+
+			if ($role_item) {
+				foreach ($users as $user) {
+					$role_item->assign($user->id);
+				}
+			}
+
 			if ($transaction) {
 				$transaction->commit();
 			}

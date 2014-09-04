@@ -202,7 +202,8 @@ class AdminController extends \ModuleAdminController {
 				$ids[] = (int)$id;
 			}
 			$resp = array();
-			$qs_svc->setPermisssionedUsers($queueset->id, $ids);
+
+			$qs_svc->setPermisssionedUsers($queueset->id, $ids, @$_POST['user_role']);
 			$resp['success'] = true;
 
 			echo \CJSON::encode($resp);
