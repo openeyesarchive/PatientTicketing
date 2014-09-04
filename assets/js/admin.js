@@ -15,7 +15,7 @@
 		 * @param description
 		 * @param removeNavId
 		 */
-		this.ajaxPostAndReload = function(uri, data, description, removeNavId) {
+		this.ajaxPostAndReload = function(uri, data, description, message, removeNavId) {
 			data.YII_CSRF_TOKEN = YII_CSRF_TOKEN;
 			$.ajax({
 				url: uri,
@@ -30,6 +30,9 @@
 					}
 					else {
 						this.reloadQueue();
+					}
+					if (message) {
+						this.displayMessage(message);
 					}
 				}.bind(this),
 				error: function(jqXHR, status, error) {
@@ -56,6 +59,12 @@
 	};
 
 	QueueAdmin.prototype.init = function() {
+	}
+
+	QueueAdmin.prototype.displayMessage = function(message) {
+		$('#message-box').text(message).slideDown().fadeTo(300, 1.0, function() {
+			$(this).delay(2000).fadeTo(1000, 0.0, function() {$(this).slideUp()});
+		});
 	}
 
 	QueueAdmin.prototype.displayQueue = function(queueId) {
@@ -218,6 +227,12 @@
 				if (resp.success) {
 					formDialog.close();
 					this.reloadQueue(resp.initialQueueId);
+					if (resp.message) {
+						this.displayMessage(resp.message);
+					}
+					else {
+						this.displayMessage("Queue set saved");
+					}
 				}
 				else {
 					formDialog.setContent(resp.form);
@@ -250,25 +265,25 @@
 							// we're removing the root queue, so we need to remove it from the nav when successful
 							removeId = queueId;
 						}
-						deleteDialog.on('ok', function() {this.ajaxPostAndReload(this.options.deleteQueueURI, {id: queueId}, 'deleting queue', removeId)}.bind(this));
-						deleteDialog.on('cancel', function() {this.ajaxPostAndReload(this.options.deactivateQueueURI, {id: queueId}, 'changing queue state')}.bind(this));
+						deleteDialog.on('ok', function() {this.ajaxPostAndReload(this.options.deleteQueueURI, {id: queueId}, 'deleting queue', 'Queue deleted', removeId)}.bind(this));
+						deleteDialog.on('cancel', function() {this.ajaxPostAndReload(this.options.deactivateQueueURI, {id: queueId}, 'changing queue state', 'Queue deactivated')}.bind(this));
 					}
 					else if (resp.current_count > 0) {
 						var deactivateDialog = new OpenEyes.UI.Dialog.Confirm({
 							title: "Queue has current tickets",
 							content: "There are currently tickets assigned to this queue. Are you sure want to deactivate it?"
 						});
-						deactivateDialog.on('ok', function() {this.ajaxPostAndReload(this.options.deactivateQueueURI, {id: queueId}, "changing queue state")}.bind(this));
+						deactivateDialog.on('ok', function() {this.ajaxPostAndReload(this.options.deactivateQueueURI, {id: queueId}, 'changing queue state', 'Queue deactivated')}.bind(this));
 						deactivateDialog.open();
 					}
 					else {
-						this.ajaxPostAndReload(this.options.deactivateQueueURI, {id: queueId}, "changing queue state");
+						this.ajaxPostAndReload(this.options.deactivateQueueURI, {id: queueId}, 'changing queue state', 'Queue deactivated');
 					}
 				}.bind(this)
 			});
 		}
 		else {
-			this.ajaxPostAndReload(this.options.activateQueueURI, {id: queueId}, "changing queue state");
+			this.ajaxPostAndReload(this.options.activateQueueURI, {id: queueId}, 'changing queue state', 'Queue activated');
 		}
 	}
 

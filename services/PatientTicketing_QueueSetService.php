@@ -158,7 +158,9 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 
 			if ($role_item) {
 				foreach ($users as $user) {
-					$role_item->assign($user->id);
+					if (!$role_item->getAssignment($user->id)) {
+						$role_item->assign($user->id);
+					}
 				}
 			}
 

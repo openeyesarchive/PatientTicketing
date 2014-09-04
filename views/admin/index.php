@@ -26,6 +26,8 @@
 		</div>
 	</header>
 
+	<div class="alert-box info" style="display: none;" id="message-box">
+	</div>
 	<div class="row">
 		<div class="column large-4">
 

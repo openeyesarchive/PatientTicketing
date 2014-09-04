@@ -205,6 +205,7 @@ class AdminController extends \ModuleAdminController {
 
 			$qs_svc->setPermisssionedUsers($queueset->id, $ids, @$_POST['user_role']);
 			$resp['success'] = true;
+			$resp['message'] = "Queue set permissions updated";
 
 			echo \CJSON::encode($resp);
 			Yii::app()->end();
@@ -284,9 +285,10 @@ class AdminController extends \ModuleAdminController {
 	{
 		// try and process form
 		$queue->attributes = $_POST;
-		if (!$parent) {
+		if (!$parent && $queue->isNewRecord) {
 			$queue->is_initial = true;
 		}
+
 		if (!$queue->validate()) {
 			$resp = array(
 					'success' => false,
@@ -339,10 +341,11 @@ class AdminController extends \ModuleAdminController {
 			throw new \CHttpException(501, "Don't currently support queues with multiple roots");
 		}
 
-		$queueset = models\QueueSet::model()->findByAttributes(array('initial_queue_id' => $queue->id));
+		$queueset = models\QueueSet::model()->findByAttributes(array('initial_queue_id' => $root->id));
 
 		$resp = array(
 				'rootid' => $root->id,
+				'queuesetid' => $queueset->id,
 				'nav' => $this->renderPartial("queue_nav_item", array('queueset' => $queueset, 'queue' => $root), true)
 		);
 		echo \CJSON::encode($resp);
