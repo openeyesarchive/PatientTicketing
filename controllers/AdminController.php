@@ -183,6 +183,12 @@ class AdminController extends \ModuleAdminController {
 		}
 	}
 
+	/**
+	 * interface for setting the user permissions for a queueset
+	 * 
+	 * @param $id
+	 * @throws \CHttpException
+	 */
 	public function actionQueueSetPermissions($id)
 	{
 		if (!$queueset = models\QueueSet::model()->findByPk($id)) {
@@ -190,12 +196,16 @@ class AdminController extends \ModuleAdminController {
 		}
 
 		if (Yii::app()->request->isPostRequest) {
-			$qssvc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
+			$qs_svc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
 			$ids = array();
 			foreach ($_POST['user_ids'] as $id) {
 				$ids[] = (int)$id;
 			}
-			$qssvc->setPermisssionedUsers($queueset->id, $ids);
+			$resp = array();
+			$qs_svc->setPermisssionedUsers($queueset->id, $ids);
+			$resp['success'] = true;
+
+			echo \CJSON::encode($resp);
 			Yii::app()->end();
 		}
 
