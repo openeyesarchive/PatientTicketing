@@ -311,6 +311,9 @@
 			queueAdmin.activeToggleQueue(queueId, active);
 		});
 
+		$(this).on('click', '#current-users-list .remove', function() {
+			$(this).parents('li').remove();
+		});
 
 		// ensure we display the tooltips for the admin controls on the nodes
 		var toolTip = new OpenEyes.UI.Tooltip({

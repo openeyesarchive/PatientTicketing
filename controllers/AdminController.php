@@ -185,7 +185,7 @@ class AdminController extends \ModuleAdminController {
 
 	/**
 	 * interface for setting the user permissions for a queueset
-	 * 
+	 *
 	 * @param $id
 	 * @throws \CHttpException
 	 */

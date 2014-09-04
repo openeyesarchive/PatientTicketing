@@ -64,6 +64,7 @@
 
 .quicklook {
 	width: auto;
+	z-index: 2000;
 }
 
 ul.queueset-list {
@@ -85,7 +86,7 @@ ul.queueset-list .queueset-link:hover {
 	cursor: pointer;
 }
 
-li.queueset-item .queueset-admin {
+li .queueset-admin {
 	float: right;
 }
 
