@@ -19,13 +19,8 @@
 ?>
 
 <?php
-	$qs_svc = Yii::app()->service->getService($this::$QUEUESET_SERVICE);
-	$can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yii::app()->user->id);
+$can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yii::app()->user->id);
 ?>
-<h1 class="badge">Patient Tickets</h1>
-
-<div class="box content">
-
 	<!--
 	<div class="panel panel actions row">
 
@@ -47,6 +42,7 @@
 						),
 						'enableAjaxValidation'=>false,
 				))?>
+		<input type="hidden" name="queueset_id" value="<?=$queueset->getId()?>" />
 		<div class="large-12 column">
 			<div class="panel">
 				<div class="row">
@@ -126,8 +122,6 @@
 	<?php } ?>
 
 	<?php $this->renderPartial('_ticketlist', array('tickets' => $tickets, 'pages' => $pages, 'can_process' => $can_process)); ?>
-
-</div>
 
 <script type="text/html" id="ticketcontroller-queue-select-template">
 	<form>

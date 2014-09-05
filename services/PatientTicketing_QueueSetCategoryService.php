@@ -113,4 +113,14 @@ class PatientTicketing_QueueSetCategoryService extends \services\ModelService {
 		}
 		return $res;
 	}
+
+	public function getCategoryQueueSetsList(PatientTicketing_QueueSetCategory $qscr, $user_id)
+	{
+		$res = array();
+		foreach ($this->getCategoryQueueSetsForUser($qscr, $user_id) as $qsr) {
+			$res[$qsr->getID()] = $qsr->name;
+		}
+		return $res;
+
+	}
 }

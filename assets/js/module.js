@@ -357,5 +357,15 @@
 			ticketController.toggleHistory(ticketInfo);
 		});
 
+		$(this).on('click', '#queueset-select-toggle', function(e) {
+			e.preventDefault();
+			$('#queueset-select-toggle-wrapper').fadeTo(300, 0.0, function() {$(this).slideUp(); $('#queueset-form').slideDown().fadeTo(300, 1.0)});
+		});
+
+		$(this).on('click', '#queueset-select-cancel', function(e) {
+			e.preventDefault();
+			$('#queueset-form').fadeTo(300, 0.0, function() {$(this).slideUp(); $('#queueset-select-toggle-wrapper').slideDown().fadeTo(300, 1.0)});
+		})
+
 	});
 }());

@@ -19,6 +19,7 @@
 
 namespace OEModule\PatientTicketing\controllers;
 use OEModule\PatientTicketing\models;
+use OEModule\PatientTicketing\services;
 use Yii;
 
 class DefaultController extends \BaseModuleController
@@ -78,11 +79,12 @@ class DefaultController extends \BaseModuleController
 		);
 	}
 
-	protected function buildTicketFilterCriteria($filter_options)
+	protected function buildTicketFilterCriteria($filter_options, services\PatientTicketing_QueueSet $queueset)
 	{
 		$patient_filter = null;
 		// build criteria
 		$criteria = new \CDbCriteria();
+		$qs_svc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
 
 		if (@$_GET['patient_id']) {
 			// this is a simple way of handling this for the sake of demo-ing functionality
@@ -106,14 +108,11 @@ class DefaultController extends \BaseModuleController
 				}
 			}
 			else {
-				foreach (models\Queue::model()->active()->notClosing()->findAll() as $open_queue) {
-					$queue_ids[] = $open_queue->id;
-				}
-				if (@$filter_options['closed-tickets']) {
-					// get all closed tickets regardless of whether queue is active or not
-					foreach (models\Queue::model()->closing()->findAll() as $active_queues) {
-						$queue_ids[] = $active_queues->id;
-					}
+				foreach ($qs_svc->getQueueSetQueues(
+							$queueset,
+							Yii::app()->user->id,
+							@$filter_options['closed-tickets'] ? true : false) as $queue) {
+					$queue_ids[] = $queue->id;
 				}
 			}
 
@@ -176,43 +175,46 @@ class DefaultController extends \BaseModuleController
 				$queueset = $queuesets[0];
 			}
 
-			// build the filter
-			$filter_keys = array('queue-ids', 'priority-ids', 'subspecialty-id', 'firm-id', 'my-tickets', 'closed-tickets');
-			$filter_options = array();
+			if ($queueset) {
+				// build the filter
+				$filter_keys = array('queue-ids', 'priority-ids', 'subspecialty-id', 'firm-id', 'my-tickets', 'closed-tickets');
+				$filter_options = array();
 
-			if (empty($_POST)) {
-				if (($filter_options = Yii::app()->session['patientticket_filter'])
-						&& @$filter_options['category-id'] == $category->getID()) {
-					foreach ($filter_options as $k => $v) {
-						$_POST[$k] = $v;
+				if (empty($_POST)) {
+					if (($filter_options = Yii::app()->session['patientticket_filter'])
+							&& @$filter_options['category-id'] == $category->getID()) {
+						foreach ($filter_options as $k => $v) {
+							$_POST[$k] = $v;
+						}
 					}
 				}
-			}
-			else {
-				foreach ($filter_keys as $k) {
-					if (isset($_POST[$k])) {
-						$filter_options[$k] = $_POST[$k];
+				else {
+					foreach ($filter_keys as $k) {
+						if (isset($_POST[$k])) {
+							$filter_options[$k] = $_POST[$k];
+						}
 					}
+					$filter_options['category-id'] = $category->getID();
 				}
-				$filter_options['category-id'] = $category->getID();
+
+				Yii::app()->session['patientticket_filter'] = $filter_options;
+
+				list($criteria, $patient_filter) = $this->buildTicketFilterCriteria($filter_options, $queueset);
+
+				$count = models\Ticket::model()->count($criteria);
+				$pages = new \CPagination($count);
+
+				$pages->pageSize = $this->page_size;
+				$pages->applyLimit($criteria);
+
+				// get tickets that match criteria
+				$tickets = models\Ticket::model()->findAll($criteria);
 			}
-
-			Yii::app()->session['patientticket_filter'] = $filter_options;
-
-			list($criteria, $patient_filter) = $this->buildTicketFilterCriteria($filter_options);
-
-			$count = models\Ticket::model()->count($criteria);
-			$pages = new \CPagination($count);
-
-			$pages->pageSize = $this->page_size;
-			$pages->applyLimit($criteria);
-
-			// get tickets that match criteria
-			$tickets = models\Ticket::model()->findAll($criteria);
-		};
+		}
 
 		// render
-		$this->render('ticketlist', array(
+		$this->render('index', array(
+				'category' => $category,
 				'queueset' => $queueset,
 				'tickets' => $tickets,
 				'patient_filter' => $patient_filter,
