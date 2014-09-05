@@ -34,7 +34,7 @@
 				<table class="grid audit-logs">
 					<thead>
 					<tr>
-						<th>Queue</th>
+						<th>Patient List</th>
 						<th>Patient</th>
 						<th>Priority</th>
 						<th>Ticket Date</th>

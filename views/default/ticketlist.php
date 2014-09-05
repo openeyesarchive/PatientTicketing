@@ -51,7 +51,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 						<table class="grid">
 							<thead>
 							<tr>
-								<th>Queue:</th>
+								<th>Patient List:</th>
 								<th>Priority:</th>
 								<th>Subspecialty:</th>
 								<th>Firm:</th>
