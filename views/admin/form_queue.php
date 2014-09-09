@@ -44,6 +44,14 @@
 		</fieldset>
 		<fieldset class="field-row row">
 			<div class="large-3 column">
+				<label for="description">Action Label:</label>
+			</div>
+			<div class="large-8 column end left">
+				<?php echo CHtml::textField('action_label', $queue->action_label); ?>
+			</div>
+		</fieldset>
+		<fieldset class="field-row row">
+			<div class="large-3 column">
 				<label for="report_definition">Report Definition:</label>
 			</div>
 			<div class="large-8 column end left">

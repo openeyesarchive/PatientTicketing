@@ -76,7 +76,7 @@ class Queue extends \BaseActiveRecordVersioned
 		return array(
 			array('name', 'required'),
 			array('assignment_fields', 'validJSON'),
-			array('name, description, active, summary_link, assignment_fields, report_definition', 'safe'),
+			array('name, description, active, action_label, summary_link, assignment_fields, report_definition', 'safe'),
 			array('id, name', 'search'),
 		);
 	}

@@ -3,7 +3,7 @@
  * OpenEyes
  *
  * (C) Moorfields Eye Hospital NHS Foundation Trust, 2008-2011
- * (C) OpenEyes Foundation, 2011-2013
+ * (C) OpenEyes Foundation, 2011-2014
  * This file is part of OpenEyes.
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -13,37 +13,24 @@
  * @link http://www.openeyes.org.uk
  * @author OpenEyes <info@openeyes.org.uk>
  * @copyright Copyright (c) 2008-2011, Moorfields Eye Hospital NHS Foundation Trust
- * @copyright Copyright (c) 2011-2013, OpenEyes Foundation
+ * @copyright Copyright (c) 2011-2014, OpenEyes Foundation
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
 
-return array(
-	'import' => array(
-	),
-	'params' => array(
-			'menu_bar_items' => array(
-					'virtual_clinic' => array(
-							'api' => 'PatientTicketing',
-							'position' => 5
-					),
-			),
-			'admin_menu' => array(
-				'Queue Set Categories' => '/PatientTicketing/admin/queueSetCategories',
-				'Queue Sets' => '/PatientTicketing/admin/',
-			),
+namespace OEModule\PatientTicketing\services;
 
-			'patient_summary_id_widgets' => array(
-				array('class' => 'OEModule\PatientTicketing\widgets\PatientSummaryId'),
-			)
-	),
-	'components' => array(
-		'service' => array(
-			'internal_services' => array(
-				'OEModule\PatientTicketing\services\PatientTicketing_QueueService',
-				'OEModule\PatientTicketing\services\PatientTicketing_QueueSetService',
-				'OEModule\PatientTicketing\services\PatientTicketing_QueueSetCategoryService',
-				'OEModule\PatientTicketing\services\PatientTicketing_TicketService',
-			)
-		)
-	)
-);
+
+class PatientTicketing_Ticket extends \services\Resource {
+
+	public $patient_id;
+	public $priority_id;
+	public $report;
+	public $assignee_user_id;
+	public $assignee_date;
+	public $created_user_id;
+	public $created_date;
+	public $last_modified_user_id;
+	public $last_modified_date;
+	public $event_id;
+
+}

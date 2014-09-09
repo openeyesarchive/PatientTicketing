@@ -29,9 +29,7 @@ class DefaultController extends \BaseModuleController
 	protected $page_size = 10;
 	public static $QUEUESETCATEGORY_SERVICE = 'PatientTicketing_QueueSetCategory';
 	public static $QUEUESET_SERVICE = 'PatientTicketing_QueueSet';
-
-	protected $ticket;
-	protected $queueset;
+	public static $TICKET_SERVICE = 'PatientTicketing_Ticket';
 
 	/**
 	 * Ensures firm is set on the controller.

@@ -18,14 +18,38 @@
  */
 
 namespace OEModule\PatientTicketing\services;
+use OEModule\PatientTicketing\models;
 
+class PatientTicketing_TicketService extends \services\ModelService {
 
-class PatientTicketing_Queue extends \services\Resource {
+	static protected $primary_model = 'OEModule\PatientTicketing\models\Ticket';
 
-	public $name;
-	public $description;
-	public $action_label;
-	public $active;
-	public $is_initial;
-	public $assignment_fields = array();
+	/**
+	 * Pass through wrapper to generate Queue Resource
+	 *
+	 * @param OEModule\PatientTicketing\models\Ticket $ticket
+	 * @return Resource
+	 */
+	public function modelToResource($ticket)
+	{
+		$res = parent::modelToResource($ticket);
+		foreach (array('patient_id','priority_id','report','assignee_user_id','assignee_date',
+			 'created_user_id','created_date','last_modified_user_id','last_modified_date','event_id') as $pass_thru) {
+			$res->$pass_thru = $ticket->$pass_thru;
+		}
+
+		return $res;
+	}
+
+	public function getTicketActionLabel(models\Ticket $ticket)
+	{
+		if (!$ticket->is_complete()) {
+			if ($label = $ticket->current_queue->action_label) {
+				return $label;
+			}
+			else {
+				return "Move";
+			}
+		}
+	}
 }

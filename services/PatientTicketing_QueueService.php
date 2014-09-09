@@ -47,7 +47,7 @@ class PatientTicketing_QueueService extends \services\ModelService {
 	public function modelToResource($queue)
 	{
 		$res = parent::modelToResource($queue);
-		foreach (array('name', 'description', 'active', 'is_initial') as $pass_thru) {
+		foreach (array('name', 'description', 'action_label', 'active', 'is_initial') as $pass_thru) {
 			$res->$pass_thru = $queue->$pass_thru;
 		}
 		if ($queue->assignment_fields) {

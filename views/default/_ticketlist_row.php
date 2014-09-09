@@ -18,6 +18,8 @@
  */
 ?>
 
+<?php $t_svc = Yii::app()->service->getService($this::$TICKET_SERVICE); ?>
+
 <tr data-ticket-id="<?= $ticket->id?>" data-ticket-info="<?= CHtml::encode($ticket->getInfoData()) ?>">
 	<td><?= $ticket->current_queue->name ?></td>
 	<td><a href="<?= $ticket->getSourceLink() ?>"><?= $ticket->patient->hos_num . " - "
@@ -43,7 +45,7 @@
 				else {
 					?><button id="take" class="tiny ticket-take">Take</button><?php
 				}?>
-				<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->current_queue->getOutcomeData()) ?>">Move</button>
+				<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->current_queue->getOutcomeData()) ?>"><?= $t_svc->getTicketActionLabel($ticket) ?></button>
 		<?php }
 		} ?>
 		<?php if ($ticket->hasHistory()) {?>
