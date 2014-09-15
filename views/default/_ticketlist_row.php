@@ -26,7 +26,7 @@
 			. (($ticket->patient->nhs_num) ? $ticket->patient->nhs_num . " - " : "")
 			. $ticket->patient->getHSCICName()
 			. " (" . ($ticket->patient->isDeceased() ? "Deceased" : $ticket->patient->getAge()) . ")"; ?></a></td>
-	<td style="color: <?= $ticket->priority->colour ?>"><?= $ticket->priority->name ?></td>
+	<td <?php if ($ticket->priority) { ?>style="color: <?= $ticket->priority->colour ?>"<?php } ?>><?= $ticket->priority ? $ticket->priority->name : "-" ?></td>
 	<td><?= Helper::convertDate2NHS($ticket->created_date)?></td>
 	<td><?= $ticket->getTicketFirm() ?></td>
 	<td><?= $ticket->user->getFullName() ?></td>

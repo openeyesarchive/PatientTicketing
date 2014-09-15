@@ -76,7 +76,7 @@ class Ticket extends \BaseActiveRecordVersioned
 	public function rules()
 	{
 		return array(
-				array('patient_id, priority_id', 'required'),
+				array('patient_id', 'required'),
 		);
 	}
 

@@ -47,7 +47,7 @@ class QueueSet extends \BaseActiveRecordVersioned {
 	public function rules()
 	{
 		return array(
-			array('name, description, category_id, summary_link, permissioned_users', 'safe'),
+			array('name, description, category_id, summary_link, allow_null_priority, permissioned_users', 'safe'),
 			array('name, category_id', 'required'),
 			array('initial_queue_id', 'required', 'except' => 'formCreate')
 		);

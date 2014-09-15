@@ -215,11 +215,11 @@ class Queue extends \BaseActiveRecordVersioned
 			$report = $ass->replaceAssignmentCodes($this->report_definition);
 			$ticket->report = Substitution::replace($report, $ticket->patient);
 			if (!$ticket->save()) {
-				throw new Exception("Unable to update Ticket report field");
+				throw new \Exception("Unable to update Ticket report field" . print_r($ticket->getErrors(), true));
 			}
 		}
 		if (!$ass->save()) {
-			throw new Exception("Unable to save queue assignment");
+			throw new \Exception("Unable to save queue assignment");
 		}
 		return true;
 	}
@@ -279,7 +279,7 @@ class Queue extends \BaseActiveRecordVersioned
 			$flds[] = array(
 				'id' => "_priority",
 				'form_name' => self::$FIELD_PREFIX . "_priority",
-				'required' => true,
+				'required' => $this->getQueueSet()->allow_null_priority ? false : true,
 				'choices' => \CHtml::listData(Priority::model()->findAll(), 'id', 'name'),
 				'label' => 'Priority',
 			);
@@ -394,7 +394,7 @@ class Queue extends \BaseActiveRecordVersioned
 	{
 		$root = $this->getRootQueue();
 		if (is_array($root)) {
-			throw new Exception("shitballs!" . print_r($root, true));
+			throw new \Exception("shitballs!" . print_r($root, true));
 			$rid = $root[0]->id;
 		}
 		else {

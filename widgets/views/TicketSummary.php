@@ -1,5 +1,6 @@
 <div class="panel">
 	<div class="row data-row">
+		<?php if ($ticket->priority) { ?>
 		<div class="large-1 column">
 			<div class="data-label">Priority:</div>
 		</div>
@@ -8,6 +9,7 @@
 				<?= $ticket->priority->name ?>
 			</div>
 		</div>
+		<?php } ?>
 		<div class="large-1 column left">
 			<div class="data-label">Current:</div>
 		</div>

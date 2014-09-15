@@ -36,6 +36,7 @@ $this->renderPartial('//elements/form_errors', array('errors' => $errors, 'botto
 		<?php echo $form->dropdownList($queueset, 'category_id', \CHtml::listData(OEModule\PatientTicketing\models\QueueSetCategory::model()->activeOrPk($queueset->category_id)->findAll(), 'id', 'name')); ?>
 		<?php echo $form->textField($queueset, 'name'); ?>
 		<?php echo $form->textArea($queueset, 'description'); ?>
+		<?php echo $form->radioBoolean($queueset, 'allow_null_priority'); ?>
 		<?php echo $form->radioBoolean($queueset, 'summary_link'); ?>
 	</div>
 	<?php if ($queue) {?>
