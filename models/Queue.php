@@ -389,12 +389,13 @@ class Queue extends \BaseActiveRecordVersioned
 	 * Get the QueueSet this Queue belongs to.
 	 *
 	 * @return QueueSet
+	 * @throws \Exception
 	 */
 	public function getQueueSet()
 	{
 		$root = $this->getRootQueue();
 		if (is_array($root)) {
-			throw new \Exception("shitballs!" . print_r($root, true));
+			throw new \Exception("Unexpected configuration of multiple root queues" . print_r($root, true));
 			$rid = $root[0]->id;
 		}
 		else {
