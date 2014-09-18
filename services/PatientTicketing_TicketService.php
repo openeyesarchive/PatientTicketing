@@ -41,6 +41,10 @@ class PatientTicketing_TicketService extends \services\ModelService {
 		return $res;
 	}
 
+	/**
+	 * @param models\Ticket $ticket
+	 * @return array|mixed|null|string
+	 */
 	public function getTicketActionLabel(models\Ticket $ticket)
 	{
 		if (!$ticket->is_complete()) {
@@ -52,4 +56,5 @@ class PatientTicketing_TicketService extends \services\ModelService {
 			}
 		}
 	}
+
 }

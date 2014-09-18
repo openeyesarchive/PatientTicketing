@@ -67,7 +67,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 									$this->widget('application.widgets.MultiSelectList', array(
 											'field' => 'queue-ids',
 											'default_options' => @$_POST['queue-ids'],
-											'options' => CHtml::listData($qs_svc->getQueueSetQueues($queueset, Yii::app()->user->id, false),'id','name'),
+											'options' => CHtml::listData($qs_svc->getQueueSetQueues($queueset, false),'id','name'),
 											'htmlOptions' => array('empty' => '- Please Select -', 'nowrapper' => true),
 											'noSelectionsMessage' => 'All Queues')
 											);

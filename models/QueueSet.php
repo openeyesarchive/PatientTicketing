@@ -19,7 +19,6 @@
 
 namespace OEModule\PatientTicketing\models;
 
-
 class QueueSet extends \BaseActiveRecordVersioned {
 
 	public $auto_update_relations = true;
@@ -101,4 +100,5 @@ class QueueSet extends \BaseActiveRecordVersioned {
 				'criteria' => $criteria,
 		));
 	}
+
 }

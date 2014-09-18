@@ -87,24 +87,19 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 
 	/**
 	 * @param PatientTicketing_QueueSet $qsr
-	 * @param $user_id
 	 * @param bool $include_closing
-	 * @return PatientTicketing_Queue[]
-	 * @todo: return resources instead of models
+	 * @return models\Queue[]
 	 */
-	public function getQueueSetQueues(PatientTicketing_QueueSet $qsr, $user_id, $include_closing = true)
+	public function getQueueSetQueues(PatientTicketing_QueueSet $qsr, $include_closing = true)
 	{
-		if ($this->isQueueSetPermissionedForUser($qsr, $user_id)) {
-			$q_svc = Yii::app()->service->getService(self::$QUEUE_SERVICE);
-			$initial_qr = $qsr->initial_queue;
-			$res = array($q_svc->readModel($initial_qr->getId()));
-			foreach ($q_svc->getDependentQueues($initial_qr, $include_closing) as $d_qr) {
-				$res[] = $d_qr;
-			};
+		$q_svc = Yii::app()->service->getService(self::$QUEUE_SERVICE);
+		$initial_qr = $qsr->initial_queue;
+		$res = array($q_svc->readModel($initial_qr->getId()));
+		foreach ($q_svc->getDependentQueues($initial_qr, $include_closing) as $d_qr) {
+			$res[] = $d_qr;
+		};
 
-			return $res;
-		}
-		return array();
+		return $res;
 	}
 
 	/**
@@ -206,4 +201,41 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 		$root = $q_svc->getRootQueue($queue_id);
 		return $this->modelToResource($this->model->findByAttributes(array('initial_queue_id' => $root->id)));
 	}
+
+	/**
+	 * @param \Firm $firm
+	 *
+	 * @return array
+	 */
+	public function getQueueSetsForFirm(\Firm $firm = null)
+	{
+		$res = array();
+		foreach (models\QueueSet::model()->active()->findAll() as $qs) {
+			$res[] = $this->modelToResource($qs);
+		}
+		return $res;
+	}
+
+	/**
+	 * Returns true if current rules allow the patient to be added to the given queueset
+	 *
+	 * @param \Patient $patient
+	 * @param $queueset_id
+	 * @return bool
+	 */
+	public function canAddPatientToQueueSet(\Patient $patient, $queueset_id)
+	{
+		$tickets = models\Ticket::model()->with('current_queue')->findAllByAttributes(array('patient_id' => $patient->id));
+		$q_rs = $this->getQueueSetQueues($this->read($queueset_id), false);
+		$q_ids = array_map(function($a) { return $a->id; }, $q_rs);
+
+		foreach ($tickets as $t) {
+			if (in_array($t->current_queue->id, $q_ids)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 }

@@ -143,19 +143,36 @@ class PatientTicketing_API extends \BaseAPI
 	 * @param \CWebUser $user
 	 * @param \Firm $firm
 	 * @param $data
+	 * @throws \Exception
 	 * @return \OEModule\PatientTicketing\models\Ticket
 	 */
 	public function createTicketForPatient(\Patient $patient, Queue $initial_queue, \CWebUser $user, \Firm $firm, $data)
 	{
-		$ticket = new Ticket();
-		$ticket->patient_id = $patient->id;
-		$ticket->created_user_id = $user->id;
-		$ticket->last_modified_user_id = $user->id;
-		$ticket->priority_id = $data['patientticketing__priority'];
-		$ticket->save();
+		$transaction = Yii::app()->db->getCurrentTransaction() === null
+				? Yii::app()->db->beginTransaction()
+				: false;
 
-		$initial_queue->addTicket($ticket, $user, $firm, $data);
-		return $ticket;
+		try {
+			$ticket = new Ticket();
+			$ticket->patient_id = $patient->id;
+			$ticket->created_user_id = $user->id;
+			$ticket->last_modified_user_id = $user->id;
+			$ticket->priority_id = $data['patientticketing__priority'];
+			$ticket->save();
+
+			$initial_queue->addTicket($ticket, $user, $firm, $data);
+			if ($transaction) {
+				$transaction->commit();
+			}
+			return $ticket;
+
+		}
+		catch (\Exception $e) {
+			if ($transaction) {
+				$transaction->rollback();
+			}
+			throw $e;
+		}
 	}
 
 	/**
@@ -184,8 +201,34 @@ class PatientTicketing_API extends \BaseAPI
 		return Queue::model()->active()->findAll($criteria);
 	}
 
-	public function getQueueSets(\CWebUser $user)
+	/**
+	 * Returns the Queue Sets a patient ticket can be created in for the given firm.
+	 * (Note: firm filtering is not currently implemented)
+	 *
+	 * @param \Firm $firm
+	 * @return mixed
+	 */
+	public function getQueueSetList(\Firm $firm, \Patient $patient = null)
 	{
+		$qs_svc = Yii::app()->service->getService("PatientTicketing_QueueSet");
+		$res = array();
+		foreach ($qs_svc->getQueueSetsForFirm($firm) as $qs_r) {
+			if ($patient && $qs_svc->canAddPatientToQueueSet($patient, $qs_r->getId())) {
+				$res[$qs_r->initial_queue->getId()] = $qs_r->name;
+			}
+		}
+		return $res;
+	}
 
+	/**
+	 * @param \Patient $patient
+	 * @param Queue $queue
+	 * @return mixed
+	 */
+	public function canAddPatientToQueue(\Patient $patient, Queue $queue)
+	{
+		$qs_svc = Yii::app()->service->getService("PatientTicketing_QueueSet");
+		$qs_r = $qs_svc->getQueueSetForQueue($queue->id);
+		return $qs_svc->canAddPatientToQueueSet($patient, $qs_r->getId());
 	}
 }

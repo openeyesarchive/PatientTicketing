@@ -104,4 +104,5 @@ class QueueTest extends \CDbTestCase {
 		$qs = $test->getQueueSet();
 		$this->assertEquals($res, $qs->id, "Incorrect QueueSet returned");
 	}
+
 }

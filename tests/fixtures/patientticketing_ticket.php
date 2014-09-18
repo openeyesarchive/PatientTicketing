@@ -18,12 +18,16 @@
  */
 
 return array(
-	'ass1' => array(
-		'ticket_id' => 1,
-		'queue_id' => 1,
-	),
-	'ass2' => array(
-			'ticket_id' => 2,
-			'queue_id' => 13,
-	),
+		'ticket1' => array(
+				'id' => 1,
+				'patient_id' => 1,
+				'assignee_user_id' => 1,
+				'assignee_date' => '2014-09-04',
+		),
+		'ticket2' => array(
+				'id' => 2,
+				'patient_id' => 2,
+				'assignee_user_id' => 1,
+				'assignee_date' => '2014-09-04',
+		),
 );

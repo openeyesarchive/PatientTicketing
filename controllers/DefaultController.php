@@ -106,11 +106,12 @@ class DefaultController extends \BaseModuleController
 				}
 			}
 			else {
-				foreach ($qs_svc->getQueueSetQueues(
-							$queueset,
-							Yii::app()->user->id,
-							@$filter_options['closed-tickets'] ? true : false) as $queue) {
-					$queue_ids[] = $queue->id;
+				if ($qs_svc->isQueueSetPermissionedForUser($queueset, Yii::app()->user->id)) {
+					foreach ($qs_svc->getQueueSetQueues(
+								$queueset,
+								@$filter_options['closed-tickets'] ? true : false) as $queue) {
+						$queue_ids[] = $queue->id;
+					}
 				}
 			}
 
