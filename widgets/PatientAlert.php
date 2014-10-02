@@ -17,19 +17,18 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
 
-return array(
-	'queueset1' => array(
-		'id' => 1,
-		'name' => 'QueueSet 1',
-		'active' => true,
-		'initial_queue_id' => 1,
-		'category_id' => 1,
-	),
-	'queueset2' => array(
-		'id' => 2,
-		'name' => 'QueueSet 2',
-		'active' => 1,
-		'initial_queue_id' => 12,
-		'category_id' => 2
-	)
-);
+namespace OEModule\PatientTicketing\widgets;
+use OEModule\PatientTicketing\models;
+use \Yii;
+
+class PatientAlert extends \PatientAlertWidget {
+
+	public function run()
+	{
+		$t_svc = Yii::app()->service->getService('PatientTicketing_Ticket');
+
+		$tickets = $t_svc->getTicketsForPatient($this->patient);
+
+		$this->render('PatientAlert', array('tickets' => $tickets, 't_svc' => $t_svc));
+	}
+}

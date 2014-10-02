@@ -66,6 +66,8 @@ class PatientTicketing_QueueSetCategoryService extends \services\ModelService {
 	}
 
 	/**
+	 * Get the categories that the user has permission to process
+	 *
 	 * @param $user_id
 	 * @return PatientTicketing_QueueSetCategory[]
 	 */

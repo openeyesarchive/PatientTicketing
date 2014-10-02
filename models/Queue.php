@@ -38,6 +38,7 @@ use OEModule\PatientTicketing\components\Substitution;
  * @property datetime $created_date
  * @property integer $last_modified_user_id
  * @property datetime $last_modified_date
+ * @property string $action_label
  *
  * The followings are the available model relations:
  *
