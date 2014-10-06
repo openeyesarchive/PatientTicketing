@@ -105,4 +105,42 @@ class QueueTest extends \CDbTestCase {
 		$this->assertEquals($res, $qs->id, "Incorrect QueueSet returned");
 	}
 
+	public function testGetRelatedEventTypes()
+	{
+		$queues = array();
+
+		$queue1 = new models\Queue;
+		$queue1->id = 1;
+		$queue2 = new models\Queue;
+		$queue2->id = 2;
+		$queue3 = new models\Queue;
+		$queue3->id = 3;
+
+		$queues = array($queue1,$queue2,$queue3);
+
+		$event_types = array();
+
+		foreach ($queues as $i => $queue) {
+			$event_types[$queue->id] = array();
+			$queue_event_types = array();
+
+			foreach (EventType::model()->findAll(array('order' => 'id asc')) as $event_type) {
+				if (rand(0,1) == 0) {
+					$event_types[$queue->id][] = array(
+						'name' => $event_type->name,
+						'class_name' => $event_type->class_name,
+					);
+					$queue_event_types[] = $event_type;
+				}
+			}
+
+			$queues[$i]->auto_update_relations = false;
+			$queues[$i]->event_types = $queue_event_types;
+		}
+
+		$queue = new models\Queue;
+		$queue->outcome_queues = $queues;
+
+		$this->assertEquals($event_types, $queue->getRelatedEventTypes(false));
+	}
 }

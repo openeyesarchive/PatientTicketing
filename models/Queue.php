@@ -246,6 +246,28 @@ class Queue extends \BaseActiveRecordVersioned
 		return $res;
 	}
 
+	public function getRelatedEventTypes($json = true)
+	{
+		$event_types = array();
+
+		foreach ($this->outcome_queues as $queue) {
+			$event_types[$queue->id] = array();
+
+			foreach ($queue->event_types as $event_type) {
+				$event_types[$queue->id][] = array(
+					'name' => $event_type->name,
+					'class_name' => $event_type->class_name,
+				);
+			}
+		}
+
+		if ($json) {
+			return \CJSON::encode($event_types);
+		}
+
+		return $event_types;
+	}
+
 	/**
 	 * Returns the fields that have been defined for this Queue when a ticket is assigned to it.
 	 *

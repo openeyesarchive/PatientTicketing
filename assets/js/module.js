@@ -109,7 +109,7 @@
 	 * @param ticketInfo
 	 * @param outcomes
 	 */
-	TicketController.prototype.moveTicket = function(ticketInfo, outcomes)
+	TicketController.prototype.moveTicket = function(ticketInfo, outcomes, event_types)
 	{
 		var template = $(this.options.queueTemplateSelector).html();
 
@@ -121,11 +121,26 @@
 		var templateVals = $.extend(true, {}, ticketInfo, {CSRF_TOKEN: YII_CSRF_TOKEN});
 		templateVals.outcome_options = '';
 		var firstSelect = '';
+		var queue_id = false;
+
 		if (outcomes.length == 1) {
 			firstSelect = ' selected';
+			queue_id = outcomes[0].id;
 		}
 		for (var i = 0; i < outcomes.length; i++) {
 			templateVals.outcome_options += '<option value="'+outcomes[i].id+'"'+firstSelect+'>'+outcomes[i].name+'</option>';
+		}
+
+		templateVals.event_types = JSON.stringify(event_types);
+		templateVals.ticketInfo = JSON.stringify(ticketInfo);
+		templateVals.event_type_links = '';
+
+		if (queue_id) {
+			if (typeof(event_types[queue_id]) != 'undefined') {
+				for (var i = 0; i < event_types[queue_id].length; i++) {
+					templateVals.event_type_links += '<a href="' + baseUrl + '/' + event_types[queue_id][i]['class_name'] + '/default/create?patient_id=' + ticketInfo.patient_id + '">' + event_types[queue_id][i]['name'] + '</a><br/>';
+				}
+			}
 		}
 
 		this.dialog = new OpenEyes.UI.Dialog({
@@ -214,7 +229,7 @@
 		if (!this.queueAssForms[id]) {
 			disableButtons();
 			var self = this;
-			var form  = $.ajax({
+			var form	= $.ajax({
 				url: this.options.queueAssignmentFormURI,
 				data: {id: id},
 				success: function(response) {
@@ -345,11 +360,26 @@
 		$(this).on('click', '.ticket-move', function(e) {
 			var ticketInfo = $(this).closest('tr').data('ticket-info');
 			var outcomes = $(this).data('outcomes');
-			ticketController.moveTicket(ticketInfo, outcomes);
+			var event_types = $(this).data('event-types');
+			ticketController.moveTicket(ticketInfo, outcomes, event_types);
 		});
 
 		$(this).on('change', '#to_queue_id', function(e) {
 			ticketController.setQueueAssForm($(e.target).val());
+			var event_types = $(this).closest('form').data('event-types');
+			var ticketInfo = $(this).closest('form').data('ticketinfo');
+
+			var links = '';
+
+			if ($(this).val() != '') {
+				if (typeof(event_types[$(this).val()]) != 'undefined') {
+					for (var i = 0; i < event_types[$(this).val()].length; i++) {
+						links += '<a href="' + baseUrl + '/' + event_types[$(this).val()][i]['class_name'] + '/default/create?patient_id=' + ticketInfo.patient_id + '">' + event_types[$(this).val()][i]['name'] + '</a><br/>';
+					}
+				}
+			}
+
+			$(this).closest('form').find('.event-types').html(links);
 		});
 
 		$(this).on('click', '.ticket-history', function(e) {
@@ -366,6 +396,5 @@
 			e.preventDefault();
 			$('#queueset-form').fadeTo(300, 0.0, function() {$(this).slideUp(); $('#queueset-select-toggle-wrapper').slideDown().fadeTo(300, 1.0)});
 		})
-
 	});
 }());
