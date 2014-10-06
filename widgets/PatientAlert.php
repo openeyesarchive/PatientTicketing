@@ -19,6 +19,7 @@
 
 namespace OEModule\PatientTicketing\widgets;
 use OEModule\PatientTicketing\models;
+use OEModule\PatientTicketing\components;
 use \Yii;
 
 class PatientAlert extends \PatientAlertWidget {
@@ -29,6 +30,6 @@ class PatientAlert extends \PatientAlertWidget {
 
 		$tickets = $t_svc->getTicketsForPatient($this->patient);
 
-		$this->render('PatientAlert', array('tickets' => $tickets, 't_svc' => $t_svc));
+		$this->render('PatientAlert', array('tickets' => $tickets, 't_svc' => $t_svc, 'summary_widget' => components\PatientTicketing_API::$TICKET_SUMMARY_WIDGET));
 	}
 }

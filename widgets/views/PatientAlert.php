@@ -20,14 +20,22 @@
 <?php if (count($tickets)) { ?>
 	<div class="row">
 		<div class="large-12 column">
-			<div class="alert-box patient">
-				<?php foreach ($tickets as $ticket) {
-					$cat = $t_svc->getCategoryForTicket($ticket);
-					?>
-					<!-- TODO: define the service methods -->
-					Patient is in <?= $cat->name ?> - <a href="<?= Yii::app()->createURL("//PatientTicketing/default/", array('cat_id' => $cat->id, 'patient_id' => $this->patient->id)) ?>"><?= $ticket->current_queue->name ?> </a>
-				<?php }?>
+			<?php foreach ($tickets as $ticket) {
+				$cat = $t_svc->getCategoryForTicket($ticket);
+			?>
+			<div class="alert-box issue js-toggle-container">
+						<span class="box-title"><?= $cat->name ?>: Patient is in <?= $ticket->current_queue->queueset->name ?>, <?= $ticket->current_queue->name ?></span>
+						<a href="#" class="toggle-trigger toggle-show js-toggle">
+							<span class="icon-showhide">
+								Show/hide this section
+							</span>
+						</a>
+					<div class="js-toggle-body" style="display: none;">
+						<?php $this->widget($summary_widget, array('ticket' => $ticket)); ?>
+						<!-- Patient is in  - <a href="<?= Yii::app()->createURL("//PatientTicketing/default/", array('cat_id' => $cat->id, 'patient_id' => $this->patient->id)) ?>"><?= $ticket->current_queue->name ?> </a> -->
+					</div>
 			</div>
+			<?php }?>
 		</div>
 	</div>
 <?php } ?>

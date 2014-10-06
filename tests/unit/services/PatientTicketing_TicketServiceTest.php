@@ -29,18 +29,7 @@ class PatientTicketing_TicketServiceTest extends \CDbTestCase
 			'ticketassignments' => 'OEModule\PatientTicketing\models\TicketQueueAssignment'
 	);
 
-	public function setUp()
-	{
-
-		$this->manager = new \services\ServiceManager;
-		$this->manager->internal_services = array(
-				'OEModule\PatientTicketing\services\PatientTicketing_TicketService',
-		);
-		$this->manager->init();
-		parent::setUp();
-	}
-
-	public function testgetTicketActionLabel() {
+		public function testgetTicketActionLabel() {
 		$no_label = $this->getMockBuilder('OEModule\PatientTicketing\models\Ticket')
 				->disableOriginalConstructor()
 				->setMethods(array('is_complete'))
@@ -50,7 +39,8 @@ class PatientTicketing_TicketServiceTest extends \CDbTestCase
 			->method('is_complete')
 			->will($this->returnValue(true));
 
-		$svc = $this->manager->getService('PatientTicketing_Ticket');
+		//$svc = $this->manager->getService('PatientTicketing_Ticket');
+		$svc = Yii::app()->service->getService('PatientTicketing_Ticket');
 
 		$this->assertEquals(null, $svc->getTicketActionLabel($no_label));
 
@@ -74,7 +64,6 @@ class PatientTicketing_TicketServiceTest extends \CDbTestCase
 		$this->assertEquals('Test Label', $svc->getTicketActionLabel($label_ticket));
 	}
 
-
 	public function getTicketsForPatientProvider()
 	{
 		return array(
@@ -90,7 +79,8 @@ class PatientTicketing_TicketServiceTest extends \CDbTestCase
 	 */
 	public function testgetTicketsForPatient($patient_id, $active_ticket_ids, $all_ticket_ids)
 	{
-		$svc = $this->manager->getService('PatientTicketing_Ticket');
+		//$svc = $this->manager->getService('PatientTicketing_Ticket');
+		$svc = Yii::app()->service->getService('PatientTicketing_Ticket');
 
 		$patient = $this->patients($patient_id);
 		$def_active_tickets = $svc->getTicketsForPatient($patient);
@@ -128,7 +118,7 @@ class PatientTicketing_TicketServiceTest extends \CDbTestCase
 	 */
 	public function testgetCategoryForTicket($ticket_name, $queuesetcategory_name)
 	{
-		$svc = $this->manager->getService('PatientTicketing_Ticket');
+		$svc = Yii::app()->service->getService('PatientTicketing_Ticket');
 		$t = $this->tickets($ticket_name);
 		$qsc = $this->queuesetcategorys($queuesetcategory_name);
 
