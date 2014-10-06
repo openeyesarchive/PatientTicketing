@@ -51,6 +51,8 @@ class Queue extends \BaseActiveRecordVersioned
 	// used to prevent form field name conflicts
 	protected static $FIELD_PREFIX = "patientticketing_";
 
+	protected $auto_update_relations = true;
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return OphTrOperationnote_GlaucomaTube_PlatePosition the static model class
@@ -76,7 +78,7 @@ class Queue extends \BaseActiveRecordVersioned
 		return array(
 			array('name', 'required'),
 			array('assignment_fields', 'validJSON'),
-			array('name, description, active, action_label, summary_link, assignment_fields, report_definition', 'safe'),
+			array('name, description, active, action_label, summary_link, assignment_fields, report_definition, event_types', 'safe'),
 			array('id, name', 'search'),
 		);
 	}
@@ -91,7 +93,9 @@ class Queue extends \BaseActiveRecordVersioned
 			'usermodified' => array(self::BELONGS_TO, 'User', 'last_modified_user_id'),
 			'outcomes' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\QueueOutcome', 'queue_id'),
 			'all_outcome_queues' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\Queue', 'outcome_queue_id', 'through' => 'outcomes'),
-			'outcome_queues' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\Queue', 'outcome_queue_id', 'through' => 'outcomes', 'on' => 'outcome_queues.active = 1')
+			'outcome_queues' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\Queue', 'outcome_queue_id', 'through' => 'outcomes', 'on' => 'outcome_queues.active = 1'),
+			'event_type_assignments' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\QueueEventType', 'queue_id', 'order' => 'display_order asc'),
+			'event_types' => array(self::HAS_MANY, 'EventType', 'event_type_id', 'through' => 'event_type_assignments'),
 		);
 	}
 

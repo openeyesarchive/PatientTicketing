@@ -101,7 +101,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 								</td>
 								<td>
 									<button id="search_button" class="secondary small" type="submit">
-										<?php if ($patient_filter) {?>Apply<? } else {?>Search<?php } ?>
+										<?php if ($patient_filter) {?>Apply<? } else {?>Search<?php }?>
 									</button>
 								</td>
 							</tr>
@@ -119,7 +119,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 		<div class="large-12 column">
 			<div class="alert-box warning">Filtering for <?= $patient_filter->getFullName() ?></div>
 		</div>
-	<?php } ?>
+	<?php }?>
 
 	<?php $this->renderPartial('_ticketlist', array('tickets' => $tickets, 'pages' => $pages, 'can_process' => $can_process)); ?>
 

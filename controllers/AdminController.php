@@ -149,12 +149,13 @@ class AdminController extends \ModuleAdminController {
 			$queueset->attributes = $_POST[\CHtml::modelName($queueset)];
 			if (!$queueset->validate()) {
 				$resp = array(
-						'success' => false,
-						'form' => $this->renderPartial('form_queue', array(
-												'queueset' => $queueset,
-												'queue' => null,
-												'errors' => $queueset->getErrors()
-										), true)
+					'success' => false,
+					'form' => $this->renderPartial('form_queue', array(
+							'queueset' => $queueset,
+							'queue' => null,
+							'errors' => $queueset->getErrors()
+						),
+						true)
 				);
 				echo \CJSON::encode($resp);
 			}
@@ -245,10 +246,10 @@ class AdminController extends \ModuleAdminController {
 		}
 		else {
 			$this->renderPartial('form_queue', array(
-						'parent' => $parent,
-						'queue' => $queue,
-						'errors' => null
-					));
+					'parent' => $parent,
+					'queue' => $queue,
+					'errors' => null
+				));
 		}
 	}
 
@@ -269,10 +270,10 @@ class AdminController extends \ModuleAdminController {
 		}
 		else {
 			$this->renderPartial('form_queue', array(
-						'parent' => null,
-						'queue' => $queue,
-						'errors' => null
-					));
+					'parent' => null,
+					'queue' => $queue,
+					'errors' => null
+				));
 		}
 	}
 
@@ -293,12 +294,12 @@ class AdminController extends \ModuleAdminController {
 
 		if (!$queue->validate()) {
 			$resp = array(
-					'success' => false,
-					'form' => $this->renderPartial('form_queue', array(
-											'parent' => $parent,
-											'queue' => $queue,
-											'errors' => $queue->getErrors()
-									), true)
+				'success' => false,
+				'form' => $this->renderPartial('form_queue', array(
+						'parent' => $parent,
+						'queue' => $queue,
+						'errors' => $queue->getErrors()
+					), true)
 			);
 			echo \CJSON::encode($resp);
 		}
@@ -315,8 +316,8 @@ class AdminController extends \ModuleAdminController {
 
 				$transaction->commit();
 				$resp = array(
-						'success' => true,
-						'queueId' => $queue->id
+					'success' => true,
+					'queueId' => $queue->id
 				);
 				echo \CJSON::encode($resp);
 			}
@@ -346,9 +347,9 @@ class AdminController extends \ModuleAdminController {
 		$queueset = models\QueueSet::model()->findByAttributes(array('initial_queue_id' => $root->id));
 
 		$resp = array(
-				'rootid' => $root->id,
-				'queuesetid' => $queueset->id,
-				'nav' => $this->renderPartial("queue_nav_item", array('queueset' => $queueset, 'queue' => $root), true)
+			'rootid' => $root->id,
+			'queuesetid' => $queueset->id,
+			'nav' => $this->renderPartial("queue_nav_item", array('queueset' => $queueset, 'queue' => $root), true)
 		);
 		echo \CJSON::encode($resp);
 	}
