@@ -22,8 +22,12 @@ class PatientTicketing_APITest extends CDbTestCase
 	private $api;
 
 	public $fixtures = array(
-			'queuesets' => 'OEModule\PatientTicketing\models\QueueSet',
-			'queue' => 'OEModule\PatientTicketing\models\Queue'
+		'patients' => 'Patient',
+		'queues' => 'OEModule\PatientTicketing\models\Queue',
+		'queue_outcomes' => 'OEModule\PatientTicketing\models\QueueOutcome',
+		'queuesets' => 'OEModule\PatientTicketing\models\QueueSet',
+		'tickets' => 'OEModule\PatientTicketing\models\Ticket',
+		'ticketassignments' => 'OEModule\PatientTicketing\models\TicketQueueAssignment'
 	);
 
 	static public function setupBeforeClass()
@@ -43,7 +47,7 @@ class PatientTicketing_APITest extends CDbTestCase
 
 	public function tearDown()
 	{
-		Yii::app()->setComponent('services', $this->orig_svcman);
+		Yii::app()->setComponent('service', $this->orig_svcman);
 		parent::tearDown();
 	}
 

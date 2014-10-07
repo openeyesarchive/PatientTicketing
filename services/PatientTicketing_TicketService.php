@@ -19,6 +19,7 @@
 
 namespace OEModule\PatientTicketing\services;
 use OEModule\PatientTicketing\models;
+use Yii;
 
 class PatientTicketing_TicketService extends \services\ModelService {
 
@@ -55,6 +56,42 @@ class PatientTicketing_TicketService extends \services\ModelService {
 				return "Move";
 			}
 		}
+	}
+
+	/**
+	 * @param \Patient $patient
+	 * @param bool $active
+	 * @return models\Ticket[]
+	 */
+	public function getTicketsForPatient(\Patient $patient, $active = true)
+	{
+		$tickets = models\Ticket::model()->with('current_queue')->findAllByAttributes(array('patient_id' => $patient->id));
+		if ($active) {
+			$res = array();
+			foreach ($tickets as $t) {
+				if (!$t->is_complete()) {
+					$res[] = $t;
+				}
+			}
+			return $res;
+		}
+		else {
+			return $tickets;
+		}
+	}
+
+	/**
+	 * Get the queueset category for the given ticket
+	 *
+	 * @param models\Ticket $ticket
+	 * @return models\QueueSetCategory
+	 */
+	public function getCategoryForTicket(models\Ticket $ticket)
+	{
+		$qs_svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
+		$qs = $qs_svc->getQueueSetForQueue($ticket->current_queue->id);
+
+		return $qs->category;
 	}
 
 }
