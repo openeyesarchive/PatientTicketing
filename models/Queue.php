@@ -95,7 +95,7 @@ class Queue extends \BaseActiveRecordVersioned
 			'all_outcome_queues' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\Queue', 'outcome_queue_id', 'through' => 'outcomes'),
 			'outcome_queues' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\Queue', 'outcome_queue_id', 'through' => 'outcomes', 'on' => 'outcome_queues.active = 1'),
 			'event_type_assignments' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\QueueEventType', 'queue_id', 'order' => 'display_order asc'),
-			'event_types' => array(self::HAS_MANY, 'EventType', 'event_type_id', 'through' => 'event_type_assignments'),
+			'event_types' => array(self::HAS_MANY, 'EventType', 'event_type_id', 'through' => 'event_type_assignments', 'order' => 'display_order asc'),
 		);
 	}
 

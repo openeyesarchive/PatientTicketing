@@ -383,9 +383,6 @@
 			$(this).closest('form').find('.event-types').html(links);
 		});
 
-		$(this).on('click', '.event-type-link', function(e) {
-		});
-
 		$(this).on('click', '.ticket-history', function(e) {
 			var ticketInfo = $(this).closest('tr').data('ticket-info');
 			ticketController.toggleHistory(ticketInfo);
