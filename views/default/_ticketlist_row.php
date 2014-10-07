@@ -32,11 +32,17 @@
 	<td><?= $ticket->user->getFullName() ?></td>
 	<td><?= $ticket->report ? $ticket->report : "-"; ?></td>
 	<td><?= Yii::app()->format->Ntext($ticket->getNotes()) ?></td>
+	<!-- Ownership functionality not required at the moment.
 	<td><?= $ticket->assignee ? $ticket->assignee->getFullName() : "-"?></td>
+	 -->
 	<td nowrap>
 		<?php
 		if ($can_process) {
 			if (!$ticket->is_complete()) {
+				/*
+				Ownership functionality is not required at the moment. It's expected that this will take place as
+				part of the "move" functionality
+
 				if ($ticket->assignee) {
 					if ($ticket->assignee_user_id == Yii::app()->user->id) {
 						?><button id="release" class="tiny ticket-release">Release</button><?php
@@ -44,8 +50,10 @@
 				}
 				else {
 					?><button id="take" class="tiny ticket-take">Take</button><?php
-				}?>
-				<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->current_queue->getOutcomeData()) ?>" data-event-types="<?php echo CHtml::encode($ticket->current_queue->getRelatedEventTypes())?>"><?= $t_svc->getTicketActionLabel($ticket) ?></button>
+				}
+				*/
+				?>
+				<a href="<?= Yii::app()->createURL("/PatientTicketing/default/startTicketProcess/", array('ticket_id' => $ticket->id)); ?>" class="button tiny"><?= $t_svc->getTicketActionLabel($ticket) ?></a>
 		<?php }
 		}?>
 		<?php if ($ticket->hasHistory()) {?>

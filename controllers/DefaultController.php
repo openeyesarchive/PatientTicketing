@@ -60,20 +60,24 @@ class DefaultController extends \BaseModuleController
 	public function accessRules()
 	{
 		return array(
-				array('allow',
-						'actions' => array('index', 'getTicketTableRow', 'getTicketTableRowHistory'),
-						'roles' => array('OprnViewQueueSet'),
-				),
-				array('allow',
-						'actions' => $this->printActions(),
-						'roles' => array('OprnPrint'),
-				),
-				// these will have additional checks in the action methods
-				// TODO: detemine cleaner way of defining this.
-				array('allow',
-						'actions' => array('moveTicket', 'getQueueAssignmentForm', 'takeTicket', 'releaseTicket'),
-						'roles' => array('OprnViewQueueSet'),
-				),
+			array('allow',
+				'actions' => array('expandTicket', 'collapseTicket'),
+				'roles' => array('OprnViewClinical'),
+			),
+			array('allow',
+				'actions' => array('index', 'getTicketTableRow', 'getTicketTableRowHistory'),
+				'roles' => array('OprnViewQueueSet'),
+			),
+			array('allow',
+				'actions' => $this->printActions(),
+				'roles' => array('OprnPrint'),
+			),
+			// these will have additional checks in the action methods
+			// TODO: detemine cleaner way of defining this.
+			array('allow',
+				'actions' => array('moveTicket', 'getQueueAssignmentForm', 'takeTicket', 'releaseTicket', 'startTicketProcess'),
+				'roles' => array('OprnViewQueueSet'),
+			),
 		);
 	}
 
@@ -443,9 +447,101 @@ class DefaultController extends \BaseModuleController
 		echo \CJSON::encode($resp);
 	}
 
+	/**
+	 * Check the current user is permissioned on the given queueset
+	 *
+	 * @param $queueset
+	 * @return mixed
+	 */
 	public function checkQueueSetProcessAccess($queueset)
 	{
 		$qs_svc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
 		return $qs_svc->isQueueSetPermissionedForUser($queueset, Yii::app()->user->id);
+	}
+
+	/**
+	 * Abstraction of managing session tracking of expanded tickets.
+	 *
+	 * @param $ticket
+	 * @param $expand
+	 * @param bool $unique
+	 */
+	public function setTicketState($ticket, $expand, $unique = false)
+	{
+		if ($unique) {
+			Yii::app()->session['patientticket_ticket_ids'] = array($ticket->id);
+			return;
+		}
+		// add to the ticket list if it's not in there for expanding
+		// remove from current list for collapsing
+		$curr = Yii::app()->session['patientticket_ticket_ids'];
+		if (!$curr) {
+			$curr = array();
+		}
+		if ($expand) {
+			$curr[] = $ticket->id;
+		}
+		else {
+			$k = array_search($ticket->id, $curr);
+			if ($k !== false) {
+				unset($curr[$k]);
+			}
+		}
+		Yii::app()->session['patientticket_ticket_ids'] = array_unique($curr);
+	}
+
+	/**
+	 * Action to mark the given ticket as being processed by the current user
+	 * Redirects to the appropriate page for the user to process the patient
+	 *
+	 * @param $ticket_id
+	 * @throws \CHttpException
+	 */
+	public function actionStartTicketProcess($ticket_id)
+	{
+		if (!$ticket = models\Ticket::model()->findByPk($ticket_id)) {
+			throw new \CHttpException(404, 'Invalid ticket id.');
+		}
+
+		// check the user is permissioned to process the queueset the ticket is on
+		$qs_svc = Yii::app()->service->getService(self::$QUEUESET_SERVICE);
+		$qs_r = $qs_svc->getQueueSetForTicket($ticket_id);
+		if (!$qs_svc->isQueueSetPermissionedForUser($qs_r, Yii::app()->user->id)) {
+			throw new \CHttpException(403, "User does not have permission to manage queueset for ticket id {$ticket_id}");
+		}
+
+		// set the patient to be in processing for the current user
+		$this->setTicketState($ticket, true, true);
+
+		// redirect to the appropriate page for the ticket processing.
+		$this->redirect($ticket->getSourceLink());
+	}
+
+	/**
+	 * Set user to session to keep ticket expanded
+	 *
+	 * @param $ticket_id
+	 * @throws \CHttpException
+	 */
+	public function actionExpandTicket($ticket_id)
+	{
+		if (!$ticket = models\Ticket::model()->findByPk($ticket_id)) {
+			throw new \CHttpException(404, 'Invalid ticket id.');
+		}
+		$this->setTicketState($ticket, true);
+	}
+
+	/**
+	 * Set user to session to keep ticket collapsed
+	 *
+	 * @param $ticket_id
+	 * @throws \CHttpException
+	 */
+	public function actionCollapseTicket($ticket_id)
+	{
+		if (!$ticket = models\Ticket::model()->findByPk($ticket_id)) {
+			throw new \CHttpException(404, 'Invalid ticket id.');
+		}
+		$this->setTicketState($ticket, false);
 	}
 }

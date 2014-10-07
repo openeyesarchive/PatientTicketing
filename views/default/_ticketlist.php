@@ -42,7 +42,7 @@
 						<th>Created By</th>
 						<th>Clinic Info</th>
 						<th>Ticket Notes</th>
-						<th>Ticket Owner</th>
+						<!--<th>Ticket Owner</th>-->
 						<th>Actions</th>
 					</tr>
 					</thead>

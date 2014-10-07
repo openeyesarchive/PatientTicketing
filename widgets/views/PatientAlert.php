@@ -17,24 +17,33 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
 ?>
+
+<?php if ($this->assetFolder) {?>
+	<script type="text/javascript" src="<?php echo $this->assetFolder?>/<?php echo $this->shortName ?>.js"></script>
+<?php }?>
+
 <?php if (count($tickets) && Yii::app()->user->checkAccess('OprnViewClinical')) { ?>
-	<div class="row">
+	<div class="row" id="patient-alert-patientticketing">
 		<div class="large-12 column">
 			<?php foreach ($tickets as $ticket) {
 				$cat = $t_svc->getCategoryForTicket($ticket);
+				$expand = false;
+				if (in_array($ticket->id, $current_ticket_ids)) {
+					$expand = true;
+				}
 			?>
-			<div class="alert-box issue js-toggle-container">
-						<span class="box-title"><?= $cat->name ?>: Patient is in <?= $ticket->current_queue->queueset->name ?>, <?= $ticket->current_queue->name ?></span>
-						<a href="#" class="toggle-trigger toggle-show js-toggle">
-							<span class="icon-showhide">
-								Show/hide this section
-							</span>
-						</a>
-					<div class="js-toggle-body" style="display: none;">
-						<?php $this->widget($summary_widget, array('ticket' => $ticket)); ?>
-						<!-- Patient is in  - <a href="<?= Yii::app()->createURL("//PatientTicketing/default/", array('cat_id' => $cat->id, 'patient_id' => $this->patient->id)) ?>"><?= $ticket->current_queue->name ?> </a> -->
-					</div>
-			</div>
+				<div class="alert-box issue js-toggle-container" data-ticket-id="<?= $ticket->id ?>">
+							<header><strong class="box-title"><?= $cat->name ?>: Patient is in <?= $ticket->current_queue->queueset->name ?>, <?= $ticket->current_queue->name ?></strong></header>
+							<a href="#" class="toggle-trigger toggle-<?= $expand ? "hide" : "show" ?> js-toggle">
+								<span class="icon-showhide">
+									Show/hide this section
+								</span>
+							</a>
+						<div class="js-toggle-body" <?php if (!$expand) {?>style="display: none;"<?php } ?>>
+							<?php $this->widget($summary_widget, array('ticket' => $ticket)); ?>
+							<!-- Patient is in  - <a href="<?= Yii::app()->createURL("//PatientTicketing/default/", array('cat_id' => $cat->id, 'patient_id' => $this->patient->id)) ?>"><?= $ticket->current_queue->name ?> </a> -->
+						</div>
+				</div>
 			<?php }?>
 		</div>
 	</div>

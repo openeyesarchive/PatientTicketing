@@ -358,6 +358,8 @@
 			ticketController.releaseTicket(ticketInfo);
 		});
 
+		/*
+		deprecated behaviour for OE-4759
 		$(this).on('click', '.ticket-move', function(e) {
 			var ticketInfo = $(this).closest('tr').data('ticket-info');
 			var outcomes = $(this).data('outcomes');
@@ -382,7 +384,7 @@
 
 			$(this).closest('form').find('.event-types').html(links);
 		});
-
+		*/
 		$(this).on('click', '.ticket-history', function(e) {
 			var ticketInfo = $(this).closest('tr').data('ticket-info');
 			ticketController.toggleHistory(ticketInfo);
