@@ -40,7 +40,7 @@
 						<th>Ticket Date</th>
 						<th>Firm</th>
 						<th>Created By</th>
-						<th>Ticket Info</th>
+						<th>Clinic Info</th>
 						<th>Ticket Notes</th>
 						<th>Ticket Owner</th>
 						<th>Actions</th>
