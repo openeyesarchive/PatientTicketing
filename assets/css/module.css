@@ -34,3 +34,8 @@ tr.disabled {
 .filter-row td {
   vertical-align: top;
 }
+
+/* line 18, ../sass/components/_move_form.scss */
+.moveTicket .event-type-link {
+  margin-bottom: 5px;
+}

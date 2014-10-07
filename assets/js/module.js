@@ -138,7 +138,8 @@
 		if (queue_id) {
 			if (typeof(event_types[queue_id]) != 'undefined') {
 				for (var i = 0; i < event_types[queue_id].length; i++) {
-					templateVals.event_type_links += '<a href="' + baseUrl + '/' + event_types[queue_id][i]['class_name'] + '/default/create?patient_id=' + ticketInfo.patient_id + '">' + event_types[queue_id][i]['name'] + '</a><br/>';
+					templateVals.event_type_links += '<a href="' + baseUrl + '/' + event_types[queue_id][i]['class_name'] + '/default/create?patient_id=' + 
+						ticketInfo.patient_id + '" class="button small event-type-link">' + event_types[queue_id][i]['name'] + '</a><br/>';
 				}
 			}
 		}
@@ -374,12 +375,15 @@
 			if ($(this).val() != '') {
 				if (typeof(event_types[$(this).val()]) != 'undefined') {
 					for (var i = 0; i < event_types[$(this).val()].length; i++) {
-						links += '<a href="' + baseUrl + '/' + event_types[$(this).val()][i]['class_name'] + '/default/create?patient_id=' + ticketInfo.patient_id + '">' + event_types[$(this).val()][i]['name'] + '</a><br/>';
+						links += '<a href="' + baseUrl + '/' + event_types[$(this).val()][i]['class_name'] + '/default/create?patient_id=' + ticketInfo.patient_id + '" class="button small event-type-link">' + event_types[$(this).val()][i]['name'] + '</a><br/>';
 					}
 				}
 			}
 
 			$(this).closest('form').find('.event-types').html(links);
+		});
+
+		$(this).on('click', '.event-type-link', function(e) {
 		});
 
 		$(this).on('click', '.ticket-history', function(e) {

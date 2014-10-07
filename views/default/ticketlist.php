@@ -122,7 +122,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 	<?php $this->renderPartial('_ticketlist', array('tickets' => $tickets, 'pages' => $pages, 'can_process' => $can_process)); ?>
 
 <script type="text/html" id="ticketcontroller-queue-select-template">
-	<form data-event-types='{{{event_types}}}' data-ticketinfo='{{{ticketInfo}}}'>
+	<form class="moveTicket" data-event-types='{{{event_types}}}' data-ticketinfo='{{{ticketInfo}}}'>
 	<input type="hidden" name="YII_CSRF_TOKEN" value="{{CSRF_TOKEN}}" />
 	<input type="hidden" name="from_queue_id" value="{{current_queue_id}}" />
 	<div>

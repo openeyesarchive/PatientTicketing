@@ -14,7 +14,8 @@
 // * @copyright Copyright (c) 2011-2013, OpenEyes Foundation
 // * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
 
-@import "openeyes/module";
-@import "components/ticket_table";
-@import "components/filter_table";
-@import "components/move_form";
+.moveTicket {
+	.event-type-link {
+		margin-bottom: 5px;
+	}
+}
