@@ -18,18 +18,13 @@
  */
 
 return array(
-	'queueset1' => array(
-		'id' => 1,
-		'name' => 'QueueSet 1',
-		'active' => true,
-		'initial_queue_id' => 1,
-		'category_id' => 1,
-	),
-	'queueset2' => array(
-		'id' => 2,
-		'name' => 'QueueSet 2',
-		'active' => 1,
-		'initial_queue_id' => 12,
-		'category_id' => 2
-	)
-);
+		'queuesetcategory1' => array(
+				'id' => 1,
+				'name' => 'Category 1',
+				'active' => true,
+		),
+		'queuesetcategory2' => array(
+				'id' => 2,
+				'name' => 'Category 2',
+				'active' => true,
+		),);

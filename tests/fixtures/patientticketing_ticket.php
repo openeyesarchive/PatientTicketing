@@ -30,4 +30,16 @@ return array(
 				'assignee_user_id' => 1,
 				'assignee_date' => '2014-09-04',
 		),
+		'ticket3' => array(
+				'id' => 3,
+				'patient_id' => 1,
+				'assignee_user_id' => 1,
+				'assignee_date' => '2014-09-04',
+		),
+		'ticket4' => array(
+				'id' => 4,
+				'patient_id' => 3,
+				'assignee_user_id' => 1,
+				'assignee_date' => '2014-09-04',
+		),
 );

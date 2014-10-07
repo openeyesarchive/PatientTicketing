@@ -30,17 +30,6 @@ class PatientTicketing_QueueSetService extends \CDbTestCase
 			'ticketassignments' => 'OEModule\PatientTicketing\models\TicketQueueAssignment'
 	);
 
-	public function setUp()
-	{
-
-		$this->manager = new \services\ServiceManager;
-		$this->manager->internal_services = array(
-				'OEModule\PatientTicketing\services\PatientTicketing_QueueSetService',
-		);
-		$this->manager->init();
-		parent::setUp();
-	}
-
 	public function testgetQueueSetsForFirm()
 	{
 		$qs_svc = $this->getMockBuilder('OEModule\PatientTicketing\services\PatientTicketing_QueueSetService')
@@ -65,8 +54,8 @@ class PatientTicketing_QueueSetService extends \CDbTestCase
 	{
 		return array(
 				array('queueset1', 'patient1', false, "Patient is active on queueset so should not be add-able"),
-				array('queueset2', 'patient1', true, "Patient has no ticket queueset, so should be add-able"),
-				array('queueset2', 'patient2', true, "Patient is complete on queueset, so should be add-able")
+				array('queueset2', 'patient1', true, "Patient has no ticket in queueset, so should be add-able"),
+				array('queueset2', 'patient3', true, "Patient is complete on queueset, so should be add-able")
 		);
 	}
 
@@ -76,8 +65,7 @@ class PatientTicketing_QueueSetService extends \CDbTestCase
 	public function testcanAddPatientToQueueSet($qs_name, $patient_name, $res, $msg)
 	{
 		$queueset = $this->queuesets($qs_name);
-		$qs_svc = $this->manager->getService('PatientTicketing_QueueSet');
-
+		$qs_svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
 		$this->assertEquals($res, $qs_svc->canAddPatientToQueueSet($this->patients($patient_name), $queueset->id), $msg);
 	}
 

@@ -24,6 +24,7 @@ use Yii;
 class PatientTicketing_QueueSetService  extends \services\ModelService {
 
 	public static $QUEUE_SERVICE = 'PatientTicketing_Queue';
+	public static $QUEUESETCATEGORY_SERVICE = 'PatientTicketing_QueueSetCategory';
 
 	static protected $operations = array(self::OP_READ, self::OP_SEARCH, self::OP_DELETE);
 	static protected $primary_model = 'OEModule\PatientTicketing\models\QueueSet';
@@ -53,6 +54,7 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 		}
 
 		$qsvc = Yii::app()->service->getService(self::$QUEUE_SERVICE);
+		$qscsvc = Yii::app()->service->getService(self::$QUEUESETCATEGORY_SERVICE);
 
 		if ($queueset->initial_queue_id) {
 			$res->initial_queue = $qsvc->read($queueset->initial_queue_id);
@@ -62,6 +64,10 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 			foreach ($queueset->permissioned_users as $u) {
 				$res->permissioned_user_ids[] = $u->id;
 			}
+		}
+
+		if ($queueset->category_id) {
+			$res->category = $qscsvc->read($queueset->category_id);
 		}
 
 		return $res;

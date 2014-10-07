@@ -16,20 +16,26 @@
  * @copyright Copyright (c) 2011-2014, OpenEyes Foundation
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
-
-return array(
-	'queueset1' => array(
-		'id' => 1,
-		'name' => 'QueueSet 1',
-		'active' => true,
-		'initial_queue_id' => 1,
-		'category_id' => 1,
-	),
-	'queueset2' => array(
-		'id' => 2,
-		'name' => 'QueueSet 2',
-		'active' => 1,
-		'initial_queue_id' => 12,
-		'category_id' => 2
-	)
-);
+?>
+<?php if (count($tickets) && Yii::app()->user->checkAccess('OprnViewClinical')) { ?>
+	<div class="row">
+		<div class="large-12 column">
+			<?php foreach ($tickets as $ticket) {
+				$cat = $t_svc->getCategoryForTicket($ticket);
+			?>
+			<div class="alert-box issue js-toggle-container">
+						<span class="box-title"><?= $cat->name ?>: Patient is in <?= $ticket->current_queue->queueset->name ?>, <?= $ticket->current_queue->name ?></span>
+						<a href="#" class="toggle-trigger toggle-show js-toggle">
+							<span class="icon-showhide">
+								Show/hide this section
+							</span>
+						</a>
+					<div class="js-toggle-body" style="display: none;">
+						<?php $this->widget($summary_widget, array('ticket' => $ticket)); ?>
+						<!-- Patient is in  - <a href="<?= Yii::app()->createURL("//PatientTicketing/default/", array('cat_id' => $cat->id, 'patient_id' => $this->patient->id)) ?>"><?= $ticket->current_queue->name ?> </a> -->
+					</div>
+			</div>
+			<?php }?>
+		</div>
+	</div>
+<?php } ?>

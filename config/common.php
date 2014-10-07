@@ -34,6 +34,9 @@ return array(
 
 			'patient_summary_id_widgets' => array(
 				array('class' => 'OEModule\PatientTicketing\widgets\PatientSummaryId'),
+			),
+			'patient_alert_widgets' => array(
+				array('class' => 'OEModule\PatientTicketing\widgets\PatientAlert'),
 			)
 	),
 	'components' => array(
