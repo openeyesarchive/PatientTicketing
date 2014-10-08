@@ -70,6 +70,10 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 			$res->category = $qscsvc->read($queueset->category_id);
 		}
 
+		if ($queueset->default_queue_id) {
+			$res->default_queue = $qsvc->read($queueset->default_queue_id);
+		}
+
 		return $res;
 	}
 
