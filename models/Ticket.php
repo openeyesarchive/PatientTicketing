@@ -92,7 +92,7 @@ class Ticket extends \BaseActiveRecordVersioned
 			'priority' => array(self::BELONGS_TO, 'OEModule\PatientTicketing\models\Priority', 'priority_id'),
 			'patient' => array(self::BELONGS_TO, 'Patient', 'patient_id'),
 			'event' => array(self::BELONGS_TO, 'Event', 'event_id'),
-			'queue_assignments' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'queue_assignments.id asc'),
+			'queue_assignments' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id'),
 			'initial_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'initial_queue_assignment.assignment_date'),
 			'current_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'current_queue_assignment.assignment_date desc'),
 			'initial_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'queue_assignments', 'order' => 'queue_assignments.assignment_date'),
