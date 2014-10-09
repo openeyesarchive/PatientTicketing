@@ -1,6 +1,6 @@
 <?php
 
-class m140909_101552_ticket_priority extends CDbMigration
+class m140909_101552_ticket_priority extends OEMigration
 {
 	public function up()
 	{

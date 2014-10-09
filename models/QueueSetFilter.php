@@ -19,10 +19,8 @@
 
 namespace OEModule\PatientTicketing\models;
 
-class QueueSet extends \BaseActiveRecordVersioned {
 
-	public $auto_update_relations = true;
-
+class QueueSetFilter extends \BaseActiveRecordVersioned {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return OphTrOperationnote_GlaucomaTube_PlatePosition the static model class
@@ -37,7 +35,7 @@ class QueueSet extends \BaseActiveRecordVersioned {
 	 */
 	public function tableName()
 	{
-		return 'patientticketing_queueset';
+		return 'patientticketing_queueset_filter';
 	}
 
 	/**
@@ -46,9 +44,7 @@ class QueueSet extends \BaseActiveRecordVersioned {
 	public function rules()
 	{
 		return array(
-			array('name, description, category_id, summary_link, allow_null_priority, permissioned_users', 'safe'),
-			array('name, category_id', 'required'),
-			array('initial_queue_id', 'required', 'except' => 'formCreate')
+			array('patient_list, priority, subspecialty, firm, my_tickets, closed_tickets', 'safe')
 		);
 	}
 
@@ -60,28 +56,6 @@ class QueueSet extends \BaseActiveRecordVersioned {
 		return array(
 			'user' => array(self::BELONGS_TO, 'User', 'created_user_id'),
 			'usermodified' => array(self::BELONGS_TO, 'User', 'last_modified_user_id'),
-			'queuesetcategory' => array(self::BELONGS_TO, 'OEModule\PatientTicketing\models\QueueSetCategory', 'category_id'),
-			'initial_queue' => array(self::BELONGS_TO, 'OEModule\PatientTicketing\models\Queue', 'initial_queue_id'),
-			'permissioned_users' => array(self::MANY_MANY, 'User', 'patientticketing_queuesetuser(queueset_id, user_id)'),
-			'filter' => array(self::BELONGS_TO, 'OEModule\PatientTicketing\models\QueueSetFilter','queueset_filter'),
-		);
-	}
-
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels()
-	{
-		return array(
-			'category_id' => 'Ticket Category',
-			'summary_link' => 'Link Tickets to Episode Summary'
-		);
-	}
-
-	public function behaviors()
-	{
-		return array(
-				'LookupTable' => 'LookupTable',
 		);
 	}
 
@@ -95,11 +69,9 @@ class QueueSet extends \BaseActiveRecordVersioned {
 
 		$criteria->compare('id', $this->id, true);
 		$criteria->compare('name', $this->name, true);
-		$criteria->compare('category_id', $this->category_id, true);
 
 		return new \CActiveDataProvider(get_class($this), array(
-				'criteria' => $criteria,
+			'criteria' => $criteria,
 		));
 	}
-
 }
