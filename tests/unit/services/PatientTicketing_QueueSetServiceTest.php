@@ -22,27 +22,29 @@ use OEModule\PatientTicketing\services;
 class PatientTicketing_QueueSetService extends \CDbTestCase
 {
 	public $fixtures = array(
-			'patients' => 'Patient',
-			'queues' => 'OEModule\PatientTicketing\models\Queue',
-			'queue_outcomes' => 'OEModule\PatientTicketing\models\QueueOutcome',
-			'queuesets' => 'OEModule\PatientTicketing\models\QueueSet',
-			'tickets' => 'OEModule\PatientTicketing\models\Ticket',
-			'ticketassignments' => 'OEModule\PatientTicketing\models\TicketQueueAssignment'
+		'patients' => 'Patient',
+		'queues' => 'OEModule\PatientTicketing\models\Queue',
+		'queue_outcomes' => 'OEModule\PatientTicketing\models\QueueOutcome',
+		'queuesets' => 'OEModule\PatientTicketing\models\QueueSet',
+		'queuesetcategories' => 'OEModule\PatientTicketing\models\QueueSetCategory',
+		'tickets' => 'OEModule\PatientTicketing\models\Ticket',
+		'ticketassignments' => 'OEModule\PatientTicketing\models\TicketQueueAssignment'
 	);
 
 	public function testgetQueueSetsForFirm()
 	{
 		$qs_svc = $this->getMockBuilder('OEModule\PatientTicketing\services\PatientTicketing_QueueSetService')
-				->disableOriginalConstructor()
-				->setMethods(array('modelToResource'))
-				->getMock();
+			->disableOriginalConstructor()
+			->setMethods(array('modelToResource'))
+			->getMock();
 
 		$qs_svc->expects($this->at(0))
 			->method('modelToResource')
 			->with($this->queuesets('queueset1'));
+
 		$qs_svc->expects($this->at(1))
-				->method('modelToResource')
-				->with($this->queuesets('queueset2'));
+			->method('modelToResource')
+			->with($this->queuesets('queueset2'));
 
 		$firm = new \Firm();
 
@@ -53,9 +55,9 @@ class PatientTicketing_QueueSetService extends \CDbTestCase
 	public function canAddPatientProvider()
 	{
 		return array(
-				array('queueset1', 'patient1', false, "Patient is active on queueset so should not be add-able"),
-				array('queueset2', 'patient1', true, "Patient has no ticket in queueset, so should be add-able"),
-				array('queueset2', 'patient3', true, "Patient is complete on queueset, so should be add-able")
+			array('queueset1', 'patient1', false, "Patient is active on queueset so should not be add-able"),
+			array('queueset2', 'patient1', true, "Patient has no ticket in queueset, so should be add-able"),
+			array('queueset2', 'patient3', true, "Patient is complete on queueset, so should be add-able")
 		);
 	}
 
@@ -68,5 +70,4 @@ class PatientTicketing_QueueSetService extends \CDbTestCase
 		$qs_svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
 		$this->assertEquals($res, $qs_svc->canAddPatientToQueueSet($this->patients($patient_name), $queueset->id), $msg);
 	}
-
 }
