@@ -18,11 +18,13 @@
  */
 ?>
 
-<?php if ($this->assetFolder) {?>
-	<script type="text/javascript" src="<?php echo $this->assetFolder?>/<?php echo $this->shortName ?>.js"></script>
-<?php }?>
 
-<?php if (count($tickets) && Yii::app()->user->checkAccess('OprnViewClinical')) { ?>
+<?php if (count($tickets) && Yii::app()->user->checkAccess('OprnViewClinical')) {
+	$qs_svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
+	if ($this->assetFolder) {?>
+		<script type="text/javascript" src="<?php echo $this->assetFolder?>/<?php echo $this->shortName ?>.js"></script>
+	<?php }?>
+
 	<div class="row" id="patient-alert-patientticketing">
 		<div class="large-12 column">
 			<?php foreach ($tickets as $ticket) {
@@ -40,7 +42,17 @@
 								</span>
 							</a>
 						<div class="js-toggle-body" <?php if (!$expand) {?>style="display: none;"<?php } ?>>
-							<?php $this->widget($summary_widget, array('ticket' => $ticket)); ?>
+							<?php
+							$this->widget($summary_widget, array('ticket' => $ticket));
+							$qs_r = $qs_svc->getQueueSetForTicket($ticket->id);
+							if ($qs_svc->isQueueSetPermissionedForUser($qs_r, Yii::app()->user->id)) {
+								$this->widget('OEModule\PatientTicketing\widgets\TicketMove', array(
+										'ticket' => $ticket,
+										)
+								);
+							}
+							?>
+
 							<!-- Patient is in  - <a href="<?= Yii::app()->createURL("//PatientTicketing/default/", array('cat_id' => $cat->id, 'patient_id' => $this->patient->id)) ?>"><?= $ticket->current_queue->name ?> </a> -->
 						</div>
 				</div>

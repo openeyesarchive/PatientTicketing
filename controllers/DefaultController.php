@@ -61,7 +61,7 @@ class DefaultController extends \BaseModuleController
 	{
 		return array(
 			array('allow',
-				'actions' => array('expandTicket', 'collapseTicket'),
+				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert'),
 				'roles' => array('OprnViewClinical'),
 			),
 			array('allow',
@@ -244,11 +244,19 @@ class DefaultController extends \BaseModuleController
 			throw new \CHttpException(403, 'Not authorised to take ticket');
 		}
 
-		$template_vars = array('queue_id' => $id);
+		$template_vars = array('queue_id' => $id, 'patient_id' => null);
 		$p = new \CHtmlPurifier();
 
 		foreach (array('label_width' => 2, 'data_width' => 8) as $id => $default) {
 			$template_vars[$id] = @$_GET[$id] ? $p->purify($_GET[$id]) : $default;
+		}
+
+		// if this is for a ticket, then we pass the patient id through for any event creation links
+		if (@$_GET['ticket_id']) {
+			if (!$ticket = models\Ticket::model()->findByPk((int)$_GET['ticket_id'])) {
+				throw new \CHttpException(404, 'Invalid ticket id.');
+			};
+			$template_vars['patient_id'] = $ticket->patient_id;
 		}
 
 		$this->renderPartial('form_queueassign', $template_vars, false, false);
@@ -539,9 +547,18 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionCollapseTicket($ticket_id)
 	{
-		if (!$ticket = models\Ticket::model()->findByPk($ticket_id)) {
+		if (!$ticket = models\Ticket::model()->findByPk((int)$ticket_id)) {
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
 		$this->setTicketState($ticket, false);
+	}
+
+	public function actionGetPatientAlert($patient_id)
+	{
+		if (!$patient = \Patient::model()->findByPk((int)$patient_id)) {
+			throw new \CHttpException(404, 'Invalid patient id.');
+		}
+
+		$this->renderPartial('patientalert', array("patient" => $patient));
 	}
 }

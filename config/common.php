@@ -17,8 +17,10 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
 
+
 return array(
 	'import' => array(
+		'PatientTicketingModule'
 	),
 	'params' => array(
 			'menu_bar_items' => array(
@@ -37,7 +39,13 @@ return array(
 			),
 			'patient_alert_widgets' => array(
 				array('class' => 'OEModule\PatientTicketing\widgets\PatientAlert'),
-			)
+			),
+			'additional_rulesets' => array(
+				array(
+					'namespace' => 'PatientTicketing',
+					'class' => 'OEModule\PatientTicketing\components\PatientTicketing_AuthRules'
+				),
+			),
 	),
 	'components' => array(
 		'service' => array(

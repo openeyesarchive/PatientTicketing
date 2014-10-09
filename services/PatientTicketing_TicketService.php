@@ -93,5 +93,5 @@ class PatientTicketing_TicketService extends \services\ModelService {
 
 		return $qs->category;
 	}
-
+	
 }

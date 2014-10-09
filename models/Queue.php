@@ -46,6 +46,8 @@ use OEModule\PatientTicketing\components\Substitution;
  * @property \User $usermodified
  * @property \OEModule\PatientTicketing\models\Outcome[] $outcomes
  * @property \OEModule\PatientTicketing\models\Queue[] $outcome_queues
+ * @property \OEModule\PatientTicketing\models\QueueEventType[] $event_type_assignments
+ * @property \EventType[] $event_types
  */
 class Queue extends \BaseActiveRecordVersioned
 {

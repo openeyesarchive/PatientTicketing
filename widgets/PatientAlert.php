@@ -46,7 +46,6 @@ class PatientAlert extends \PatientAlertWidget {
 		$match = false;
 
 		if ($curr_ids = Yii::app()->session['patientticket_ticket_ids']) {
-			error_log(print_r($curr_ids, true));
 			foreach ($tickets as $ticket) {
 				if ($ticket->id == $curr_ids[0]) {
 					$match = true;

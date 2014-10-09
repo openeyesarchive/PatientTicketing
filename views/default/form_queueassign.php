@@ -22,6 +22,7 @@
 $this->widget('OEModule\PatientTicketing\widgets\QueueAssign', array(
 	'queue_id' => $queue_id,
 	'label_width' => $label_width,
-	'data_width' => $data_width)
+	'data_width' => $data_width,
+	'patient_id' => $patient_id)
 );
 ?>

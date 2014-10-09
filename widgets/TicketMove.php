@@ -18,29 +18,49 @@
  */
 
 namespace OEModule\PatientTicketing\widgets;
-use OEModule\PatientTicketing\models;
-/**
- * Class QueueAssign
- *
- * Widget to generate the assignment form for a Queue
- *
- * @package OEModule\PatientTicketing\widgets
- */
-class QueueAssign extends \CWidget {
-	public $queue_id;
-	public $label_width = 4;
-	public $data_width = 8;
-	public $queue_select_label = 'Queue';
-	public $patient_id;
+use Yii;
+
+class TicketMove extends \CWidget {
+	public $event_types;
+	public $ticket_info;
+	public $current_queue_name;
+	public $outcome_options;
+	public $ticket;
+
+	protected $outcome_queue_id;
+
+	public $assetFolder;
+	public $shortName;
+
+	public function init()
+	{
+		// if the widget has javascript, load it in
+		$cls_name = explode('\\', get_class($this));
+		$this->shortName = array_pop($cls_name);
+		if (file_exists(dirname(__FILE__) . "/js/".$this->shortName.".js")) {
+			$this->assetFolder = Yii::app()->getAssetManager()->publish(dirname(__FILE__) . "/js/");
+		}
+		parent::init();
+	}
 
 	public function run()
 	{
-		if ($this->queue_id) {
-			$queue = models\Queue::model()->findByPk($this->queue_id);
+		if ($this->ticket) {
+			$this->event_types = $this->ticket->current_queue->getRelatedEventTypes();
+			$this->ticket_info = $this->ticket->getInfoData(false);
+			$this->current_queue_name =  $this->ticket->current_queue->name;
+			$this->outcome_options = array();
+			$od = $this->ticket->current_queue->getOutcomeData(false);
+			foreach ($od as $out) {
+				$this->outcome_options[$out['id']] = $out['name'];
+			};
+			if (count($od) == 1) {
+				// TODO: maybe set the POST value here?
+				$this->outcome_queue_id = $od[0]['id'];
+			}
 		}
-		else {
-			$queue = null;
-		}
-		$this->render('QueueAssign', array('queue' => $queue));
+
+		$this->render('TicketMove');
 	}
+
 }

@@ -19,7 +19,8 @@
 ?>
 
 <?php if ($queue) {?>
-	<div>
+	<div class="row">
+	<div class="large-6 column">
 		<?php foreach ($queue->getFormFields() as $fld) {?>
 			<fieldset class="field-row row">
 				<div class="large-<?= $this->label_width ?> column">
@@ -40,5 +41,23 @@
 				</div>
 			</fieldset>
 		<?php }?>
+	</div>
+	<div class="large-6 column end">
+		<?php
+		if ($this->patient_id) { ?>
+			<ul>
+			<?php
+			foreach ($queue->event_types as $et) {
+				?>
+				<li><a href="<?= Yii::app()->baseURL?>/<?=$et->class_name?>/default/create?patient_id=<?= $this->patient_id ?>" class="button small event-type-link"><?= $et->name ?></a></li>
+			<?php
+			}
+			?>
+			</ul>
+
+		<?php
+		}
+		?>
+	</div>
 	</div>
 <?php } ?>
