@@ -209,7 +209,8 @@ class Ticket extends \BaseActiveRecordVersioned
 			'id' => $this->id,
 			'patient_name' => $this->patient->getFullName(),
 			'current_queue_name' => $this->current_queue->name,
-			'current_queue_id' => $this->current_queue->id
+			'current_queue_id' => $this->current_queue->id,
+			'patient_id' => $this->patient->id,
 		);
 		if ($json) {
 			return \CJSON::encode($res);

@@ -26,7 +26,7 @@
 			. (($ticket->patient->nhs_num) ? $ticket->patient->nhs_num . " - " : "")
 			. $ticket->patient->getHSCICName()
 			. " (" . ($ticket->patient->isDeceased() ? "Deceased" : $ticket->patient->getAge()) . ")"; ?></a></td>
-	<td <?php if ($ticket->priority) { ?>style="color: <?= $ticket->priority->colour ?>"<?php } ?>><?= $ticket->priority ? $ticket->priority->name : "-" ?></td>
+	<td <?php if ($ticket->priority) {?>style="color: <?= $ticket->priority->colour ?>"<?php }?>><?= $ticket->priority ? $ticket->priority->name : "-" ?></td>
 	<td><?= Helper::convertDate2NHS($ticket->created_date)?></td>
 	<td><?= $ticket->getTicketFirm() ?></td>
 	<td><?= $ticket->user->getFullName() ?></td>
@@ -45,11 +45,11 @@
 				else {
 					?><button id="take" class="tiny ticket-take">Take</button><?php
 				}?>
-				<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->current_queue->getOutcomeData()) ?>"><?= $t_svc->getTicketActionLabel($ticket) ?></button>
+				<button class="tiny ticket-move" data-outcomes="<?= CHtml::encode($ticket->current_queue->getOutcomeData()) ?>" data-event-types="<?php echo CHtml::encode($ticket->current_queue->getRelatedEventTypes())?>"><?= $t_svc->getTicketActionLabel($ticket) ?></button>
 		<?php }
-		} ?>
+		}?>
 		<?php if ($ticket->hasHistory()) {?>
 			<button class="tiny ticket-history">History</button>
-		<?php } ?>
+		<?php }?>
 	</td>
 </tr>

@@ -167,6 +167,9 @@
 						content: content,
 						okButton: 'Save'
 					});
+					formDialog.on('open', function() {
+						formDialog.content.find('.multi-select').trigger('init');
+					});
 					formDialog.open();
 					// suppress default ok behaviour
 					formDialog.content.off('click', '.ok');
@@ -185,6 +188,9 @@
 					title: "Edit Queue",
 					content: content,
 					okButton: 'Save'
+				});
+				formDialog.on('open', function() {
+					formDialog.content.find('.multi-select').trigger('init');
 				});
 				formDialog.open();
 				// suppress default ok behaviour
