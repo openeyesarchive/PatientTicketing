@@ -90,6 +90,10 @@ li .queueset-admin {
 	float: right;
 }
 
+ul .queueset-item  {
+	overflow: hidden;
+}
+
 li.queueset-item .queueset-admin .admin-action:hover {
 	cursor:pointer;
 }
