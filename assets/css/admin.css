@@ -30,6 +30,10 @@
 	bottom: 0px;
 }
 
+.jOrgChart .queue {
+	overflow: hidden;
+}
+
 .jOrgChart table {
 	border-collapse: separate;
 	border: 0px;
