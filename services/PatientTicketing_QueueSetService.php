@@ -104,6 +104,7 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 	{
 		$q_svc = Yii::app()->service->getService(self::$QUEUE_SERVICE);
 		$initial_qr = $qsr->initial_queue;
+		if(!$initial_qr)return array();
 		$res = array($q_svc->readModel($initial_qr->getId()));
 		foreach ($q_svc->getDependentQueues($initial_qr, $include_closing) as $d_qr) {
 			$res[] = $d_qr;
