@@ -24,12 +24,15 @@ return array(
 		'active' => true,
 		'initial_queue_id' => 1,
 		'category_id' => 1,
+		'queueset_filter_id' =>1
 	),
 	'queueset2' => array(
 		'id' => 2,
 		'name' => 'QueueSet 2',
 		'active' => 1,
 		'initial_queue_id' => 12,
-		'category_id' => 2
+		'category_id' => 2,
+		'queueset_filter_id' =>2
+
 	)
 );

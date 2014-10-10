@@ -16,16 +16,30 @@
  * @copyright Copyright (c) 2011-2014, OpenEyes Foundation
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
-
 namespace OEModule\PatientTicketing\services;
+use OEModule\PatientTicketing\models;
+use Yii;
 
-class PatientTicketing_QueueSet extends \services\Resource {
-	public $name;
-	public $description;
-	public $active;
-	public $initial_queue;
-	public $permissioned_user_ids = array();
-	public $filter_settings;
-	public $default_queue;
+class PatientTicketing_QueueFilterSettingsService  extends \services\ModelService {
+
+	static protected $operations = array(self::OP_CREATE, self::OP_READ, self::OP_SEARCH, self::OP_DELETE);
+	static protected $primary_model = 'OEModule\PatientTicketing\models\QueueSetFilter';
+
+	public function modelToResource($queue)
+	{
+		$res = parent::modelToResource($queue);
+		foreach (array('id', 'patient_list', 'priority', 'subspecialty', 'firm', 'my_tickets', 'closed_tickets') as $pass_thru) {
+			$res->$pass_thru = $queue->$pass_thru;
+		}
+		return $res;
+	}
+
+	protected function resourceToModel($resource, $model)
+	{
+		foreach (array('patient_list', 'priority', 'subspecialty', 'firm', 'my_tickets', 'closed_tickets') as $pass_thru) {
+			$model->$pass_thru = $resource->$pass_thru;
+		}
+		$this->saveModel($model);
+	}
 
 }
