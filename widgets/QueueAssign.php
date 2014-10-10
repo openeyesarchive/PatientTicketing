@@ -19,6 +19,7 @@
 
 namespace OEModule\PatientTicketing\widgets;
 use OEModule\PatientTicketing\models;
+
 /**
  * Class QueueAssign
  *

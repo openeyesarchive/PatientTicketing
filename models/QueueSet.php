@@ -46,7 +46,7 @@ class QueueSet extends \BaseActiveRecordVersioned {
 	public function rules()
 	{
 		return array(
-			array('name, description, category_id, summary_link, allow_null_priority, permissioned_users', 'safe'),
+			array('name, description, category_id, summary_link, allow_null_priority, permissioned_users, default_queue_id', 'safe'),
 			array('name, category_id', 'required'),
 			array('initial_queue_id', 'required', 'except' => 'formCreate')
 		);
@@ -64,6 +64,7 @@ class QueueSet extends \BaseActiveRecordVersioned {
 			'initial_queue' => array(self::BELONGS_TO, 'OEModule\PatientTicketing\models\Queue', 'initial_queue_id'),
 			'permissioned_users' => array(self::MANY_MANY, 'User', 'patientticketing_queuesetuser(queueset_id, user_id)'),
 			'filter' => array(self::BELONGS_TO, 'OEModule\PatientTicketing\models\QueueSetFilter','queueset_filter'),
+			'default_queue' => array(self::BELONGS_TO, 'OEModule\PatientTicketing\models\Queue', 'default_queue_id'),
 		);
 	}
 
@@ -74,14 +75,15 @@ class QueueSet extends \BaseActiveRecordVersioned {
 	{
 		return array(
 			'category_id' => 'Ticket Category',
-			'summary_link' => 'Link Tickets to Episode Summary'
+			'summary_link' => 'Link Tickets to Episode Summary',
+			'default_queue_id' => 'Default queue',
 		);
 	}
 
 	public function behaviors()
 	{
 		return array(
-				'LookupTable' => 'LookupTable',
+			'LookupTable' => 'LookupTable',
 		);
 	}
 

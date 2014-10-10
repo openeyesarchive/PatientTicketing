@@ -1,8 +1,9 @@
+<?php
 /**
  * OpenEyes
  *
  * (C) Moorfields Eye Hospital NHS Foundation Trust, 2008-2011
- * (C) OpenEyes Foundation, 2011-2013
+ * (C) OpenEyes Foundation, 2011-2014
  * This file is part of OpenEyes.
  * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -12,30 +13,45 @@
  * @link http://www.openeyes.org.uk
  * @author OpenEyes <info@openeyes.org.uk>
  * @copyright Copyright (c) 2008-2011, Moorfields Eye Hospital NHS Foundation Trust
- * @copyright Copyright (c) 2011-2013, OpenEyes Foundation
+ * @copyright Copyright (c) 2011-2014, OpenEyes Foundation
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
-/* line 17, ../sass/components/_ticket_table.scss */
-tr.history {
-  background-color: #ccc !important;
-}
 
-/* line 21, ../sass/components/_ticket_table.scss */
-tr.disabled {
-  opacity: 0.6;
-}
+namespace OEModule\PatientTicketing\models;
 
-/* line 25, ../sass/components/_ticket_table.scss */
-#ticket-list td {
-  vertical-align: top;
-}
+/**
+ * This is the model class for table "patientticketing_queue".
+ *
+ * The followings are the available columns in table:
+ * @property string $id
+ * @property string $queue_id
+ * @property string $event_type_id
+ *
+ * The followings are the available model relations:
+ *
+ * @property \OEModule\PatientTicketing\models\Queue $queue
+ * @property EventType $event_type_id
+ */
+class QueueEventType extends \BaseActiveRecordVersioned
+{
+	public function tableName()
+	{
+		return 'patientticketing_queue_event_type';
+	}
 
-/* line 17, ../sass/components/_filter_table.scss */
-.filter-row td {
-  vertical-align: top;
-}
+	public function rules()
+	{
+		return array(
+			array('event_type_id', 'safe'),
+			array('event_type_id', 'required'),
+		);
+	}
 
-/* line 18, ../sass/components/_move_form.scss */
-.moveTicket .event-type-link {
-  margin-bottom: 5px;
+	public function relations()
+	{
+		return array(
+			'queue' => array(self::BELONGS_TO, 'Queue', 'queue_id'),
+			'event_type' => array(self::BELONGS_TO, 'EventType', 'event_type_id'),
+		);
+	}
 }

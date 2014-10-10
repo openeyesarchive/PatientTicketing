@@ -128,7 +128,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 								<?php } ?>
 								<td>
 									<button id="search_button" class="secondary small" type="submit">
-										<?php if ($patient_filter) {?>Apply<? } else {?>Search<?php } ?>
+										<?php if ($patient_filter) {?>Apply<? } else {?>Search<?php }?>
 									</button>
 								</td>
 							</tr>
@@ -137,7 +137,6 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 
 					</div>
 				</div>
-
 			</div>
 		</div>
 		<?php } ?>
@@ -147,12 +146,12 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 		<div class="large-12 column">
 			<div class="alert-box warning">Filtering for <?= $patient_filter->getFullName() ?></div>
 		</div>
-	<?php } ?>
+	<?php }?>
 
 	<?php $this->renderPartial('_ticketlist', array('tickets' => $tickets, 'pages' => $pages, 'can_process' => $can_process)); ?>
 
 <script type="text/html" id="ticketcontroller-queue-select-template">
-	<form>
+	<form class="moveTicket" data-event-types='{{{event_types}}}' data-ticketinfo='{{{ticketInfo}}}'>
 	<input type="hidden" name="YII_CSRF_TOKEN" value="{{CSRF_TOKEN}}" />
 	<input type="hidden" name="from_queue_id" value="{{current_queue_id}}" />
 	<div>
@@ -184,6 +183,9 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 		<div class="buttons">
 			<button class="secondary small ok" type="button">OK</button>
 			<button class="warning small cancel" type="button">Cancel</button>
+		</div>
+		<div class="event-types">
+			{{{event_type_links}}}
 		</div>
 	</div>
 	</form>

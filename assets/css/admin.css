@@ -30,6 +30,10 @@
 	bottom: 0px;
 }
 
+.jOrgChart .queue {
+	overflow: hidden;
+}
+
 .jOrgChart table {
 	border-collapse: separate;
 	border: 0px;
@@ -88,6 +92,10 @@ ul.queueset-list .queueset-link:hover {
 
 li .queueset-admin {
 	float: right;
+}
+
+ul .queueset-item  {
+	overflow: hidden;
 }
 
 li.queueset-item .queueset-admin .admin-action:hover {

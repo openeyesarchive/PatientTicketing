@@ -96,7 +96,7 @@ class Ticket extends \BaseActiveRecordVersioned
 			'initial_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'initial_queue_assignment.assignment_date'),
 			'current_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'current_queue_assignment.assignment_date desc'),
 			'initial_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'queue_assignments', 'order' => 'queue_assignments.assignment_date'),
-			'current_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'queue_assignments', 'order' => 'queue_assignments.assignment_date desc')
+			'current_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'queue_assignments', 'order' => 'queue_assignments.assignment_date desc'),
 		);
 	}
 
@@ -209,7 +209,8 @@ class Ticket extends \BaseActiveRecordVersioned
 			'id' => $this->id,
 			'patient_name' => $this->patient->getFullName(),
 			'current_queue_name' => $this->current_queue->name,
-			'current_queue_id' => $this->current_queue->id
+			'current_queue_id' => $this->current_queue->id,
+			'patient_id' => $this->patient->id,
 		);
 		if ($json) {
 			return \CJSON::encode($res);
@@ -237,4 +238,45 @@ class Ticket extends \BaseActiveRecordVersioned
 		return $this->current_queue_assignment->notes;
 	}
 
+	public function getDisplayQueue()
+	{
+		$current_queue = $this->current_queue;
+
+		if (!$service = Yii::app()->service->getService('PatientTicketing_QueueSet')) {
+			throw new Exception("Service not found: PatientTicketing_QueueSet");
+		}
+
+		$queueset = $service->getQueueSetForQueue($current_queue->id);
+
+		if ($queueset->default_queue) {
+			foreach ($this->queue_assignments as $assignment) {
+				if ($assignment->queue_id == $queueset->default_queue->getId()) {
+					return $queueset->default_queue;
+				}
+			}
+		}
+
+		return $current_queue;
+	}
+
+	public function getDisplayQueueAssignment()
+	{
+		$current_queue = $this->current_queue;
+
+		if (!$service = Yii::app()->service->getService('PatientTicketing_QueueSet')) {
+			throw new Exception("Service not found: PatientTicketing_QueueSet");
+		}
+
+		$queueset = $service->getQueueSetForQueue($current_queue->id);
+
+		if ($queueset->default_queue) {
+			foreach ($this->queue_assignments as $assignment) {
+				if ($assignment->queue_id == $queueset->default_queue->getId()) {
+					return $assignment;
+				}
+			}
+		}
+
+		return $this->current_queue_assignment;
+	}
 }
