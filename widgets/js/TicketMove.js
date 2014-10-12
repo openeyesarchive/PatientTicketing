@@ -63,6 +63,9 @@
 		}
 	}
 
+	/**
+	 * Reload the patient alert banner
+	 */
 	TicketMoveController.prototype.reloadPatientAlert = function()
 	{
 		$.ajax({
@@ -83,6 +86,7 @@
 	TicketMoveController.prototype.submitForm = function()
 	{
 		var form = $(this.options.formSelector);
+		disableButtons(this.options.formSelector);
 		var errors = form.find('.alert-box');
 
 		if (!form.find('[name=to_queue_id]').val()) {
@@ -108,6 +112,9 @@
 			error: function(jqXHR, status, error) {
 				this.reloadPatientAlert();
 				new OpenEyes.UI.Dialog.Alert({content: 'Could not move ticket'}).open();
+			}.bind(this),
+			complete: function() {
+				enableButtons(this.options.formSelector);
 			}.bind(this)
 		})
 	}

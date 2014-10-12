@@ -19,7 +19,15 @@
 ?>
 
 
-<?php if (count($tickets) && Yii::app()->user->checkAccess('OprnViewClinical')) {
+<?php
+if ($closing_flsh = Yii::app()->user->getFlash('patient-ticketing-closing')) {
+?>
+	<div class="alert-box with-icon success">
+		<?= $closing_flsh; ?>
+	</div>
+<?php }
+
+if (count($tickets) && Yii::app()->user->checkAccess('OprnViewClinical')) {
 	$qs_svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
 	if ($this->assetFolder) {?>
 		<script type="text/javascript" src="<?php echo $this->assetFolder?>/<?php echo $this->shortName ?>.js"></script>
@@ -52,8 +60,6 @@
 								);
 							}
 							?>
-
-							<!-- Patient is in  - <a href="<?= Yii::app()->createURL("//PatientTicketing/default/", array('cat_id' => $cat->id, 'patient_id' => $this->patient->id)) ?>"><?= $ticket->current_queue->name ?> </a> -->
 						</div>
 				</div>
 			<?php }?>

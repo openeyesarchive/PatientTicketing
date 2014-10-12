@@ -20,9 +20,19 @@
 
 <?php
 	$t_svc = Yii::app()->service->getService('PatientTicketing_Ticket');
+	$q_svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
 	if ($this->assetFolder) {?>
 		<script type="text/javascript" src="<?php echo $this->assetFolder?>/<?php echo $this->shortName ?>.js"></script>
-<?php	} ?>
+<?php
+	}
+	if ($flash_message = Yii::app()->user->getFlash('patient-ticketing-' . $q_svc->getQueueSetForTicket($this->ticket->id)->getId())) {
+?>
+		<div class="alert-box with-icon success">
+			<?php echo $flash_message; ?>
+		</div>
+	<?php
+	}
+?>
 
 
 <form id="PatientTicketing-moveForm" class="moveTicket" data-patient-id="<?= $this->ticket->patient_id ?>">

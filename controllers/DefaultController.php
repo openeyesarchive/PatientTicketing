@@ -313,6 +313,17 @@ class DefaultController extends \BaseModuleController
 					$ticket->save();
 				}
 				$transaction->commit();
+				$t_svc = Yii::app()->service->getService('PatientTicketing_Ticket');
+
+				$flsh_id = 'patient-ticketing-';
+
+				if ($to_queue->outcomes) {
+					$flsh_id .= $queueset->getId();
+				}
+				else {
+					$flsh_id .= 'closing';
+				}
+				Yii::app()->user->setFlash($flsh_id, $t_svc->getCategoryForTicket($ticket)->name . ' - moved to ' . $to_queue->name);
 			}
 			else {
 				throw new Exception("unable to assign ticket to queue");
