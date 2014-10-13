@@ -49,14 +49,13 @@ $this->renderPartial('//elements/form_errors', array('errors' => $errors, 'botto
 	<?php if (@$queueset_filter) {?>
 	<div>
 			<h3>Search Filters:</h3>
-		<?php echo $form->radioBoolean($queueset_filter, 'patient_list'); ?>
 		<?php echo $form->radioBoolean($queueset_filter, 'priority'); ?>
 		<?php echo $form->radioBoolean($queueset_filter, 'subspecialty'); ?>
 		<?php echo $form->radioBoolean($queueset_filter, 'firm'); ?>
 		<?php echo $form->radioBoolean($queueset_filter, 'my_tickets'); ?>
 		<?php echo $form->radioBoolean($queueset_filter, 'closed_tickets'); ?>
 	</div>
-	<?php } ?>
+	<?php }?>
 
 	<?php if ($queue) {?>
 		<h3>Initial Queue:</h3>

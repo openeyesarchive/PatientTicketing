@@ -21,13 +21,10 @@ namespace OEModule\PatientTicketing\services;
 
 
 class PatientTicketing_QueueFilterSettings extends \services\Resource {
-
 	public $id;
-	public $patient_list;
 	public $priority;
 	public $subspecialty;
 	public $firm;
 	public $my_tickets;
 	public $closed_tickets;
-
 }

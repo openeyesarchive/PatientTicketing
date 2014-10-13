@@ -35,7 +35,6 @@ class PatientTicketing_QueueFilterSettingsServiceTest extends \CDbTestCase
 	{
 		$svc = Yii::app()->service->getService('PatientTicketing_QueueFilterSettings');
 
-		$this->assertEquals($svc->read(1)->patient_list,true);
 		$this->assertEquals($svc->read(1)->priority,true);
 		$this->assertEquals($svc->read(1)->subspecialty,true);
 		$this->assertEquals($svc->read(1)->firm,true);
@@ -47,7 +46,6 @@ class PatientTicketing_QueueFilterSettingsServiceTest extends \CDbTestCase
 	{
 		$svc = Yii::app()->service->getService('PatientTicketing_QueueFilterSettings');
 
-		$this->assertEquals($svc->read(2)->patient_list,false);
 		$this->assertEquals($svc->read(2)->priority,false);
 		$this->assertEquals($svc->read(2)->subspecialty,false);
 		$this->assertEquals($svc->read(2)->firm,false);

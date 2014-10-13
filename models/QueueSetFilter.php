@@ -44,7 +44,7 @@ class QueueSetFilter extends \BaseActiveRecordVersioned {
 	public function rules()
 	{
 		return array(
-			array('patient_list, priority, subspecialty, firm, my_tickets, closed_tickets', 'safe')
+			array('priority, subspecialty, firm, my_tickets, closed_tickets', 'safe')
 		);
 	}
 

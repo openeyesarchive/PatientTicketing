@@ -2,7 +2,6 @@
 return array(
 	'filter1' => array(
 		'id' => 1,
-		'patient_list' => true,
 		'priority' => true,
 		'subspecialty' => true,
 		'firm' => true,
@@ -11,7 +10,6 @@ return array(
 	),
 	'filter2' => array(
 		'id' => 2,
-		'patient_list' => false,
 		'priority' => false,
 		'subspecialty' => false,
 		'firm' => false,

@@ -45,8 +45,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 		<input type="hidden" name="queueset_id" value="<?=$queueset->getId()?>" />
 		<?php
 		$filter_settings = $queueset->filter_settings;
-		if ($filter_settings->patient_list || $filter_settings->priority || $filter_settings->subspecialty || $filter_settings->firm || $filter_settings->my_tickets || $filter_settings->closed_tickets) { ?>
-
+		?>
 		<div class="large-12 column">
 			<div class="panel">
 				<div class="row">
@@ -54,30 +53,27 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 						<table class="grid">
 							<thead>
 							<tr>
-								<?php if ($filter_settings->patient_list) { ?>
 								<th>Patient List:</th>
-								<?php } ?>
-								<?php if ($filter_settings->priority) { ?>
-								<th>Priority:</th>
-								<?php } ?>
-								<?php if ($filter_settings->subspecialty) { ?>
-								<th>Subspecialty:</th>
-								<?php } ?>
-								<?php if ($filter_settings->firm) { ?>
-								<th>Firm:</th>
-								<?php } ?>
-								<?php if ($filter_settings->my_tickets) { ?>
-								<th nowrap>My Tickets:</th>
-								<?php } ?>
-								<?php if ($filter_settings->closed_tickets) { ?>
-								<th nowrap>Closed Tickets:</th>
-								<?php } ?>
+								<?php if ($filter_settings->priority) {?>
+									<th>Priority:</th>
+								<?php }?>
+								<?php if ($filter_settings->subspecialty) {?>
+									<th>Subspecialty:</th>
+								<?php }?>
+								<?php if ($filter_settings->firm) {?>
+									<th>Firm:</th>
+								<?php }?>
+								<?php if ($filter_settings->my_tickets) {?>
+									<th nowrap>My Tickets:</th>
+								<?php }?>
+								<?php if ($filter_settings->closed_tickets) {?>
+									<th nowrap>Closed Tickets:</th>
+								<?php }?>
 								<th>&nbsp;</th>
 							</tr>
 							</thead>
 							<tbody>
 							<tr class="filter-row">
-								<?php if ($filter_settings->patient_list) { ?>
 								<td>
 									<?php
 									$this->widget('application.widgets.MultiSelectList', array(
@@ -90,8 +86,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 									?>
 
 								</td>
-								<?php } ?>
-								<?php if ($filter_settings->priority) { ?>
+								<?php if ($filter_settings->priority) {?>
 								<td>
 									<?php $this->widget('application.widgets.MultiSelectList', array(
 													'field' => 'priority-ids',
@@ -101,13 +96,13 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 													'noSelectionsMessage' => 'All Priorities')
 									) ?>
 								</td>
-								<?php } ?>
-								<?php if ($filter_settings->subspecialty) { ?>
+								<?php }?>
+								<?php if ($filter_settings->subspecialty) {?>
 								<td>
 									<?php echo CHtml::dropDownList('subspecialty-id', @$_POST['subspecialty-id'], Subspecialty::model()->getList(), array('empty'=>'All specialties', 'disabled' => (@$_POST['emergency_list']==1 ? 'disabled' : '')))?>
 								</td>
-								<?php } ?>
-								<?php if ($filter_settings->firm) { ?>
+								<?php }?>
+								<?php if ($filter_settings->firm) {?>
 								<td>
 									<?php if (!@$_POST['subspecialty-id']) {?>
 										<?php echo CHtml::dropDownList('firm-id', '', array(), array('empty'=>'All firms', 'disabled' => 'disabled'))?>
@@ -115,17 +110,17 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 										<?php echo CHtml::dropDownList('firm-id', @$_POST['firm-id'], Firm::model()->getList(@$_POST['subspecialty-id']), array('empty'=>'All firms', 'disabled' => (@$_POST['emergency_list']==1 ? 'disabled' : '')))?>
 									<?php }?>
 								</td>
-								<?php } ?>
-								<?php if ($filter_settings->my_tickets) { ?>
+								<?php }?>
+								<?php if ($filter_settings->my_tickets) {?>
 								<td align="middle">
 									<?php echo CHtml::checkBox('my-tickets', (@$_POST['my-tickets'] == 1))?>
 								</td>
-								<?php } ?>
-								<?php if ($filter_settings->closed_tickets) { ?>
+								<?php }?>
+								<?php if ($filter_settings->closed_tickets) {?>
 								<td align="middle">
 									<?php echo CHtml::checkBox('closed-tickets', (@$_POST['closed-tickets'] == 1))?>
 								</td>
-								<?php } ?>
+								<?php }?>
 								<td>
 									<button id="search_button" class="secondary small" type="submit">
 										<?php if ($patient_filter) {?>Apply<? } else {?>Search<?php }?>
@@ -139,7 +134,6 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 				</div>
 			</div>
 		</div>
-		<?php } ?>
 		<?php $this->endWidget()?>
 	</div>
 	<?php if ($patient_filter) {?>

@@ -28,7 +28,7 @@ class PatientTicketing_QueueFilterSettingsService  extends \services\ModelServic
 	public function modelToResource($queue)
 	{
 		$res = parent::modelToResource($queue);
-		foreach (array('id', 'patient_list', 'priority', 'subspecialty', 'firm', 'my_tickets', 'closed_tickets') as $pass_thru) {
+		foreach (array('id', 'priority', 'subspecialty', 'firm', 'my_tickets', 'closed_tickets') as $pass_thru) {
 			$res->$pass_thru = $queue->$pass_thru;
 		}
 		return $res;
@@ -36,7 +36,7 @@ class PatientTicketing_QueueFilterSettingsService  extends \services\ModelServic
 
 	protected function resourceToModel($resource, $model)
 	{
-		foreach (array('patient_list', 'priority', 'subspecialty', 'firm', 'my_tickets', 'closed_tickets') as $pass_thru) {
+		foreach (array('priority', 'subspecialty', 'firm', 'my_tickets', 'closed_tickets') as $pass_thru) {
 			$model->$pass_thru = $resource->$pass_thru;
 		}
 		$this->saveModel($model);
