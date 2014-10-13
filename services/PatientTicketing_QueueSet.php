@@ -19,12 +19,13 @@
 
 namespace OEModule\PatientTicketing\services;
 
-
 class PatientTicketing_QueueSet extends \services\Resource {
 	public $name;
 	public $description;
 	public $active;
 	public $initial_queue;
 	public $permissioned_user_ids = array();
+	public $filter_settings;
+	public $default_queue;
 
 }

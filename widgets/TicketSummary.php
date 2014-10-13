@@ -19,12 +19,10 @@
 
 namespace OEModule\PatientTicketing\widgets;
 
-
 class TicketSummary extends \CWidget {
 	public $ticket;
 	public function run()
 	{
 		$this->render('TicketSummary', array('ticket' => $this->ticket));
 	}
-
 }

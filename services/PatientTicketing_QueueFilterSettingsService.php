@@ -16,32 +16,30 @@
  * @copyright Copyright (c) 2011-2014, OpenEyes Foundation
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
-
-namespace OEModule\PatientTicketing\widgets;
+namespace OEModule\PatientTicketing\services;
 use OEModule\PatientTicketing\models;
+use Yii;
 
-/**
- * Class QueueAssign
- *
- * Widget to generate the assignment form for a Queue
- *
- * @package OEModule\PatientTicketing\widgets
- */
-class QueueAssign extends \CWidget {
-	public $queue_id;
-	public $label_width = 4;
-	public $data_width = 8;
-	public $queue_select_label = 'Queue';
-	public $patient_id;
+class PatientTicketing_QueueFilterSettingsService  extends \services\ModelService {
 
-	public function run()
+	static protected $operations = array(self::OP_CREATE, self::OP_READ, self::OP_SEARCH, self::OP_DELETE);
+	static protected $primary_model = 'OEModule\PatientTicketing\models\QueueSetFilter';
+
+	public function modelToResource($queue)
 	{
-		if ($this->queue_id) {
-			$queue = models\Queue::model()->findByPk($this->queue_id);
+		$res = parent::modelToResource($queue);
+		foreach (array('id', 'patient_list', 'priority', 'subspecialty', 'firm', 'my_tickets', 'closed_tickets') as $pass_thru) {
+			$res->$pass_thru = $queue->$pass_thru;
 		}
-		else {
-			$queue = null;
-		}
-		$this->render('QueueAssign', array('queue' => $queue));
+		return $res;
 	}
+
+	protected function resourceToModel($resource, $model)
+	{
+		foreach (array('patient_list', 'priority', 'subspecialty', 'firm', 'my_tickets', 'closed_tickets') as $pass_thru) {
+			$model->$pass_thru = $resource->$pass_thru;
+		}
+		$this->saveModel($model);
+	}
+
 }

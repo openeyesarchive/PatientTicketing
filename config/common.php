@@ -54,6 +54,7 @@ return array(
 				'OEModule\PatientTicketing\services\PatientTicketing_QueueSetService',
 				'OEModule\PatientTicketing\services\PatientTicketing_QueueSetCategoryService',
 				'OEModule\PatientTicketing\services\PatientTicketing_TicketService',
+				'OEModule\PatientTicketing\services\PatientTicketing_QueueFilterSettingsService',
 			)
 		)
 	)

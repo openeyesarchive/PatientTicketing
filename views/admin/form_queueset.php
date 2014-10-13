@@ -33,12 +33,31 @@ $this->renderPartial('//elements/form_errors', array('errors' => $errors, 'botto
 ?>
 	<h3>Queue Set:</h3>
 	<div>
+		<?php
+		if (!$service = Yii::app()->service->getService('PatientTicketing_QueueSet')) {
+			throw new Exception("Service not found: PatientTicketing_QueueSet");
+		}
+		$queueset_resource = $service->modelToResource($queueset);
+		?>
 		<?php echo $form->dropdownList($queueset, 'category_id', \CHtml::listData(OEModule\PatientTicketing\models\QueueSetCategory::model()->activeOrPk($queueset->category_id)->findAll(), 'id', 'name')); ?>
 		<?php echo $form->textField($queueset, 'name'); ?>
 		<?php echo $form->textArea($queueset, 'description'); ?>
 		<?php echo $form->radioBoolean($queueset, 'allow_null_priority'); ?>
 		<?php echo $form->radioBoolean($queueset, 'summary_link'); ?>
+	<?php echo $form->dropDownList($queueset, 'default_queue_id', \CHtml::listData($service->getQueueSetQueues($queueset_resource),'id','name'), array('empty' => '- None -'))?>
 	</div>
+	<?php if (@$queueset_filter) {?>
+	<div>
+			<h3>Search Filters:</h3>
+		<?php echo $form->radioBoolean($queueset_filter, 'patient_list'); ?>
+		<?php echo $form->radioBoolean($queueset_filter, 'priority'); ?>
+		<?php echo $form->radioBoolean($queueset_filter, 'subspecialty'); ?>
+		<?php echo $form->radioBoolean($queueset_filter, 'firm'); ?>
+		<?php echo $form->radioBoolean($queueset_filter, 'my_tickets'); ?>
+		<?php echo $form->radioBoolean($queueset_filter, 'closed_tickets'); ?>
+	</div>
+	<?php } ?>
+
 	<?php if ($queue) {?>
 		<h3>Initial Queue:</h3>
 		<div>
@@ -47,7 +66,7 @@ $this->renderPartial('//elements/form_errors', array('errors' => $errors, 'botto
 			<?php echo $form->textArea($queue, 'report_definition'); ?>
 			<?php echo $form->textArea($queue, 'assignment_fields'); ?>
 		</div>
-	<?php } ?>
+	<?php }?>
 
 <?php
 $this->endWidget();

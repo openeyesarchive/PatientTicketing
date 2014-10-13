@@ -17,31 +17,17 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
 
-namespace OEModule\PatientTicketing\widgets;
-use OEModule\PatientTicketing\models;
+namespace OEModule\PatientTicketing\services;
 
-/**
- * Class QueueAssign
- *
- * Widget to generate the assignment form for a Queue
- *
- * @package OEModule\PatientTicketing\widgets
- */
-class QueueAssign extends \CWidget {
-	public $queue_id;
-	public $label_width = 4;
-	public $data_width = 8;
-	public $queue_select_label = 'Queue';
-	public $patient_id;
 
-	public function run()
-	{
-		if ($this->queue_id) {
-			$queue = models\Queue::model()->findByPk($this->queue_id);
-		}
-		else {
-			$queue = null;
-		}
-		$this->render('QueueAssign', array('queue' => $queue));
-	}
+class PatientTicketing_QueueFilterSettings extends \services\Resource {
+
+	public $id;
+	public $patient_list;
+	public $priority;
+	public $subspecialty;
+	public $firm;
+	public $my_tickets;
+	public $closed_tickets;
+
 }
