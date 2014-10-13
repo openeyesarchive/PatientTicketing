@@ -34,7 +34,7 @@ return array(
 				'id' => 3,
 				'patient_id' => 1,
 				'assignee_user_id' => 1,
-				'assignee_date' => '2014-09-04',
+				'assignee_date' => '2014-09-05',
 		),
 		'ticket4' => array(
 				'id' => 4,

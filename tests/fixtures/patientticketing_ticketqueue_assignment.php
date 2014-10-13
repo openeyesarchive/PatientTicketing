@@ -21,7 +21,7 @@ return array(
 	'ass1' => array(
 		'ticket_id' => 1,
 		'queue_id' => 1,
-		'assignment_date' => '2014-09-01',
+		'assignment_date' => '2014-09-04',
 	),
 	'ass2' => array(
 		'ticket_id' => 2,
@@ -31,12 +31,12 @@ return array(
 	'ass3' => array(
 		'ticket_id' => 3,
 		'queue_id' => 12,
-		'assignment_date' => '2014-09-01',
+		'assignment_date' => '2014-09-05',
 	),
 	'ass4' => array(
 		'ticket_id' => 3,
 		'queue_id' => 13,
-		'assignment_date' => '2014-09-02',
+		'assignment_date' => '2014-09-07',
 	),
 	'ass5' => array(
 		'ticket_id' => 4,

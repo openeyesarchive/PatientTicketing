@@ -65,7 +65,10 @@ class PatientTicketing_TicketService extends \services\ModelService {
 	 */
 	public function getTicketsForPatient(\Patient $patient, $active = true)
 	{
-		$tickets = models\Ticket::model()->with('current_queue')->findAllByAttributes(array('patient_id' => $patient->id));
+		$criteria = new \CDbCriteria(array('order' => 't.created_date desc'));
+		$criteria->addColumnCondition(array('patient_id' => $patient->id));
+
+		$tickets = models\Ticket::model()->with('current_queue')->findAll($criteria);
 		if ($active) {
 			$res = array();
 			foreach ($tickets as $t) {
@@ -93,5 +96,5 @@ class PatientTicketing_TicketService extends \services\ModelService {
 
 		return $qs->category;
 	}
-	
+
 }

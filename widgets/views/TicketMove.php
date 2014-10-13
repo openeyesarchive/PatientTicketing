@@ -45,7 +45,9 @@
 					</div>
 					<div class="large-3 column">
 						<?php
-							echo CHtml::dropDownList("to_queue_id", $this->outcome_queue_id, $this->outcome_options, array('empty' => ' - Please Select -'));
+							echo CHtml::dropDownList("to_queue_id", $this->outcome_queue_id, $this->outcome_options, array(
+									'id' => 'to_queue_id-' . $this->ticket->id,
+									'empty' => ' - Please Select -'));
 						?>
 					</div>
 					<div class="large-1 column end">

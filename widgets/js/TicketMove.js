@@ -51,15 +51,15 @@
 	 *
 	 * @param integer id
 	 */
-	TicketMoveController.prototype.setQueueAssForm = function(id)
+	TicketMoveController.prototype.setQueueAssForm = function(form, id)
 	{
 		if (id) {
-			this.getQueueAssForm(id, function onSuccess(form) {
-				$(this.options.formSelector).find(this.options.queueAssignmentPlaceholderSelector).html(form)
+			this.getQueueAssForm(id, function onSuccess(assForm) {
+				form.find(this.options.queueAssignmentPlaceholderSelector).html(assForm)
 			}.bind(this));
 		}
 		else {
-			$(this.dialog.content.html).find(this.options.queueAssignmentPlaceholderSelector).html('');
+			form.find(this.options.queueAssignmentPlaceholderSelector).html('');
 		}
 	}
 
@@ -123,13 +123,20 @@
 	$(document).ready(function() {
 		var ticketMoveController = new TicketMoveController();
 
-		$('#to_queue_id').on('change', function(e) {
-			ticketMoveController.setQueueAssForm($(e.target).val());
+		$(ticketMoveController.options.formClass).each(function() {
+
+			$(this).find('.ok').on('click', function(e) {
+				e.preventDefault();
+				ticketMoveController.submitForm($(this).parents('form'));
+			});
+
+			$(this).find('select[name="to_queue_id"]').on('change', function(e) {
+				ticketMoveController.setQueueAssForm($(this), $(e.target).val());
+			}.bind(this)
+			);
+
 		});
-		$(ticketMoveController.options.formClass + " .ok").on('click', function(e) {
-			e.preventDefault();
-			ticketMoveController.submitForm($(this).parents('form'));
-		})
+
 	});
 
 })();

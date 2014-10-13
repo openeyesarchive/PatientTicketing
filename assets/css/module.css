@@ -36,6 +36,10 @@ tr.disabled {
 }
 
 /* line 18, ../sass/components/_move_form.scss */
-.moveTicket .event-type-link {
-  margin-bottom: 5px;
+.PatientTicketing-moveTicket ul {
+  list-style-type: none;
+}
+/* line 21, ../sass/components/_move_form.scss */
+.PatientTicketing-moveTicket li {
+  margin-bottom: 6px;
 }

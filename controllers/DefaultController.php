@@ -506,7 +506,8 @@ class DefaultController extends \BaseModuleController
 				unset($curr[$k]);
 			}
 		}
-		Yii::app()->session['patientticket_ticket_ids'] = array_unique($curr);
+		// ensure that tickets are only referenced once, and that the list is zero indexed.
+		Yii::app()->session['patientticket_ticket_ids'] = array_values(array_unique($curr));
 	}
 
 	/**

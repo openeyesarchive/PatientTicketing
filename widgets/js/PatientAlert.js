@@ -17,7 +17,7 @@
  */
 
 $(document).ready(function () {
-	$('#patient-alert-patientticketing .toggle-trigger').on('click', function(e) {
+	$(document).on('click', '#patient-alert-patientticketing .alert-box .toggle-trigger', function(e) {
 		if ($(this).hasClass('toggle-show')) {
 			target = "/PatientTicketing/default/collapseTicket";
 		}
