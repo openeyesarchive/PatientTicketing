@@ -153,7 +153,7 @@ class AdminController extends \ModuleAdminController {
 			throw new \CHttpException(404, "Queue Set not found with id {$id}");
 		}
 
-	  $queueset_filter = models\QueueSetFilter::model()->find($queueset->queueset_filter_id);
+	  $queueset_filter = models\QueueSetFilter::model()->findByPk($queueset->queueset_filter_id);
 
 		if (!empty($_POST)) {
 
