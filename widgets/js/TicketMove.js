@@ -126,6 +126,7 @@
 			ticketMoveController.setQueueAssForm($(e.target).val());
 		});
 		$(this).on('click', ticketMoveController.options.formSelector + " .ok", function(e) {
+			e.preventDefault();
 			ticketMoveController.submitForm();
 		})
 	});
