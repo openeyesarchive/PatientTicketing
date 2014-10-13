@@ -123,19 +123,20 @@
 	$(document).ready(function() {
 		var ticketMoveController = new TicketMoveController();
 
-		$(ticketMoveController.options.formClass).each(function() {
-
-			$(this).find('.ok').on('click', function(e) {
-				e.preventDefault();
-				ticketMoveController.submitForm($(this).parents('form'));
-			});
-
-			$(this).find('select[name="to_queue_id"]').on('change', function(e) {
-				ticketMoveController.setQueueAssForm($(this), $(e.target).val());
-			}.bind(this)
-			);
-
+		$(document).on('click', ticketMoveController.options.formClass + ' .ok', function(e) {
+			e.preventDefault();
+			ticketMoveController.submitForm($(this).parents('form'));
 		});
+
+		$(document).on('click', ticketMoveController.options.formClass + ' .cancel', function(e) {
+			$(this).parents('.alert-box').find('.js-toggle').trigger('click');
+		});
+
+
+		$(document).on('change', ticketMoveController.options.formClass + ' select[name="to_queue_id"]', function(e) {
+			ticketMoveController.setQueueAssForm($(this).parents('form'), $(e.target).val());
+		});
+
 
 	});
 
