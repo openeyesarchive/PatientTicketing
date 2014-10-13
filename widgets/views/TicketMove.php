@@ -21,10 +21,6 @@
 <?php
 	$t_svc = Yii::app()->service->getService('PatientTicketing_Ticket');
 	$q_svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
-	if ($this->assetFolder) {?>
-		<script type="text/javascript" src="<?php echo $this->assetFolder?>/<?php echo $this->shortName ?>.js"></script>
-<?php
-	}
 	if ($flash_message = Yii::app()->user->getFlash('patient-ticketing-' . $q_svc->getQueueSetForTicket($this->ticket->id)->getId())) {
 ?>
 		<div class="alert-box with-icon success">
@@ -35,7 +31,7 @@
 ?>
 
 
-<form id="PatientTicketing-moveForm" class="moveTicket" data-patient-id="<?= $this->ticket->patient_id ?>">
+<form id="PatientTicketing-moveForm-<?= $this->ticket->id ?>" class="PatientTicketing-moveTicket" data-patient-id="<?= $this->ticket->patient_id ?>">
 	<input type="hidden" name="YII_CSRF_TOKEN" value="<?= Yii::app()->request->csrfToken ?>" />
 	<input type="hidden" name="from_queue_id" value="<?= $this->ticket->current_queue->id ?>" />
 	<input type="hidden" name="ticket_id" value="<?= $this->ticket->id ?>" />

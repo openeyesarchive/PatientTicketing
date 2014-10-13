@@ -33,7 +33,7 @@ if (count($tickets) && Yii::app()->user->checkAccess('OprnViewClinical')) {
 		<script type="text/javascript" src="<?php echo $this->assetFolder?>/<?php echo $this->shortName ?>.js"></script>
 	<?php }?>
 
-	<div class="row" id="patient-alert-patientticketing">
+	<div class="row" id="patient-alert-patientticketing" data-patient-id="<?= $this->patient->id ?>">
 		<div class="large-12 column">
 			<?php foreach ($tickets as $ticket) {
 				$cat = $t_svc->getCategoryForTicket($ticket);

@@ -564,6 +564,12 @@ class DefaultController extends \BaseModuleController
 		$this->setTicketState($ticket, false);
 	}
 
+	/**
+	 * Load the Patient Alert widget for the given patient
+	 *
+	 * @param $patient_id
+	 * @throws \CHttpException
+	 */
 	public function actionGetPatientAlert($patient_id)
 	{
 		if (!$patient = \Patient::model()->findByPk((int)$patient_id)) {
