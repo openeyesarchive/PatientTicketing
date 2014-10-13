@@ -32,19 +32,16 @@ class TicketMove extends \CWidget {
 	public $assetFolder;
 	public $shortName;
 
-	public function init()
+	public function run()
 	{
-		// if the widget has javascript, load it in
+		//TODO: genericise this behaviour
 		$cls_name = explode('\\', get_class($this));
 		$this->shortName = array_pop($cls_name);
 		if (file_exists(dirname(__FILE__) . "/js/".$this->shortName.".js")) {
 			$this->assetFolder = Yii::app()->getAssetManager()->publish(dirname(__FILE__) . "/js/");
+			Yii::app()->getClientScript()->registerScriptFile($this->assetFolder . '/' . $this->shortName.".js");
 		}
-		parent::init();
-	}
 
-	public function run()
-	{
 		if ($this->ticket) {
 			$this->event_types = $this->ticket->current_queue->getRelatedEventTypes();
 			$this->ticket_info = $this->ticket->getInfoData(false);
@@ -55,7 +52,6 @@ class TicketMove extends \CWidget {
 				$this->outcome_options[$out['id']] = $out['name'];
 			};
 			if (count($od) == 1) {
-				// TODO: maybe set the POST value here?
 				$this->outcome_queue_id = $od[0]['id'];
 			}
 		}

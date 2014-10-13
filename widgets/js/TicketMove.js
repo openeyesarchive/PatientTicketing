@@ -3,14 +3,14 @@
 	function TicketMoveController(options) {
 		this.options = $.extend(true, {}, TicketMoveController._defaultOptions, options);
 		this.queueAssForms = {};
-		this.ticketId = $(this.options.formSelector).find("input[name='ticket_id']").val();
-		this.patientId = $(this.options.formSelector).data('patient-id');
+		this.patientId = $(this.options.patientAlertSelector).data('patient-id');
 	}
 
 	TicketMoveController._defaultOptions = {
 		queueAssignmentFormURI: "/PatientTicketing/default/getQueueAssignmentForm/",
 		reloadPatientAlertURI: "/PatientTicketing/default/getPatientAlert",
 		formSelector: "#PatientTicketing-moveForm",
+		formClass: '.PatientTicketing-moveTicket',
 		queueAssignmentPlaceholderSelector: "#PatientTicketing-queue-assignment",
 		ticketMoveURI: "/PatientTicketing/default/moveTicket/",
 		patientAlertSelector: "#patient-alert-patientticketing"
@@ -83,9 +83,8 @@
 	/**
 	 * process the Ticket Move form
 	 */
-	TicketMoveController.prototype.submitForm = function()
+	TicketMoveController.prototype.submitForm = function(form)
 	{
-		var form = $(this.options.formSelector);
 		disableButtons(this.options.formSelector);
 		var errors = form.find('.alert-box');
 
@@ -94,9 +93,11 @@
 			return;
 		}
 
+		var ticket_id = form.find('input[name="ticket_id"]').val();
+
 		errors.hide();
 		$.ajax({
-			url: this.options.ticketMoveURI + this.ticketId,
+			url: this.options.ticketMoveURI + ticket_id,
 			data: form.serialize(),
 			type: 'POST',
 			dataType: 'json',
@@ -122,12 +123,12 @@
 	$(document).ready(function() {
 		var ticketMoveController = new TicketMoveController();
 
-		$(this).on('change', '#to_queue_id', function(e) {
+		$('#to_queue_id').on('change', function(e) {
 			ticketMoveController.setQueueAssForm($(e.target).val());
 		});
-		$(this).on('click', ticketMoveController.options.formSelector + " .ok", function(e) {
+		$(ticketMoveController.options.formClass + " .ok").on('click', function(e) {
 			e.preventDefault();
-			ticketMoveController.submitForm();
+			ticketMoveController.submitForm($(this).parents('form'));
 		})
 	});
 
