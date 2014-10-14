@@ -33,10 +33,6 @@ return array(
 				'Queue Set Categories' => '/PatientTicketing/admin/queueSetCategories',
 				'Queue Sets' => '/PatientTicketing/admin/',
 			),
-
-			'patient_summary_id_widgets' => array(
-				array('class' => 'OEModule\PatientTicketing\widgets\PatientSummaryId'),
-			),
 			'patient_alert_widgets' => array(
 				array('class' => 'OEModule\PatientTicketing\widgets\PatientAlert'),
 			),
