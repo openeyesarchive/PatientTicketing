@@ -64,10 +64,10 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 									<th>Firm:</th>
 								<?php }?>
 								<?php if ($filter_settings->my_tickets) {?>
-									<th nowrap>My Tickets:</th>
+									<th nowrap>My Patients:</th>
 								<?php }?>
 								<?php if ($filter_settings->closed_tickets) {?>
-									<th nowrap>Closed Tickets:</th>
+									<th nowrap>Completed Patients:</th>
 								<?php }?>
 								<th>&nbsp;</th>
 							</tr>
