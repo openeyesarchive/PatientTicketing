@@ -72,7 +72,6 @@ class AdminController extends \ModuleAdminController {
 	{
 		$queueset = new models\QueueSet('formCreate');
 		$queue = new models\Queue();
-		$queueset_filter = new models\QueueSetFilter();
 		$queue->is_initial = true;
 		$errors = array();
 
@@ -95,16 +94,10 @@ class AdminController extends \ModuleAdminController {
 				$transaction = Yii::app()->db->beginTransaction();
 				try {
 					$queue->save();
-					$queueset_filter->save();
-
 
 					$queueset->initial_queue_id = $queue->id;
-					$queueset->queueset_filter_id = $queueset_filter->id;
 					$queueset->setScenario('insert');
 					$queueset->save();
-
-					$queueset_filter = $queueset->id;
-
 
 					$transaction->commit();
 					$resp = array(
@@ -153,14 +146,9 @@ class AdminController extends \ModuleAdminController {
 			throw new \CHttpException(404, "Queue Set not found with id {$id}");
 		}
 
-	  $queueset_filter = models\QueueSetFilter::model()->findByPk($queueset->queueset_filter_id);
-
 		if (!empty($_POST)) {
 
 			$queueset->attributes = $_POST[\CHtml::modelName($queueset)];
-			$queueset_filter->attributes = $_POST[\CHtml::modelName($queueset_filter)];
-
-
 
 			if (!$queueset->validate()) {
 				$resp = array(
@@ -178,7 +166,6 @@ class AdminController extends \ModuleAdminController {
 				$transaction = Yii::app()->db->beginTransaction();
 				try {
 					$queueset->save();
-					$queueset_filter->save();
 					$transaction->commit();
 					$resp = array(
 						'success' => true,
@@ -196,7 +183,6 @@ class AdminController extends \ModuleAdminController {
 		else {
 			$this->renderPartial('form_queueset', array(
 				'queueset' => $queueset,
-				'queueset_filter' => $queueset_filter,
 				'queue' => null,
 				'errors' => null
 			));

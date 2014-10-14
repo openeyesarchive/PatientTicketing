@@ -24,7 +24,11 @@ return array(
 		'active' => true,
 		'initial_queue_id' => 1,
 		'category_id' => 1,
-		'queueset_filter_id' =>1
+		'filter_priority' => 1,
+		'filter_subspecialty' => 1,
+		'filter_firm' => 1,
+		'filter_my_tickets' => 1,
+		'filter_closed_tickets' => 1,
 	),
 	'queueset2' => array(
 		'id' => 2,
@@ -32,7 +36,10 @@ return array(
 		'active' => 1,
 		'initial_queue_id' => 12,
 		'category_id' => 2,
-		'queueset_filter_id' =>2
-
+		'filter_priority' => 0,
+		'filter_subspecialty' => 0,
+		'filter_firm' => 0,
+		'filter_my_tickets' => 0,
+		'filter_closed_tickets' => 0,
 	)
 );

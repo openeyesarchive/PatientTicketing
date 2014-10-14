@@ -25,7 +25,6 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 
 	public static $QUEUE_SERVICE = 'PatientTicketing_Queue';
 	public static $QUEUESETCATEGORY_SERVICE = 'PatientTicketing_QueueSetCategory';
-	public static $QUEUEFILTERSETTINGS_SERVICE = 'PatientTicketing_QueueFilterSettings';
 
 	static protected $operations = array(self::OP_READ, self::OP_SEARCH, self::OP_DELETE);
 	static protected $primary_model = 'OEModule\PatientTicketing\models\QueueSet';
@@ -50,18 +49,12 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 	public function modelToResource($queueset)
 	{
 		$res = parent::modelToResource($queueset);
-		foreach (array('name', 'description', 'active') as $pass_thru) {
+		foreach (array('name', 'description', 'active', 'filter_priority', 'filter_subspecialty', 'filter_firm', 'filter_my_tickets', 'filter_closed_tickets') as $pass_thru) {
 			$res->$pass_thru = $queueset->$pass_thru;
 		}
 
 		$qsvc = Yii::app()->service->getService(self::$QUEUE_SERVICE);
 		$qscsvc = Yii::app()->service->getService(self::$QUEUESETCATEGORY_SERVICE);
-		$queue_filter_settings_service = Yii::app()->service->getService(self::$QUEUEFILTERSETTINGS_SERVICE);
-
-		if($queueset->queueset_filter_id)
-		{
-		$res->filter_settings = $queue_filter_settings_service->read($queueset->queueset_filter_id);
-		}
 
 		if ($queueset->initial_queue_id) {
 			$res->initial_queue = $qsvc->read($queueset->initial_queue_id);

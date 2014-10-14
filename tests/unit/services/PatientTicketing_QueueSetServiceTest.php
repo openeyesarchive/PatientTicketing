@@ -70,4 +70,24 @@ class PatientTicketing_QueueSetService extends \CDbTestCase
 		$qs_svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
 		$this->assertEquals($res, $qs_svc->canAddPatientToQueueSet($this->patients($patient_name), $queueset->id), $msg);
 	}
+
+	public function testGetFilterSettingsAllOn()
+	{
+		$svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
+		$this->assertEquals($svc->read(1)->filter_priority,1);
+		$this->assertEquals($svc->read(1)->filter_subspecialty,1);
+		$this->assertEquals($svc->read(1)->filter_firm,1);
+		$this->assertEquals($svc->read(1)->filter_my_tickets,1);
+		$this->assertEquals($svc->read(1)->filter_closed_tickets,1);
+	}
+
+	public function testGetFilterSettingsAllOff()
+	{
+		$svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
+		$this->assertEquals($svc->read(2)->filter_priority,0);
+		$this->assertEquals($svc->read(2)->filter_subspecialty,0);
+		$this->assertEquals($svc->read(2)->filter_firm,0);
+		$this->assertEquals($svc->read(2)->filter_my_tickets,0);
+		$this->assertEquals($svc->read(2)->filter_closed_tickets,0);
+	}
 }
