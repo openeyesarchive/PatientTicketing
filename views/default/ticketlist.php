@@ -81,7 +81,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 											'default_options' => @$_POST['queue-ids'],
 											'options' => CHtml::listData($qs_svc->getQueueSetQueues($queueset, false),'id','name'),
 											'htmlOptions' => array('empty' => '- Please Select -', 'nowrapper' => true),
-											'noSelectionsMessage' => 'All Queues')
+											'noSelectionsMessage' => 'All Patient Lists')
 											);
 									?>
 
