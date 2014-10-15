@@ -37,11 +37,11 @@
 						<th>Patient List</th>
 						<th>Patient</th>
 						<th>Priority</th>
-						<th>Ticket Date</th>
+						<th>Referral Date</th>
 						<th>Firm</th>
 						<th>Created By</th>
 						<th>Clinic Info</th>
-						<th>Ticket Notes</th>
+						<th>Referral Notes</th>
 						<!--<th>Ticket Owner</th>-->
 						<th>Actions</th>
 					</tr>
