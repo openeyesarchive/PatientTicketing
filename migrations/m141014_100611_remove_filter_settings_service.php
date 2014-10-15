@@ -5,16 +5,6 @@ class m141014_100611_remove_filter_settings_service extends OEMigration
 	public function up()
 	{
 
-		$this->execute("update patientticketing_queueset set queueset_filter_id = null");
-		$this->execute("delete from patientticketing_queueset_filter");
-
-		$this->dropForeignKey("patientticketing_queueset_filter_fk","patientticketing_queueset");
-		$this->dropColumn('patientticketing_queueset','queueset_filter_id');
-		$this->dropColumn('patientticketing_queueset_version','queueset_filter_id');
-
-		$this->dropTable('patientticketing_queueset_filter');
-		$this->dropTable('patientticketing_queueset_filter_version');
-
 		$this->addColumn('patientticketing_queueset','filter_priority','boolean NOT NULL DEFAULT true');
 		$this->addColumn('patientticketing_queueset','filter_subspecialty','boolean NOT NULL DEFAULT true');
 		$this->addColumn('patientticketing_queueset','filter_firm','boolean NOT NULL DEFAULT true');
@@ -26,6 +16,24 @@ class m141014_100611_remove_filter_settings_service extends OEMigration
 		$this->addColumn('patientticketing_queueset_version','filter_firm','boolean NOT NULL DEFAULT true');
 		$this->addColumn('patientticketing_queueset_version','filter_my_tickets','boolean NOT NULL DEFAULT true');
 		$this->addColumn('patientticketing_queueset_version','filter_closed_tickets','boolean NOT NULL DEFAULT true');
+
+		$this->execute("update patientticketing_queueset set filter_priority = (select priority from  patientticketing_queueset_filter where patientticketing_queueset_filter.id=patientticketing_queueset.id)");
+		$this->execute("update patientticketing_queueset set filter_subspecialty = (select subspecialty from  patientticketing_queueset_filter where patientticketing_queueset_filter.id=patientticketing_queueset.id)");
+		$this->execute("update patientticketing_queueset set filter_firm = (select firm from  patientticketing_queueset_filter where patientticketing_queueset_filter.id=patientticketing_queueset.id)");
+		$this->execute("update patientticketing_queueset set filter_my_tickets = (select my_tickets from  patientticketing_queueset_filter where patientticketing_queueset_filter.id=patientticketing_queueset.id)");
+		$this->execute("update patientticketing_queueset set filter_closed_tickets = (select closed_tickets from  patientticketing_queueset_filter where patientticketing_queueset_filter.id=patientticketing_queueset.id)");
+
+		$this->execute("update patientticketing_queueset set queueset_filter_id = null");
+		$this->execute("delete from patientticketing_queueset_filter");
+
+		$this->dropForeignKey("patientticketing_queueset_filter_fk","patientticketing_queueset");
+		$this->dropColumn('patientticketing_queueset','queueset_filter_id');
+		$this->dropColumn('patientticketing_queueset_version','queueset_filter_id');
+
+		$this->dropTable('patientticketing_queueset_filter');
+		$this->dropTable('patientticketing_queueset_filter_version');
+
+
 	}
 
 	public function down()
