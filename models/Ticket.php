@@ -171,7 +171,7 @@ class Ticket extends \BaseActiveRecordVersioned
 	public function getTicketFirm()
 	{
 		$ass = $this->initial_queue_assignment;
-		return $ass->assignment_firm->getNameAndSubspecialty();
+		return $ass->assignment_firm->name;
 	}
 
 	/**
