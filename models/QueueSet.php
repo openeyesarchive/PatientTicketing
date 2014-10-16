@@ -76,6 +76,8 @@ class QueueSet extends \BaseActiveRecordVersioned {
 			'category_id' => 'Ticket Category',
 			'summary_link' => 'Link Tickets to Episode Summary',
 			'default_queue_id' => 'Default queue',
+			'filter_my_tickets' => 'Filter My Patients',
+			'filter_closed_tickets' => 'Filter Completed Patients',
 		);
 	}
 
