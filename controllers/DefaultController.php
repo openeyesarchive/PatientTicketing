@@ -61,7 +61,7 @@ class DefaultController extends \BaseModuleController
 	{
 		return array(
 			array('allow',
-				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert', 'eventAction'),
+				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert', 'autoSaveNotes'),
 				'roles' => array('OprnViewClinical'),
 			),
 			array('allow',
@@ -583,7 +583,7 @@ class DefaultController extends \BaseModuleController
 	}
 
 
-	public function actionEventAction()
+	public function actionAutoSaveNotes()
 	{
 		$patient_id = $_POST['patient_id'];
 		$notes = $_POST['notes'];

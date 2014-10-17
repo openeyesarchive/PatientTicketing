@@ -42,7 +42,7 @@ $(document).ready(function () {
 		var patient = encodeURIComponent($('#patient-alert-patientticketing').data('patient-id'));
 		var notes = encodeURIComponent($('#patientticketing__notes').val());
 		$.ajax({
-			url: "/PatientTicketing/default/eventAction/",
+			url: "/PatientTicketing/default/autoSaveNotes/",
 			data: 'notes='+notes+'&patient_id='+patient+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
 			type: 'POST',
 			dataType: 'json',

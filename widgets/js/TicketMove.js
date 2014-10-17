@@ -131,7 +131,7 @@
 		$(document).on('click', ticketMoveController.options.formClass + ' .cancel', function(e) {
 			var patient = encodeURIComponent($('#patient-alert-patientticketing').data('patient-id'));
 			$.ajax({
-				url: "/PatientTicketing/default/eventAction/",
+				url: "/PatientTicketing/default/autoSaveNotes/",
 				data: 'notes=&patient_id='+patient+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
 				type: 'POST',
 				dataType: 'json',
