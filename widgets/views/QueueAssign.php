@@ -35,8 +35,14 @@
 								array('empty' => ($fld['required']) ? ' - Please Select - ' : 'None'));
 					} else {
 						//may need to expand this beyond textarea and select in the future.
+						if($_POST) {
+							$notes = @$_POST[$fld['form_name']];
+						}
+						else {
+							$notes = @Yii::app()->session['pt_notes_'.$this->patient_id];
+						}
 						?>
-						<textarea id="<?= $fld['form_name']?>" name="<?= $fld['form_name']?>"><?=@$_POST[$fld['form_name']]?></textarea>
+						<textarea id="<?= $fld['form_name']?>" name="<?= $fld['form_name']?>"><?=$notes?></textarea>
 					<?php }?>
 				</div>
 			</fieldset>
@@ -49,7 +55,7 @@
 			<?php
 			foreach ($queue->event_types as $et) {
 				?>
-				<li><a href="<?= Yii::app()->baseURL?>/<?=$et->class_name?>/default/create?patient_id=<?= $this->patient_id ?>" class="button small event-type-link"><?= $et->name ?></a></li>
+				<li><a href="<?= Yii::app()->baseURL?>/<?=$et->class_name?>/default/create?patient_id=<?= $this->patient_id ?>" class="button small event-type-link auto-save"><?= $et->name ?></a></li>
 			<?php
 			}
 			?>

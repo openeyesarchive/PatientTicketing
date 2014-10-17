@@ -61,7 +61,7 @@ class DefaultController extends \BaseModuleController
 	{
 		return array(
 			array('allow',
-				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert'),
+				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert', 'eventAction'),
 				'roles' => array('OprnViewClinical'),
 			),
 			array('allow',
@@ -314,6 +314,8 @@ class DefaultController extends \BaseModuleController
 				}
 				$transaction->commit();
 				$t_svc = Yii::app()->service->getService('PatientTicketing_Ticket');
+
+				unset(Yii::app()->session['pt_notes_'.$ticket->patient->id]);
 
 				$flsh_id = 'patient-ticketing-';
 
@@ -578,5 +580,20 @@ class DefaultController extends \BaseModuleController
 		}
 
 		$this->renderPartial('patientalert', array("patient" => $patient));
+	}
+
+
+	public function actionEventAction()
+	{
+		$patient_id = $_POST['patient_id'];
+		$notes = $_POST['notes'];
+		if($notes){
+		Yii::app()->session['pt_notes_'.$patient_id]=$notes;
+		} else {
+			unset(Yii::app()->session['pt_notes_'.$patient_id]);
+		}
+
+		return true;
+
 	}
 }

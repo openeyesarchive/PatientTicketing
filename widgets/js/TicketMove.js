@@ -129,6 +129,19 @@
 		});
 
 		$(document).on('click', ticketMoveController.options.formClass + ' .cancel', function(e) {
+			var patient = encodeURIComponent($('#patient-alert-patientticketing').data('patient-id'));
+			$.ajax({
+				url: "/PatientTicketing/default/eventAction/",
+				data: 'notes=&patient_id='+patient+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
+				type: 'POST',
+				dataType: 'json',
+				success: function (response) {
+				}.bind(this),
+				error: function() {
+					new OpenEyes.UI.Dialog.Alert({content: 'An error occurred'}).open();
+				}.bind(this)
+			});
+			$('#patientticketing__notes').val("");
 			$(this).parents('.alert-box').find('.js-toggle').trigger('click');
 		});
 
