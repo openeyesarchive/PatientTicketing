@@ -77,7 +77,7 @@
 	</div>
 	<div class="alert-box alert hidden"></div>
 	<div class="buttons">
-		<button class="secondary small ok" type="button">OK</button>
-		<button class="warning small cancel" type="button">Cancel</button>
+		<button class="secondary small ok" type="button" data-queue="<?=$this->ticket->current_queue->id?>">OK</button>
+		<button class="warning small cancel" type="button" data-queue="<?=$this->ticket->current_queue->id?>">Cancel</button>
 	</div>
 </form>
