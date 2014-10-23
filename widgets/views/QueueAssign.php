@@ -46,7 +46,6 @@ if ($queue) {?>
 						{
 							?>
 							<script>
-								debugger;
 								$(document).ready(function(){
 								window.patientTicketChanged = true;
 								window.changedTickets[<?=$current_queue_id?>]=true;
