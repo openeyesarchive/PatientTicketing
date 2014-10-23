@@ -63,12 +63,13 @@
 			}
 		?>
 	</div>
-	<div id="PatientTicketing-queue-assignment">
+	<div id="PatientTicketing-queue-assignment" data-queue="<?=$this->ticket->current_queue->id?>">
 		<?php
 			if ($this->outcome_queue_id) {
 				$this->widget('OEModule\PatientTicketing\widgets\QueueAssign', array(
 						'queue_id' => $this->outcome_queue_id,
-						'patient_id' => $this->ticket->patient_id
+						'patient_id' => $this->ticket->patient_id,
+						'current_queue_id' => $this->ticket->current_queue->id
 					));
 			}
 		?>

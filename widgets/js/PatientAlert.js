@@ -36,23 +36,5 @@ $(document).ready(function () {
 		});
 	});
 
-	$(document).on('click', '.auto-save', function(e) {
-		e.preventDefault();
-		var href = $(this).attr('href');
-		var patient = encodeURIComponent($('#patient-alert-patientticketing').data('patient-id'));
-		var notes = encodeURIComponent($('#patientticketing__notes').val());
-		$.ajax({
-			url: "/PatientTicketing/default/autoSaveNotes/",
-			data: 'notes='+notes+'&patient_id='+patient+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
-			type: 'POST',
-			dataType: 'json',
-			success: function (response) {
-				$(window).off('beforeunload');
-				window.location.href = href;
-			}.bind(this),
-			error: function() {
-				new OpenEyes.UI.Dialog.Alert({content: 'An error occurred'}).open();
-			}.bind(this)
-		})
-	});
+
 });

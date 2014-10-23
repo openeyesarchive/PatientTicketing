@@ -16,9 +16,7 @@
  * @copyright Copyright (c) 2011-2014, OpenEyes Foundation
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
-?>
-
-<?php if ($queue) {?>
+if ($queue) {?>
 	<div class="row">
 	<div class="large-6 column">
 		<?php foreach ($queue->getFormFields() as $fld) {?>
@@ -39,10 +37,24 @@
 							$notes = @$_POST[$fld['form_name']];
 						}
 						else {
-							$notes = @Yii::app()->session['pt_notes_'.$this->patient_id];
+							$notes = @Yii::app()->session['pt_notes_'.$this->patient_id.'_'.$current_queue_id];
 						}
 						?>
 						<textarea id="<?= $fld['form_name']?>" name="<?= $fld['form_name']?>"><?=$notes?></textarea>
+						<?php
+						if(isset(Yii::app()->session['pt_notes_'.$this->patient_id.'_'.$current_queue_id]))
+						{
+							?>
+							<script>
+								debugger;
+								$(document).ready(function(){
+								window.patientTicketChanged = true;
+								window.changedTickets[<?=$current_queue_id?>]=true;
+								});
+							</script>
+						<?php
+						}
+						?>
 					<?php }?>
 				</div>
 			</fieldset>
@@ -55,7 +67,7 @@
 			<?php
 			foreach ($queue->event_types as $et) {
 				?>
-				<li><a href="<?= Yii::app()->baseURL?>/<?=$et->class_name?>/default/create?patient_id=<?= $this->patient_id ?>" class="button small event-type-link auto-save"><?= $et->name ?></a></li>
+				<li><a href="<?= Yii::app()->baseURL?>/<?=$et->class_name?>/default/create?patient_id=<?= $this->patient_id ?>" class="button small event-type-link auto-save" data-queue="<?= $current_queue_id?>"><?= $et->name ?></a></li>
 			<?php
 			}
 			?>
@@ -67,3 +79,6 @@
 	</div>
 	</div>
 <?php } ?>
+<?php
+
+?>

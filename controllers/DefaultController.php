@@ -587,10 +587,13 @@ class DefaultController extends \BaseModuleController
 	{
 		$patient_id = $_POST['patient_id'];
 		$notes = $_POST['notes'];
+		$queue = $_POST['queue'];
+		$key = 'pt_notes_'.$patient_id.'_'.$queue;
+
 		if($notes){
-		Yii::app()->session['pt_notes_'.$patient_id]=$notes;
+			Yii::app()->session[$key]=$notes;
 		} else {
-			unset(Yii::app()->session['pt_notes_'.$patient_id]);
+			unset(Yii::app()->session[$key]);
 		}
 
 		return true;

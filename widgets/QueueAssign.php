@@ -19,6 +19,7 @@
 
 namespace OEModule\PatientTicketing\widgets;
 use OEModule\PatientTicketing\models;
+use Yii;
 
 /**
  * Class QueueAssign
@@ -29,19 +30,31 @@ use OEModule\PatientTicketing\models;
  */
 class QueueAssign extends \CWidget {
 	public $queue_id;
+	public $current_queue_id;
 	public $label_width = 4;
 	public $data_width = 8;
 	public $queue_select_label = 'Queue';
 	public $patient_id;
 
+	public $assetFolder;
+	public $shortName;
+
+
 	public function run()
 	{
+		$cls_name = explode('\\', get_class($this));
+		$this->shortName = array_pop($cls_name);
+		if (file_exists(dirname(__FILE__) . "/js/".$this->shortName.".js")) {
+			$this->assetFolder = Yii::app()->getAssetManager()->publish(dirname(__FILE__) . "/js/");
+			Yii::app()->getClientScript()->registerScriptFile($this->assetFolder . '/' . $this->shortName.".js");
+		}
+
 		if ($this->queue_id) {
 			$queue = models\Queue::model()->findByPk($this->queue_id);
 		}
 		else {
 			$queue = null;
 		}
-		$this->render('QueueAssign', array('queue' => $queue));
+		$this->render('QueueAssign', array('queue' => $queue, 'current_queue_id' =>$this->current_queue_id));
 	}
 }
