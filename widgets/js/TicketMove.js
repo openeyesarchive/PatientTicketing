@@ -125,12 +125,19 @@
 
 		$(document).on('click', ticketMoveController.options.formClass + ' .ok', function(e) {
 			e.preventDefault();
+			clearAutoSave($(this).data('queue'));
 			ticketMoveController.submitForm($(this).parents('form'));
 		});
 
 		$(document).on('click', ticketMoveController.options.formClass + ' .cancel', function(e) {
+			clearAutoSave($(this).data('queue'));
+			$('#patientticketing__notes').val("");
+			$(this).parents('.alert-box').find('.js-toggle').trigger('click');
+		});
+
+	  function clearAutoSave(queue)
+		{
 			var patient = encodeURIComponent($('#patient-alert-patientticketing').data('patient-id'));
-			var queue = $(this).data('queue');
 			$.ajax({
 				url: "/PatientTicketing/default/autoSaveNotes/",
 				data: 'notes=&patient_id='+patient+'&queue='+queue+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
@@ -144,11 +151,7 @@
 					new OpenEyes.UI.Dialog.Alert({content: 'An error occurred'}).open();
 				}.bind(this)
 			});
-			$('#patientticketing__notes').val("");
-			$(this).parents('.alert-box').find('.js-toggle').trigger('click');
-		});
-
-
+		}
 		$(document).on('change', ticketMoveController.options.formClass + ' select[name="to_queue_id"]', function(e) {
 			ticketMoveController.setQueueAssForm($(this).parents('form'), $(e.target).val());
 		});
