@@ -564,6 +564,8 @@ class DefaultController extends \BaseModuleController
 		if (!$ticket = models\Ticket::model()->findByPk((int)$ticket_id)) {
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
+		$key = 'pt_notes_'.$ticket->patient->id.'_'.$ticket->current_queue->id;
+		unset(Yii::app()->session[$key]);
 		$this->setTicketState($ticket, false);
 	}
 
