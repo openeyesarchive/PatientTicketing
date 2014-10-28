@@ -130,6 +130,8 @@
 		});
 
 		$(document).on('click', ticketMoveController.options.formClass + ' .cancel', function(e) {
+			var queue = $(this).data('queue');
+			delete(window.changedTickets[queue]);
 			$(this).closest('.PatientTicketing-moveTicket').find('#patientticketing__notes').val("");
 			$(this).parents('.alert-box').find('.js-toggle').trigger('click');
 		});
