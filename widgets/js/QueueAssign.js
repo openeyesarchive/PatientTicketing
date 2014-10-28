@@ -12,7 +12,7 @@ $(document).on('click', '.auto-save', function(e) {
 		dataType: 'json',
 		success: function (response) {
 			if(Object.keys(window.changedTickets).length < 2 && !window.formHasChanged) {
-				if(window.changedTickets[queue]=true){
+				if(window.changedTickets[queue]==true){
 					$(window).off('beforeunload');
 				}
 			}
