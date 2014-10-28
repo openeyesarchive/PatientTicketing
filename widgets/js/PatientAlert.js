@@ -19,7 +19,6 @@
 $(document).ready(function () {
 	$(document).on('click', '#patient-alert-patientticketing .alert-box .toggle-trigger', function(e) {
 		if ($(this).hasClass('toggle-show')) {
-			$('#patientticketing__notes').val("");
 			target = "/PatientTicketing/default/collapseTicket";
 		}
 		else {

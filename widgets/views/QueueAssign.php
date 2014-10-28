@@ -33,7 +33,7 @@ if ($queue) {?>
 								array('empty' => ($fld['required']) ? ' - Please Select - ' : 'None'));
 					} else {
 						//may need to expand this beyond textarea and select in the future.
-						if($_POST) {
+						if($_POST && isset($_POST[$fld['form_name']])) {
 							$notes = @$_POST[$fld['form_name']];
 						}
 						else {
