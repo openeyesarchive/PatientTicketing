@@ -25,3 +25,12 @@ tr.disabled {
 #ticket-list td {
 	vertical-align: top;
 }
+
+#ticket-table{
+  table-layout: fixed;
+  width: 100%;
+}
+
+.forceNoWrap{
+  word-wrap: break-word;
+}

@@ -31,7 +31,7 @@
 	<td><?= $ticket->getTicketFirm() ?></td>
 	<td><?= $ticket->user->getFullName() ?></td>
 	<td><?= $ticket->report ? $ticket->report : "-"; ?></td>
-	<td><?= Yii::app()->format->Ntext($ticket->getNotes()) ?></td>
+	<td class="forceNoWrap"><?= Yii::app()->format->Ntext($ticket->getNotes()) ?></td>
 	<!-- Ownership functionality not required at the moment.
 	<td><?= $ticket->assignee ? $ticket->assignee->getFullName() : "-"?></td>
 	 -->

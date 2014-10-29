@@ -31,7 +31,7 @@
 			} else {?>
 				<div class="pagination">
 				</div>
-				<table class="grid audit-logs">
+				<table class="grid audit-logs" id="ticket-table">
 					<thead>
 					<tr>
 						<th>Patient List</th>
@@ -43,7 +43,7 @@
 						<th class="large-2">Clinic Info</th>
 						<th class="large-2">Referral Notes</th>
 						<!--<th>Ticket Owner</th>-->
-						<th>Actions</th>
+						<th class="large-2">Actions</th>
 					</tr>
 					</thead>
 					<tbody id="ticket-list">
