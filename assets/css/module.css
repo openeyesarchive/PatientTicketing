@@ -30,6 +30,17 @@ tr.disabled {
   vertical-align: top;
 }
 
+/* line 29, ../sass/components/_ticket_table.scss */
+#ticket-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* line 34, ../sass/components/_ticket_table.scss */
+.forceNoWrap {
+  word-wrap: break-word;
+}
+
 /* line 17, ../sass/components/_filter_table.scss */
 .filter-row td {
   vertical-align: top;
