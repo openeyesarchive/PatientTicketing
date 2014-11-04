@@ -18,44 +18,43 @@
  */
 
 namespace OEModule\PatientTicketing\widgets;
-use OEModule\PatientTicketing\models;
-use Yii;
 
-/**
- * Class QueueAssign
- *
- * Widget to generate the assignment form for a Queue
- *
- * @package OEModule\PatientTicketing\widgets
- */
-class QueueAssign extends \CWidget {
-	public $ticket;
-	public $queue_id;
-	public $current_queue_id;
-	public $label_width = 4;
-	public $data_width = 8;
-	public $queue_select_label = 'Queue';
-	public $patient_id;
 
-	public $assetFolder;
+class BaseTicketAssignment extends \CWidget {
+
 	public $shortName;
+	public $ticket;
+	public $label_width = 2;
+	public $data_width = 4;
+	public $form_name;
+	public $assetFolder;
 
+	public function init()
+	{
+		// if the widget has javascript, load it in
+		$cls_name = explode('\\', get_class($this));
+		$this->shortName = array_pop($cls_name);
+		$path = dirname(__FILE__);
+		if (file_exists($path . "/js/".$this->shortName.".js")) {
+			$assetManager = \Yii::app()->getAssetManager();
+			$this->assetFolder = $assetManager->publish($path . "/js/");
+			$assetManager->registerScriptFile("js/".$this->shortName.".js", "application.modules.PatientTicketing.widgets");
+		}
+		parent::init();
+	}
+
+	public function extractFormData($form_data)
+	{
+		// should be implemented in the child class
+	}
+
+	public function valdiate($form_data)
+	{
+		// should be implemented in the child class
+	}
 
 	public function run()
 	{
-		$cls_name = explode('\\', get_class($this));
-		$this->shortName = array_pop($cls_name);
-		if (file_exists(dirname(__FILE__) . "/js/".$this->shortName.".js")) {
-			$this->assetFolder = Yii::app()->getAssetManager()->publish(dirname(__FILE__) . "/js/");
-			Yii::app()->getClientScript()->registerScriptFile($this->assetFolder . '/' . $this->shortName.".js");
-		}
-
-		if ($this->queue_id) {
-			$queue = models\Queue::model()->findByPk($this->queue_id);
-		}
-		else {
-			$queue = null;
-		}
-		$this->render('QueueAssign', array('queue' => $queue, 'current_queue_id' =>$this->current_queue_id));
+		$this->render($this->shortName);
 	}
 }

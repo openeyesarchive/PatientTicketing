@@ -69,7 +69,8 @@
 				$this->widget('OEModule\PatientTicketing\widgets\QueueAssign', array(
 						'queue_id' => $this->outcome_queue_id,
 						'patient_id' => $this->ticket->patient_id,
-						'current_queue_id' => $this->ticket->current_queue->id
+						'current_queue_id' => $this->ticket->current_queue->id,
+						'ticket' => $this->ticket
 					));
 			}
 		?>

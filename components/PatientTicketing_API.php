@@ -22,6 +22,7 @@ namespace OEModule\PatientTicketing\components;
 use OEModule\PatientTicketing\models\QueueSetCategory;
 use OEModule\PatientTicketing\models\Queue;
 use OEModule\PatientTicketing\models\Ticket;
+use OEModule\PatientTicketing\widgets;
 use Yii;
 
 class PatientTicketing_API extends \BaseAPI
@@ -85,21 +86,31 @@ class PatientTicketing_API extends \BaseAPI
 
 		foreach ($queue->getFormFields() as $field) {
 			$field_name = $field['form_name'];
-			$res[$field_name] = $p->purify(@$data[$field_name]);
-			if ($validate) {
-				if ($field['required'] && !@$data[$field_name]) {
-					$errs[$field_name] = $field['label'] . " is required";
+			if (@$field['type'] == 'widget') {
+				$cls_name = "OEModule\\PatientTicketing\\widgets\\" . $field['widget_name'];
+				$widget = new $cls_name;
+				$res[$field_name] = $widget->extractFormData($data[$field['form_name']]);
+				if ($validate) {
+					$errs = array_merge($errs, $widget->validate($data[$field['form_name']]));
 				}
-				elseif (@$field['choices'] && @$data[$field_name]) {
-					$match = false;
-					foreach ($field['choices'] as $k => $v) {
-						if ($data[$field_name] == $k) {
-							$match = true;
-							break;
-						}
+			}
+			else {
+				$res[$field_name] = $p->purify(@$data[$field_name]);
+				if ($validate) {
+					if ($field['required'] && !@$data[$field_name]) {
+						$errs[$field_name] = $field['label'] . " is required";
 					}
-					if (!$match) {
-						$errs[$field_name] = $field['label'] .": invalid choice";
+					elseif (@$field['choices'] && @$data[$field_name]) {
+						$match = false;
+						foreach ($field['choices'] as $k => $v) {
+							if ($data[$field_name] == $k) {
+								$match = true;
+								break;
+							}
+						}
+						if (!$match) {
+							$errs[$field_name] = $field['label'] .": invalid choice";
+						}
 					}
 				}
 			}

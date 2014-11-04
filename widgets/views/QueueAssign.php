@@ -19,7 +19,16 @@
 if ($queue) {?>
 	<div class="row">
 	<div class="large-6 column">
-		<?php foreach ($queue->getFormFields() as $fld) {?>
+		<?php foreach ($queue->getFormFields() as $fld) {
+			if (@$fld['type'] == 'widget') {
+				$this->widget('OEModule\PatientTicketing\widgets\\' . $fld['widget_name'], array(
+						'ticket' => $this->ticket,
+						'label_width' => $this->label_width,
+						'data_width' => $this->data_width,
+						'form_name' => $fld['form_name']
+					));
+			}
+			else { ?>
 			<fieldset class="field-row row">
 				<div class="large-<?= $this->label_width ?> column">
 					<label for="<?= $fld['form_name']?>"><?= $fld['label'] ?>:</label>
@@ -57,7 +66,8 @@ if ($queue) {?>
 					<?php }?>
 				</div>
 			</fieldset>
-		<?php }?>
+		<?php }
+		}?>
 	</div>
 	<div class="large-6 column end">
 		<?php

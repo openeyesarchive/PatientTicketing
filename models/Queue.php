@@ -177,6 +177,30 @@ class Queue extends \BaseActiveRecordVersioned
 	}
 
 	/**
+	 * assignment field validation
+	 */
+	public function afterValidate()
+	{
+		// validate any widget fields in the assignment_fields attribute
+		foreach ($this->getAssignmentFieldDefinitions() as $i => $fld) {
+			if (!$id = @$fld['id']) {
+				$this->addError("assignment_fields", "ID required for assignment field "  . ($i+1));
+				continue;
+			}
+			if (@$fld['type'] == 'widget') {
+				if (!@$fld['widget_name']) {
+					$this->addError('assignment_fields', 'Widget Name missing for ' . $id);
+				}
+				elseif (!is_file(\Yii::getPathOfAlias('application.modules.PatientTicketing.widgets.' . $fld['widget_name']) . '.php')) {
+					$this->addError('assignment_fields', 'Widget with name ' . $fld['widget_name'] . ' for ' . $id . ' not defined');
+				}
+			}
+		}
+
+		parent::afterValidate();
+	}
+
+	/**
 	 * Add the given ticket to the Queue for the user and firm
 	 *
 	 * @param Ticket $ticket
@@ -282,11 +306,12 @@ class Queue extends \BaseActiveRecordVersioned
 		if ($ass_fields = \CJSON::decode($this->assignment_fields)) {
 			foreach ($ass_fields as $ass_fld) {
 				$flds[] = array(
-						'id' => "{$ass_fld['id']}",
-						'form_name' => self::$FIELD_PREFIX . $ass_fld['id'],
-						'required' => $ass_fld['required'],
+						'id' => @$ass_fld['id'],
+						'form_name' => self::$FIELD_PREFIX . @$ass_fld['id'],
+						'required' => @$ass_fld['required'],
 						'type' => @$ass_fld['type'],
-						'label' => $ass_fld['label'],
+						'widget_name' => @$ass_fld['widget_name'],
+						'label' => @$ass_fld['label'],
 						'choices' => @$ass_fld['choices']
 				);
 			}
