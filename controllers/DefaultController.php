@@ -151,7 +151,7 @@ class DefaultController extends \BaseModuleController
 			throw new \CHttpException(404, 'Category ID required');
 		}
 
-		if($qs_id = @$_POST['queueset_id'] && !@$_POST['queue-ids'])
+		if($qs_id = @$_POST['queueset_id'] && @$_POST['select_queue_set'])
 		{
 			$this->redirect(array("/PatientTicketing/default/?queueset_id=$qs_id&cat_id=".$_GET['cat_id']));
 		}
