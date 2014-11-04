@@ -151,7 +151,7 @@ class DefaultController extends \BaseModuleController
 			throw new \CHttpException(404, 'Category ID required');
 		}
 
-		if($qs_id = @$_POST['queueset_id'])
+		if($qs_id = @$_POST['queueset_id'] && !@$_POST['queue-ids'])
 		{
 			$this->redirect(array("/PatientTicketing/default/?queueset_id=$qs_id&cat_id=".$_GET['cat_id']));
 		}
@@ -548,6 +548,9 @@ class DefaultController extends \BaseModuleController
 
 		// set the patient to be in processing for the current user
 		$this->setTicketState($ticket, true, true);
+
+		//set session variable to display patient ticket banner
+		Yii::app()->session['patientticket_ticket_in_review']=$ticket_id;
 
 		// redirect to the appropriate page for the ticket processing.
 		$this->redirect($ticket->getSourceLink());
