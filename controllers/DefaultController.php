@@ -147,6 +147,9 @@ class DefaultController extends \BaseModuleController
 	 */
 	public function actionIndex()
 	{
+
+		unset(Yii::app()->session['patientticket_ticket_in_review']);
+
 		if (!@$_GET['cat_id']) {
 			throw new \CHttpException(404, 'Category ID required');
 		}
@@ -550,7 +553,7 @@ class DefaultController extends \BaseModuleController
 		$this->setTicketState($ticket, true, true);
 
 		//set session variable to display patient ticket banner
-		Yii::app()->session['patientticket_ticket_in_review']=$ticket_id;
+		Yii::app()->session['patientticket_ticket_in_review']=array("ticket_id"=>$ticket_id, "patient_id" => $ticket->patient->id);
 
 		// redirect to the appropriate page for the ticket processing.
 		$this->redirect($ticket->getSourceLink());
