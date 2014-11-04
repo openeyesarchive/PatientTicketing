@@ -151,6 +151,15 @@ class DefaultController extends \BaseModuleController
 			throw new \CHttpException(404, 'Category ID required');
 		}
 
+		if($qs_id = @$_POST['queueset_id'])
+		{
+			$this->redirect(array("/PatientTicketing/default/?queueset_id=$qs_id&cat_id=".$_GET['cat_id']));
+		}
+
+		if(@$_GET['queueset_id']) {
+			$qs_id = $_GET['queueset_id'];
+		}
+
 		$qsc_svc = Yii::app()->service->getService(self::$QUEUESETCATEGORY_SERVICE);
 
 		if (!$category = $qsc_svc->readActive((int)$_GET['cat_id'])) {
@@ -165,7 +174,7 @@ class DefaultController extends \BaseModuleController
 		if ($queuesets = $qsc_svc->getCategoryQueueSetsForUser($category, Yii::app()->user->id)) {
 			// default to the single queueset if that is all that is available to the user
 			if (count($queuesets) > 1) {
-				if ($qs_id = @$_POST['queueset_id']) {
+				if ($qs_id) {
 					foreach ($queuesets as $qs) {
 						if ($qs->getID() == $qs_id) {
 							$queueset = $qs;
@@ -319,13 +328,14 @@ class DefaultController extends \BaseModuleController
 
 				$flsh_id = 'patient-ticketing-';
 
+				$flsh_id .= $queueset->getId();
 				if ($to_queue->outcomes) {
-					$flsh_id .= $queueset->getId();
+					Yii::app()->user->setFlash($flsh_id, $t_svc->getCategoryForTicket($ticket)->name . ' - moved to ' . $to_queue->name);
 				}
 				else {
-					$flsh_id .= 'closing';
+					Yii::app()->user->setFlash($flsh_id, $t_svc->getCategoryForTicket($ticket)->name . ' - referral closed');
 				}
-				Yii::app()->user->setFlash($flsh_id, $t_svc->getCategoryForTicket($ticket)->name . ' - moved to ' . $to_queue->name);
+
 			}
 			else {
 				throw new Exception("unable to assign ticket to queue");
@@ -336,8 +346,12 @@ class DefaultController extends \BaseModuleController
 			throw $e;
 		}
 
-		echo "{}";
+		$queueset_id = $queueset->getId();
+		$queueset_model = models\QueueSet::model()->findByPk($queueset_id);
+		$queueset_category_id = $queueset_model->category_id;
+		echo json_encode(array('redirectURL'=>"/PatientTicketing/default/?queueset_id=$queueset_id&cat_id=$queueset_category_id"));
 	}
+
 
 	/**
 	 * Generate individual row for the given Ticket id

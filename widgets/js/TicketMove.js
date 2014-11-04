@@ -101,13 +101,17 @@
 			data: form.serialize(),
 			type: 'POST',
 			dataType: 'json',
+
 			success: function (response) {
 				if (response.errors) {
 					errors.text('');
 					for (var i in response.errors) errors.append(response.errors[i] + "<br>");
 					errors.show();
 				} else {
-					this.reloadPatientAlert();
+					//this.reloadPatientAlert();
+					if(response.redirectURL){
+					window.location = response.redirectURL;
+					}
 				}
 			}.bind(this),
 			error: function(jqXHR, status, error) {
@@ -130,11 +134,13 @@
 		});
 
 		$(document).on('click', ticketMoveController.options.formClass + ' .cancel', function(e) {
-			var queue = $(this).data('queue');
-			delete(window.changedTickets[queue]);
+			var queueset_id = $(this).data('queue');
+			var category_id = $(this).data('category');
+			delete(window.changedTickets[queueset_id]);
 			if(Object.keys(window.changedTickets).length==0) window.patientTicketChanged = false;
 			$(this).closest('.PatientTicketing-moveTicket').find('#patientticketing__notes').val("");
-			$(this).parents('.alert-box').find('.js-toggle').trigger('click');
+			//$(this).parents('.alert-box').find('.js-toggle').trigger('click');
+			window.location = "/PatientTicketing/default/?queueset_id=" + queueset_id + "&cat_id=" + category_id;
 		});
 
 	  function clearAutoSave(queue)
