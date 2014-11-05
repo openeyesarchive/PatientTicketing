@@ -135,7 +135,7 @@ class TicketQueueAssignment extends \BaseActiveRecordVersioned
 					$by_id[$fld['id']] = $widget->getReportString($fld['value']);
 				}
 				else {
-					$by_id[$fld['id']] = $fld->value;
+					$by_id[$fld['id']] = $fld['value'];
 				}
 			}
 
