@@ -63,6 +63,27 @@ class AdminController extends \ModuleAdminController {
 		);
 	}
 
+	public function actionTicketAssignOutcomes()
+	{
+		$this->genericAdmin(
+			'Edit Outcome Options',
+			'OEModule\PatientTicketing\models\TicketAssignOutcomeOption',
+			array(
+				'extra_fields' => array(
+					array(
+						'field' => 'episode_status_id',
+						'type' => 'lookup',
+						'model' => 'EpisodeStatus',
+					),
+					array(
+						'field' => 'followup',
+						'type' => 'boolean'
+					)
+				)
+			)
+		);
+	}
+
 	/**
 	 * Create a new QueueSet along with its initial queue (cannot have a queue set without an initial queue)
 	 *

@@ -20,11 +20,11 @@
 namespace OEModule\PatientTicketing\models;
 
 
-class Priority extends \BaseActiveRecordVersioned
+class TicketAssignOutcomeOption extends \BaseActiveRecordVersioned
 {
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @return OEModule\PatientTicketing\models\Priority the static model class
+	 * @return OEModule\PatientTicketing\models\TicketAssignOutcomeOption the static model class
 	 */
 	public static function model($className = __CLASS__)
 	{
@@ -36,7 +36,7 @@ class Priority extends \BaseActiveRecordVersioned
 	 */
 	public function tableName()
 	{
-		return 'patientticketing_priority';
+		return 'patientticketing_ticketassignoutcomeoption';
 	}
 
 	public function defaultScope()
@@ -50,7 +50,7 @@ class Priority extends \BaseActiveRecordVersioned
 	public function rules()
 	{
 		return array(
-				array('name, display_order', 'required')
+			array('name, display_order', 'required')
 		);
 	}
 
@@ -60,8 +60,8 @@ class Priority extends \BaseActiveRecordVersioned
 	public function relations()
 	{
 		return array(
-				'user' => array(self::BELONGS_TO, 'User', 'created_user_id'),
-				'usermodified' => array(self::BELONGS_TO, 'User', 'last_modified_user_id'),
+			'user' => array(self::BELONGS_TO, 'User', 'created_user_id'),
+			'usermodified' => array(self::BELONGS_TO, 'User', 'last_modified_user_id'),
 		);
 	}
 
@@ -71,13 +71,14 @@ class Priority extends \BaseActiveRecordVersioned
 	public function attributeLabels()
 	{
 		return array(
+			'episode_status_id' => 'Episode Status'
 		);
 	}
 
 	public function behaviors()
 	{
 		return array(
-				'LookupTable' => 'LookupTable',
+			'LookupTable' => 'LookupTable',
 		);
 	}
 
@@ -95,7 +96,8 @@ class Priority extends \BaseActiveRecordVersioned
 		$criteria->compare('id', $this->id, true);
 
 		return new CActiveDataProvider(get_class($this), array(
-				'criteria' => $criteria,
+			'criteria' => $criteria,
 		));
 	}
+
 }

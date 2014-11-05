@@ -32,6 +32,7 @@ return array(
 			'admin_menu' => array(
 				'Queue Set Categories' => '/PatientTicketing/admin/queueSetCategories',
 				'Queue Sets' => '/PatientTicketing/admin/',
+				'Outcome Options' => '/PatientTicketing/admin/ticketAssignOutcomes'
 			),
 			'patient_alert_widgets' => array(
 				array('class' => 'OEModule\PatientTicketing\widgets\PatientAlert'),

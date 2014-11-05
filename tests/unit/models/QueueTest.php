@@ -143,4 +143,34 @@ class QueueTest extends \CDbTestCase {
 
 		$this->assertEquals($event_types, $queue->getRelatedEventTypes(false));
 	}
+
+
+	public function assignmentFieldValidateProvider()
+	{
+		return array(
+			array('[{"type":"widget"}]', false, array('ID required for assignment field 1')),
+			array('[{"id": "test_widget", "type":"widget"}]', false, array('Widget Name missing for test_widget')),
+			array('[{"id": "test_widget", "type":"widget", "widget_name": "missing_widget"}]', false, array('Widget with name missing_widget for test_widget not defined')),
+			array('[{"id": "test_widget", "type":"widget", "widget_name": "BaseTicketAssignment"}]', true, null)
+		);
+	}
+
+	/**
+	 * @dataProvider assignmentFieldValidateProvider
+	 */
+	public function testAssignmentFieldValidate($ass_fields, $valid, $messages)
+	{
+		$model = new models\Queue;
+		$model->name = 'Test Queue';
+		$model->assignment_fields = $ass_fields;
+		$res = $model->validate();
+		$this->assertEquals($valid, $res, "Unexpected validation response");
+		if ($messages) {
+			$errs = $model->getErrors('assignment_fields');
+			$this->assertEquals(count($errs), count($messages), "Error message count not matching expectation");
+			foreach ($messages as $i => $msg) {
+				$this->assertEquals($msg, $errs[$i]);
+			}
+		}
+	}
 }
