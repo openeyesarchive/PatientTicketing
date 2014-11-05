@@ -223,19 +223,25 @@ class Queue extends \BaseActiveRecordVersioned
 			$details = array();
 			foreach ($ass_flds as $ass_fld) {
 				if ($val = @$data[$ass_fld['form_name']]) {
-					if (@$ass_fld['choices']) {
+					$store = array('id' => $ass_fld['id']);
+					if (@$ass_fld['type'] == 'widget') {
+						// store the widget for later data manipulation
+						$store['widget_name'] = $ass_fld['widget_name'];
+						// post processing handling
+						$cls_name = "OEModule\\PatientTicketing\\widgets\\" . $ass_fld['widget_name'];
+						$widget = new $cls_name;
+						$widget->processAssignmentData($ticket, $val);
+					}
+					else if (@$ass_fld['choices']) {
 						foreach ($ass_fld['choices'] as $k => $v) {
 							if ($k == $val) {
 								$val = $v;
 								break;
 							}
 						}
-
 					}
-					$details[] = array(
-						'id' => $ass_fld['id'],
-						'value' => $val,
-					);
+					$store['value'] = $val;
+					$details[] = $store;
 				}
 			}
 			$ass->details = json_encode($details);

@@ -43,16 +43,50 @@ class BaseTicketAssignment extends \CWidget {
 		parent::init();
 	}
 
+	/**
+	 * Extract the data into a storable (usable) form from the form $_POST data
+	 *
+	 * @param $form_data
+	 */
 	public function extractFormData($form_data)
 	{
 		// should be implemented in the child class
 	}
 
-	public function valdiate($form_data)
+	/**
+	 * Validate the submitted form data for this widget
+	 *
+	 * @param $form_data
+	 */
+	public function validate($form_data)
 	{
 		// should be implemented in the child class
 	}
 
+	/**
+	 * For widgets that need to process assignment data in the wider patient record context
+	 *
+	 * @param $ticket
+	 * @param $data
+	 */
+	public function processAssignmentData($ticket, $data)
+	{
+		// should be implemented in the child class as necessary
+	}
+
+	/**
+	 * Generates a string for display/reporting purposes
+	 *
+	 * @param $data
+	 */
+	public function getReportString($data)
+	{
+		// should be implemented in the child class as necessary
+	}
+
+	/**
+	 * renders the widget view
+	 */
 	public function run()
 	{
 		$this->render($this->shortName);

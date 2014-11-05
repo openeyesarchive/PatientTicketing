@@ -125,11 +125,20 @@ class TicketQueueAssignment extends \BaseActiveRecordVersioned
 	public function replaceAssignmentCodes($text)
 	{
 		if ($this->details) {
-			$flds = json_decode($this->details, false);
+			$flds = json_decode($this->details, true);
+
 			$by_id = array();
 			foreach ($flds as $fld) {
-				$by_id[$fld->id] = $fld->value;
+				if (@$fld['widget_name']) {
+					$cls_name = "OEModule\\PatientTicketing\\widgets\\" . $fld['widget_name'];
+					$widget = new $cls_name;
+					$by_id[$fld['id']] = $widget->getReportString($fld['value']);
+				}
+				else {
+					$by_id[$fld['id']] = $fld->value;
+				}
 			}
+
 			// match for ticketing fields
 			preg_match_all('/\[pt_([a-z]+)\]/is',$text,$m);
 

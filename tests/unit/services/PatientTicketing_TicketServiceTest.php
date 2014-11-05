@@ -21,6 +21,8 @@ class PatientTicketing_TicketServiceTest extends \CDbTestCase
 {
 	public $fixtures = array(
 			'patients' => 'Patient',
+			'episodes' => 'Episode',
+			'events' => 'Event',
 			'queuesetcategorys' => 'OEModule\PatientTicketing\models\QueueSetCategory',
 			'queues' => 'OEModule\PatientTicketing\models\Queue',
 			'queue_outcomes' => 'OEModule\PatientTicketing\models\QueueOutcome',
@@ -123,6 +125,31 @@ class PatientTicketing_TicketServiceTest extends \CDbTestCase
 		$qsc = $this->queuesetcategorys($queuesetcategory_name);
 
 		$this->assertEquals($qsc->id, $svc->getCategoryForTicket($t)->id);
+	}
+
+	public function getTicketEpisodeProvider()
+	{
+		return array(
+			array('ticket1', 'episode1'),
+			array('ticket2', null)
+		);
+	}
+
+	/**
+	 * @dataProvider getTicketEpisodeProvider
+	 */
+	public function testgetTicketEpisode($ticket_name, $episode_name)
+	{
+		$svc = Yii::app()->service->getService('PatientTicketing_Ticket');
+		$ticket = $this->tickets($ticket_name);
+		if ($episode_name) {
+			$episode = $this->episodes($episode_name);
+			$this->assertEquals($episode->id, $svc->getTicketEpisode($ticket)->id);
+		}
+		else {
+			$this->assertNull($svc->getTicketEpisode($ticket));
+		}
+
 	}
 
 }
