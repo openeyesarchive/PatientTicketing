@@ -147,8 +147,8 @@
 		{
 			var patient = encodeURIComponent($('#patient-alert-patientticketing').data('patient-id'));
 			$.ajax({
-				url: "/PatientTicketing/default/autoSaveNotes/",
-				data: 'notes=&patient_id='+patient+'&queue='+queue+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
+				url: "/PatientTicketing/default/autoSave/",
+				data: 'clear=1&patient_id='+patient+'&queue='+queue+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
 				type: 'POST',
 				dataType: 'json',
 				success: function (response) {

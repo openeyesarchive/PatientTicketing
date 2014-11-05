@@ -3,11 +3,11 @@ $(document).on('click', '.auto-save', function(e) {
 	var href = $(this).attr('href');
 	var queue = $(this).data('queue');
 	var patient = encodeURIComponent($('#patient-alert-patientticketing').data('patient-id'));
-	var notes = encodeURIComponent($(this).closest('.row').find('#patientticketing__notes').val());
+	var form = $(this).closest('.PatientTicketing-moveTicket').serialize();
 
 	$.ajax({
-		url: "/PatientTicketing/default/autoSaveNotes/",
-		data: 'notes='+notes+'&patient_id='+patient+'&queue='+queue+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
+		url: "/PatientTicketing/default/autoSave/",
+		data: form+'&patient_id='+patient,
 		type: 'POST',
 		dataType: 'json',
 		success: function (response) {

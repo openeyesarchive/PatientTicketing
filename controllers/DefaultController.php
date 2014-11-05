@@ -61,7 +61,7 @@ class DefaultController extends \BaseModuleController
 	{
 		return array(
 			array('allow',
-				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert', 'autoSaveNotes'),
+				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert', 'autoSave'),
 				'roles' => array('OprnViewClinical'),
 			),
 			array('allow',
@@ -605,17 +605,21 @@ class DefaultController extends \BaseModuleController
 	}
 
 
-	public function actionAutoSaveNotes()
+	public function actionAutoSave()
 	{
 		$patient_id = $_POST['patient_id'];
-		$notes = $_POST['notes'];
-		$queue = $_POST['queue'];
-		$key = 'pt_notes_'.$patient_id.'_'.$queue;
+		$queue_id = $_POST['from_queue_id'];
+		$key = 'pt_autosave_'.$patient_id.'_'.$queue_id;
 
-		if($notes){
-			Yii::app()->session[$key]=$notes;
-		} else {
+		$clear = 	@$_POST['clear'];
+		if($clear) {
 			unset(Yii::app()->session[$key]);
+		}
+		else	{
+			$auto_save_data = $_POST;
+			unset ($auto_save_data['YII_CSRF_TOKEN']);
+			unset ($auto_save_data['queue']);
+			Yii::app()->session[$key]=$auto_save_data;
 		}
 
 		return true;
