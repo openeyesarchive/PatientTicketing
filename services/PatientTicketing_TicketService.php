@@ -97,4 +97,17 @@ class PatientTicketing_TicketService extends \services\ModelService {
 		return $qs->category;
 	}
 
+	/**
+	 * Get the episode for the ticket if one exists
+	 *
+	 * @param models\Ticket $ticket
+	 * @return \Episode|null
+	 */
+	public function getTicketEpisode(models\Ticket $ticket)
+	{
+		if ($event = $ticket->event) {
+			return $event->episode;
+		}
+		return null;
+	}
 }

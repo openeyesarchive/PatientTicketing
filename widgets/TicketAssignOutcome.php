@@ -127,4 +127,47 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 
 		return $res;
 	}
+
+	/**
+	 * Set episode status for relevant choices in the outcome field
+	 *
+	 * @param $ticket
+	 * @param $data
+	 * @throws \Exception
+	 */
+	public function processAssignmentData($ticket, $data)
+	{
+		if (!$outcome_id = $data['outcome']) {
+			throw new \Exception("Invalid data for processing - outcome is required field");
+		}
+		if (!$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$outcome_id)) {
+			throw new \Exception("Cannot find outcome with id {$outcome_id}");
+		}
+		if ($episode_status = $outcome->episode_status) {
+			$t_svc = \Yii::app()->service->getService('PatientTicketing_Ticket');
+			$ep = $t_svc->getTicketEpisode($ticket);
+			$ep->episode_status_id = $episode_status->id;
+			$ep->save();
+		}
+	}
+
+	/**
+	 * Generate string from the widget captured data
+	 *
+	 * @param $data
+	 * @return string|void
+	 */
+	public function getReportString($data)
+	{
+		$res = '';
+		if ($outcome_id = @$data['outcome']) {
+			$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$outcome_id);
+			$res = $outcome->name;
+			if ($outcome->followup) {
+				$res .= " in " . @$data['followup_quantity'] . " " . @$data['followup_period'];
+				$res .= " at " . @$data['site'];
+			}
+		}
+		return $res;
+	}
 }

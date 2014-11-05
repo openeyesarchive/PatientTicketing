@@ -22,6 +22,7 @@ return array(
 				'id' => 1,
 				'patient_id' => 1,
 				'assignee_user_id' => 1,
+				'event_id' => 1,
 				'assignee_date' => '2014-09-04',
 		),
 		'ticket2' => array(
