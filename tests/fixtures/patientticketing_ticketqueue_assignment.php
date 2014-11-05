@@ -31,16 +31,19 @@ return array(
 	'ass3' => array(
 		'ticket_id' => 3,
 		'queue_id' => 12,
+		'report' => 'test report',
 		'assignment_date' => '2014-09-05',
 	),
 	'ass4' => array(
 		'ticket_id' => 3,
 		'queue_id' => 13,
+		'report' => 'updated test report',
 		'assignment_date' => '2014-09-07',
 	),
 	'ass5' => array(
 		'ticket_id' => 4,
 		'queue_id' => 12,
+		'report' => 'test report',
 		'assignment_date' => '2014-09-01',
 	),
 	'ass6' => array(

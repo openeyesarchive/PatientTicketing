@@ -19,7 +19,8 @@
 
 use OEModule\PatientTicketing\models;
 
-class QueueTest extends \CDbTestCase {
+class QueueTest extends \CDbTestCase
+{
 
 	public $fixtures = array(
 			'queues' => 'OEModule\PatientTicketing\models\Queue',

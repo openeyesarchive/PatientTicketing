@@ -25,6 +25,8 @@ class TicketTest extends \CDbTestCase
 			'queues' => 'OEModule\PatientTicketing\models\Queue',
 			'queue_outcomes' => 'OEModule\PatientTicketing\models\QueueOutcome',
 			'queuesets' => 'OEModule\PatientTicketing\models\QueueSet',
+			'tickets' => 'OEModule\PatientTicketing\models\Ticket',
+			'queue_assignments' => 'OEModule\PatientTicketing\models\TicketQueueAssignment',
 	);
 
 	public function setUp()
@@ -33,6 +35,7 @@ class TicketTest extends \CDbTestCase
 		$this->service_manager = new ServiceManagerWrapper2;
 
 		Yii::app()->setComponent('service', $this->service_manager);
+		parent::setUp();
 	}
 
 	public function tearDown()
@@ -246,6 +249,23 @@ class TicketTest extends \CDbTestCase
 
 		$this->assertInstanceOf('OEModule\PatientTicketing\models\TicketQueueAssignment', $display_queue_assignment);
 		$this->assertEquals(7070707, $display_queue_assignment->id);
+	}
+
+	public function getReportProvider()
+	{
+		return array(
+			array('ticket3', 'updated test report'),
+			array('ticket4', 'test report')
+		);
+	}
+
+	/**
+	 * @dataProvider getReportProvider
+	 */
+	public function testGetReport($ticket_name, $report)
+	{
+		$ticket = $this->tickets($ticket_name);
+		$this->assertEquals($report, $ticket->getReport(), "Did not get expected report value for ticket.");
 	}
 }
 

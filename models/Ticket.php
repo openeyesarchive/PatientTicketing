@@ -46,6 +46,7 @@ use Yii;
  * @property \User $user
  * @property \User $usermodified
  * @property TicketQueueAssignment[] queue_assignments
+ * @property TicketQueueAssignment[] reverse_queue_assignments
  * @property TicketQueueAssignment initial_queue_assignment
  * @property TicketQueueAssignment current_queue_assignment
  * @property Queue current_queue
@@ -93,6 +94,7 @@ class Ticket extends \BaseActiveRecordVersioned
 			'patient' => array(self::BELONGS_TO, 'Patient', 'patient_id'),
 			'event' => array(self::BELONGS_TO, 'Event', 'event_id'),
 			'queue_assignments' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id'),
+			'reversed_queue_assignments' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'reversed_queue_assignments.assignment_date desc'),
 			'initial_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'initial_queue_assignment.assignment_date'),
 			'current_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'current_queue_assignment.assignment_date desc'),
 			'initial_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'queue_assignments', 'order' => 'queue_assignments.assignment_date'),
@@ -236,6 +238,21 @@ class Ticket extends \BaseActiveRecordVersioned
 	public function getNotes()
 	{
 		return $this->current_queue_assignment->notes;
+	}
+
+	/**
+	 * Convenience function to accese ticket report field
+	 *
+	 * @return mixed
+	 */
+	public function getReport()
+	{
+		foreach ($this->reversed_queue_assignments as $ass) {
+			if ($ass->report) {
+				return $ass->report;
+			}
+		}
+		return '';
 	}
 
 	public function getDisplayQueue()

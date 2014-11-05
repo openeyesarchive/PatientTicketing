@@ -26,7 +26,7 @@
 <td><?= Helper::convertDate2NHS($ass->assignment_date)?></td>
 <td><?= $ass->assignment_firm->getNameAndSubspecialty() ?></td>
 <td><?= $ass->assignment_user->getFullName() ?></td>
-<td>&nbsp;</td>
+<td><?= $ass->report ?></td>
 <td><?= Yii::app()->format->Ntext($ass->notes) ?></td>
 <!--<td>&nbsp;</td>-->
 <td>&nbsp;</td>
