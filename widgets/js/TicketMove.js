@@ -138,7 +138,6 @@
 			var category_id = $(this).data('category');
 			delete(window.changedTickets[queueset_id]);
 			if(Object.keys(window.changedTickets).length==0) window.patientTicketChanged = false;
-			$(this).closest('.PatientTicketing-moveTicket').find('#patientticketing__notes').val("");
 			//$(this).parents('.alert-box').find('.js-toggle').trigger('click');
 			window.location = "/PatientTicketing/default/?queueset_id=" + queueset_id + "&cat_id=" + category_id;
 		});
@@ -148,7 +147,7 @@
 			var patient = encodeURIComponent($('#patient-alert-patientticketing').data('patient-id'));
 			$.ajax({
 				url: "/PatientTicketing/default/autoSave/",
-				data: 'clear=1&patient_id='+patient+'&queue='+queue+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
+				data: 'clear=1&patient_id='+patient+'&from_queue_id='+queue+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
 				type: 'POST',
 				dataType: 'json',
 				success: function (response) {

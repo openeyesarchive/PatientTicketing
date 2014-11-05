@@ -25,7 +25,7 @@ if ($queue) {?>
 				$form_data = $_POST;
 			}
 			else{
-				$form_data = @Yii::app()->session['pt_autosave_'.$this->patient_id.'_'.$current_queue_id];
+				$form_data = @Yii::app()->session['pt_autosave'][$this->patient_id.'-'.$current_queue_id];
 			}
 
 			if (@$fld['type'] == 'widget') {
@@ -58,7 +58,7 @@ if ($queue) {?>
 			</fieldset>
 		<?php }
 		}
-		if(isset(Yii::app()->session['pt_autosave_'.$this->patient_id.'_'.$current_queue_id]))
+		if(isset(Yii::app()->session['pt_autosave'][$this->patient_id.'-'.$current_queue_id]))
 		{
 			?>
 			<script>

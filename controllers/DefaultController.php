@@ -149,6 +149,7 @@ class DefaultController extends \BaseModuleController
 	{
 
 		unset(Yii::app()->session['patientticket_ticket_in_review']);
+		unset(Yii::app()->session['pt_autosave']);
 
 		if (!@$_GET['cat_id']) {
 			throw new \CHttpException(404, 'Category ID required');
@@ -327,7 +328,7 @@ class DefaultController extends \BaseModuleController
 				$transaction->commit();
 				$t_svc = Yii::app()->service->getService('PatientTicketing_Ticket');
 
-				unset(Yii::app()->session['pt_notes_'.$ticket->patient->id]);
+				unset(Yii::app()->session['pt_autosave']);
 
 				$flsh_id = 'patient-ticketing-';
 
@@ -584,8 +585,6 @@ class DefaultController extends \BaseModuleController
 		if (!$ticket = models\Ticket::model()->findByPk((int)$ticket_id)) {
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
-		$key = 'pt_notes_'.$ticket->patient->id.'_'.$ticket->current_queue->id;
-		unset(Yii::app()->session[$key]);
 		$this->setTicketState($ticket, false);
 	}
 
@@ -609,7 +608,7 @@ class DefaultController extends \BaseModuleController
 	{
 		$patient_id = $_POST['patient_id'];
 		$queue_id = $_POST['from_queue_id'];
-		$key = 'pt_autosave_'.$patient_id.'_'.$queue_id;
+		$key = $patient_id.'-'.$queue_id;
 
 		$clear = 	@$_POST['clear'];
 		if($clear) {
@@ -619,7 +618,10 @@ class DefaultController extends \BaseModuleController
 			$auto_save_data = $_POST;
 			unset ($auto_save_data['YII_CSRF_TOKEN']);
 			unset ($auto_save_data['queue']);
-			Yii::app()->session[$key]=$auto_save_data;
+
+			$temp = Yii::app()->session['pt_autosave'];
+			$temp[$key] = $auto_save_data;
+			Yii::app()->session['pt_autosave'] = $temp;
 		}
 
 		return true;
