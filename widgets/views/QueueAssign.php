@@ -20,6 +20,14 @@ if ($queue) {?>
 	<div class="row">
 	<div class="large-6 column">
 		<?php foreach ($queue->getFormFields() as $fld) {
+
+			if(@$_POST['from_queue_id']){
+				$form_data = $_POST;
+			}
+			else{
+				$form_data = @Yii::app()->session['pt_autosave_'.$this->patient_id.'_'.$current_queue_id];
+			}
+
 			if (@$fld['type'] == 'widget') {
 				$this->widget('OEModule\PatientTicketing\widgets\\' . $fld['widget_name'], array(
 						'ticket' => $this->ticket,
@@ -37,37 +45,32 @@ if ($queue) {?>
 					<?php if (@$fld['choices']) {
 						echo CHtml::dropDownList(
 								$fld['form_name'],
-								@$_POST[$fld['form_name']],
+								@$form_data[$fld['form_name']],
 								$fld['choices'],
 								array('empty' => ($fld['required']) ? ' - Please Select - ' : 'None'));
 					} else {
 						//may need to expand this beyond textarea and select in the future.
-						if($_POST && isset($_POST[$fld['form_name']])) {
-							$notes = @$_POST[$fld['form_name']];
-						}
-						else {
-							$notes = @Yii::app()->session['pt_notes_'.$this->patient_id.'_'.$current_queue_id];
-						}
+						$notes = @$form_data[$fld['form_name']];
 						?>
 						<textarea id="<?= $fld['form_name']?>" name="<?= $fld['form_name']?>"><?=$notes?></textarea>
-						<?php
-						if(isset(Yii::app()->session['pt_notes_'.$this->patient_id.'_'.$current_queue_id]))
-						{
-							?>
-							<script>
-								$(document).ready(function(){
-								window.patientTicketChanged = true;
-								window.changedTickets[<?=$current_queue_id?>]=true;
-								});
-							</script>
-						<?php
-						}
-						?>
 					<?php }?>
 				</div>
 			</fieldset>
 		<?php }
-		}?>
+		}
+		if(isset(Yii::app()->session['pt_autosave_'.$this->patient_id.'_'.$current_queue_id]))
+		{
+			?>
+			<script>
+				$(document).ready(function(){
+					window.patientTicketChanged = true;
+					window.changedTickets[<?=$current_queue_id?>]=true;
+				});
+			</script>
+		<?php
+		}
+
+		?>
 	</div>
 	<div class="large-6 column end">
 		<?php
@@ -88,6 +91,3 @@ if ($queue) {?>
 	</div>
 	</div>
 <?php } ?>
-<?php
-
-?>
