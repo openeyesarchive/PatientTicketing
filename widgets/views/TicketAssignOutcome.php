@@ -31,8 +31,7 @@ $auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.
 	</div>
 </fieldset>
 <?php
-if(@$auto_save_data[$this->form_name]['outcome'])
-{
+if(@$auto_save_data[$this->form_name]['outcome']){
 	$outcome = OEModule\PatientTicketing\models\TicketAssignOutcomeOption::model()->findByPk((int)$auto_save_data[$this->form_name]['outcome']);
 	if($outcome->followup) {
 		$this->hideFollowUp = false;
