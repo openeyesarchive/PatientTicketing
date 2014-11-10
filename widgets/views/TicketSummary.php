@@ -1,3 +1,4 @@
+
 <?php
 	$display_queue = $ticket->getDisplayQueueAssignment();
 ?>

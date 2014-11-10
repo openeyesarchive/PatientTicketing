@@ -22,31 +22,45 @@ $auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.
 
 <fieldset class="field-row row" data-formName="<?=$this->form_name ?>">
 	<div class="large-<?= $this->label_width ?> column">
-		<label for="site">Appointment date:</label>
+		<label for="site">Follow-up appointment:</label>
 	</div>
-	<div class="large-<?= $this->data_width ?> column end">
-		<?php
-		$value = @$auto_save_data[$this->form_name]['appointment_date'];
-	  $this->widget('zii.widgets.jui.CJuiDatePicker', array(
-			'name'=>$this->form_name . '[appointment_date]',
-			'id'=>$this->form_name . '_appointment_date',
-			// additional javascript options for the date picker plugin
-			'options'=>array(
-				'showAnim'=>'fold',
-				'dateFormat'=>Helper::NHS_DATE_FORMAT_JS
-			),
-			'value' => (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/',$value) ? Helper::convertMySQL2NHS($value) : $value),
-			'htmlOptions'=>null
-		)); ?>
-	</div>
+	<div class="large-<?= $this->data_width ?> column">
+	<table class="blank">
+
+	<thead>
+	<tr>
+		<th>Date</th>
+		<th>Time (HH:MM)</th>
+	</tr>
+	</thead>
+	<tbody class="readings-right">
+	<tr>
+		<td>
+			<?php
+			$value = @$auto_save_data[$this->form_name]['appointment_date'];
+			$this->widget('zii.widgets.jui.CJuiDatePicker', array(
+				'name'=>$this->form_name . '[appointment_date]',
+				'id'=>$this->form_name . '_appointment_date',
+				// additional javascript options for the date picker plugin
+				'options'=>array(
+					'showAnim'=>'fold',
+					'dateFormat'=>Helper::NHS_DATE_FORMAT_JS
+				),
+				'value' => (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/',$value) ? Helper::convertMySQL2NHS($value) : $value),
+				'htmlOptions'=>null
+			)); ?>
+		</td>
+		<td>
+			<?php echo CHtml::textField($this->form_name . '[appointment_time]','')?>
+		</td>
+
+	</tr>
+	</tbody>
+</table>
+		</div>
+
 </fieldset>
-<span id="<?= $this->form_name ?>-apppointment-time">
-<fieldset class="field-row row">
-	<div class="large-<?= $this->label_width ?> column">
-		<label for="followup_quantity">Appointment time:</label>
-	</div>
-	<div class="large-<?= $this->data_width ?> column end">
-		<?php echo CHtml::textField($this->form_name . '[appointment_time]','')?>
-	</div>
-</fieldset>
-</span>
+
+
+
+

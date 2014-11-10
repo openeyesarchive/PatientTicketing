@@ -68,7 +68,7 @@ class TicketAssignAppointment extends BaseTicketAssignment {
 
 		$appointment_time = $form_data['appointment_time'];
 		if(!$this->isValidTimeValue($appointment_time)){
-			$errs['appointment_date'] = 'Appointment time is not valid';
+			$errs['appointment_time'] = 'Appointment time is not valid';
 		}
 
 		return $errs;
@@ -76,7 +76,7 @@ class TicketAssignAppointment extends BaseTicketAssignment {
 
 	public function isValidTimeValue($value)
 	{
-		if (!preg_match("/^(([01]?[0-9])|(2[0-3])):?[0-5][0-9]$/", $value)) {
+		if (!preg_match("/^(([01]?[0-9])|(2[0-3])):[0-5][0-9]$/", $value)) {
 			return false;
 		}
 		return true;
@@ -90,7 +90,7 @@ class TicketAssignAppointment extends BaseTicketAssignment {
 	 */
 	public function getReportString($data)
 	{
-		$res = "Appointment arranged on " . @$data['appointment_date'] . " at " . @$data['appointment_time'];
+		$res = "Follow-up appointment booked for " . @$data['appointment_date'] . " at " . @$data['appointment_time'];
 		return $res;
 	}
 
