@@ -32,6 +32,19 @@ class PatientTicketing_API extends \BaseAPI
 	public static $TICKET_SUMMARY_WIDGET = 'OEModule\PatientTicketing\widgets\TicketSummary';
 	public static $QUEUE_ASSIGNMENT_WIDGET = 'OEModule\PatientTicketing\widgets\QueueAssign';
 	public static $QUEUESETCATEGORY_SERVICE = 'PatientTicketing_QueueSetCategory';
+	public static $TICKET_SERVICE = 'PatientTicketing_Ticket';
+
+	public function getLatestFollowUp($patient)
+	{
+		$ticket_service = Yii::app()->service->getService(self::$TICKET_SERVICE);
+		$tickets = $ticket_service->getTicketsForPatient($patient);
+		foreach($tickets as $ticket){
+			if($follow_up = $this->getFollowUp($ticket->id)){
+				return $follow_up;
+			}
+		}
+		return false;
+	}
 
 	public function getFollowUp($ticket_id)
 	{
