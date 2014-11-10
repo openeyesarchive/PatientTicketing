@@ -120,9 +120,11 @@ class PatientTicketing_API extends \BaseAPI
 			if (@$field['type'] == 'widget') {
 				$cls_name = "OEModule\\PatientTicketing\\widgets\\" . $field['widget_name'];
 				$widget = new $cls_name;
-				$res[$field_name] = $widget->extractFormData($data[$field['form_name']]);
-				if ($validate) {
-					$errs = array_merge($errs, $widget->validate($data[$field['form_name']]));
+				if(isset($data[$field['form_name']])){ // if widget is missing don't validate
+					$res[$field_name] = $widget->extractFormData($data[$field['form_name']]);
+					if ($validate) {
+						$errs = array_merge($errs, $widget->validate($data[$field['form_name']]));
+					}
 				}
 			}
 			else {

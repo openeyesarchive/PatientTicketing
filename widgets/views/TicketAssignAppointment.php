@@ -18,6 +18,8 @@
  */
 
 $auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.'-'.$this->ticket->current_queue->id];
+$api = Yii::app()->moduleAPI->get('PatientTicketing');
+if($outcome = $api->getFollowUp($this->ticket->id)){
 ?>
 
 <fieldset class="field-row row" data-formName="<?=$this->form_name ?>">
@@ -60,7 +62,7 @@ $auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.
 		</div>
 
 </fieldset>
-
+<?php } ?>
 
 
 
