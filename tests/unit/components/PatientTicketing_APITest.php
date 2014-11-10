@@ -51,6 +51,11 @@ class PatientTicketing_APITest extends CDbTestCase
 		parent::tearDown();
 	}
 
+	public function testGetFollowUp()
+	{
+		$this->assertEquals(true, $this->api->getFollowUp(5));
+	}
+
 	public function testcanAddPatientToQueue()
 	{
 		$patient = new \Patient();

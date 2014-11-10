@@ -32,6 +32,11 @@ class PatientTicketing_API extends \BaseAPI
 	public static $QUEUE_ASSIGNMENT_WIDGET = 'OEModule\PatientTicketing\widgets\QueueAssign';
 	public static $QUEUESETCATEGORY_SERVICE = 'PatientTicketing_QueueSetCategory';
 
+	public function getFollowUp($ticket_id)
+	{
+			return false;
+	}
+
 	public function getMenuItems($position = 1)
 	{
 		$result = array();
