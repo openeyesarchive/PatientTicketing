@@ -22,6 +22,7 @@ namespace OEModule\PatientTicketing\components;
 use OEModule\PatientTicketing\models\QueueSetCategory;
 use OEModule\PatientTicketing\models\Queue;
 use OEModule\PatientTicketing\models\Ticket;
+use OEModule\PatientTicketing\models\TicketAssignOutcomeOption;
 use OEModule\PatientTicketing\widgets;
 use Yii;
 
@@ -34,7 +35,32 @@ class PatientTicketing_API extends \BaseAPI
 
 	public function getFollowUp($ticket_id)
 	{
+		if (!$ticket = Ticket::model()->findByPk((int)$ticket_id)) {
 			return false;
+		};
+
+		if($queue_assignments = $ticket->queue_assignments){
+			foreach($queue_assignments as $queue_assignment){
+				$ticket_fields = json_decode($queue_assignment->details,true);
+				if($ticket_fields){
+					foreach($ticket_fields as $ticket_field){
+						if(isset($ticket_field['widget_name'])){
+							if($ticket_field['widget_name'] == "TicketAssignOutcome"){
+								if(isset($ticket_field['value'])){
+									if(isset($ticket_field['value']['outcome'])){
+										$ticket_outcome_option = TicketAssignOutcomeOption::model()->findByPk((int)$ticket_field['value']['outcome']);
+										if($ticket_outcome_option->followup == 1){
+											return json_decode(json_encode($ticket_field['value']));
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public function getMenuItems($position = 1)

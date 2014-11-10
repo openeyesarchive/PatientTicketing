@@ -43,4 +43,10 @@ return array(
 				'assignee_user_id' => 1,
 				'assignee_date' => '2014-09-04',
 		),
+		'ticket5' => array(
+				'id' => 5,
+				'patient_id' => 3,
+				'assignee_user_id' => 1,
+				'assignee_date' => '2014-09-04',
+	),
 );
