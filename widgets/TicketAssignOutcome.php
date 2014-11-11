@@ -30,7 +30,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 	public function run()
 	{
 		if (\Yii::app()->request->isPostRequest) {
-			if ($_POST[$this->form_name]) {
+			if (isset($_POST[$this->form_name])) {
 				if ($outcome_id = @$_POST[$this->form_name]['outcome']) {
 					$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$outcome_id);
 					if ($outcome->followup) {
