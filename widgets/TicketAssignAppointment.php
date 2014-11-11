@@ -65,6 +65,13 @@ class TicketAssignAppointment extends BaseTicketAssignment {
 				$errs['appointment_date'] = 'Appointment date is not a valid date';
 			}
 		}
+		else {
+			$not_historical_validator = new \OEDateValidatorNotHistorical();
+			if($not_historical_validator->validateValue($appointment_date) == false){
+				$errs['appointment_date'] = 'Appointment date cannot be in the past';
+			}
+		}
+
 
 		$appointment_time = $form_data['appointment_time'];
 		if(!$this->isValidTimeValue($appointment_time)){

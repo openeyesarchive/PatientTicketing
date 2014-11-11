@@ -46,9 +46,11 @@ if($outcome = $api->getFollowUp($this->ticket->id)){
 				// additional javascript options for the date picker plugin
 				'options'=>array(
 					'showAnim'=>'fold',
-					'dateFormat'=>Helper::NHS_DATE_FORMAT_JS
+					'dateFormat'=>Helper::NHS_DATE_FORMAT_JS,
+					'minDate'=>'new Date()',
 				),
-				'value' => (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/',$value) ? Helper::convertMySQL2NHS($value) : $value),
+				'value' => (preg_match('/^[0
+				-9]{4}-[0-9]{2}-[0-9]{2}$/',$value) ? Helper::convertMySQL2NHS($value) : $value),
 				'htmlOptions'=>null
 			)); ?>
 		</td>
