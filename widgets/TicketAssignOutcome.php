@@ -97,7 +97,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 		}
 
 		$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$form_data['outcome']);
-		if ($outcome->followup) {
+		if ($outcome && $outcome->followup) {
 			// validate outcome fields
 			foreach (array(
 				 'followup_quantity' => 'follow up quantity',
