@@ -30,7 +30,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 	public function run()
 	{
 		if (\Yii::app()->request->isPostRequest) {
-			if (isset($_POST[$this->form_name])) {
+			if ($_POST[$this->form_name]) {
 				if ($outcome_id = @$_POST[$this->form_name]['outcome']) {
 					$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$outcome_id);
 					if ($outcome->followup) {
@@ -164,6 +164,9 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 			$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$outcome_id);
 			$res = $outcome->name;
 			if ($outcome->followup) {
+				if(@$data['followup_quantity'] == 1 && isset($data['followup_period'])) {
+					$data['followup_period'] = rtrim($data['followup_period'],'s');
+				}
 				$res .= " in " . @$data['followup_quantity'] . " " . @$data['followup_period'];
 				$res .= " at " . @$data['site'];
 			}

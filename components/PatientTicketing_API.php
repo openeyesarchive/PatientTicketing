@@ -63,7 +63,11 @@ class PatientTicketing_API extends \BaseAPI
 									if(isset($ticket_field['value']['outcome'])){
 										$ticket_outcome_option = TicketAssignOutcomeOption::model()->findByPk((int)$ticket_field['value']['outcome']);
 										if($ticket_outcome_option->followup == 1){
-											return json_decode(json_encode($ticket_field['value']));
+											$followupValue = json_decode(json_encode($ticket_field['value']));
+											if(@$followupValue->followup_quantity==1 && @$followupValue->followup_period) {
+												$followupValue->followup_period = rtrim($followupValue->followup_period,'s');
+											}
+											return $followupValue;
 										}
 									}
 								}
