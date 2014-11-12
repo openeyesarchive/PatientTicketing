@@ -334,10 +334,10 @@ class DefaultController extends \BaseModuleController
 
 				$flsh_id .= $queueset->getId();
 				if ($to_queue->outcomes) {
-					Yii::app()->user->setFlash($flsh_id, $t_svc->getCategoryForTicket($ticket)->name . ' - moved to ' . $to_queue->name);
+					Yii::app()->user->setFlash($flsh_id, $t_svc->getCategoryForTicket($ticket)->name . ' - ' . $ticket->patient->getHSCICName() . ' moved to ' . $to_queue->name);
 				}
 				else {
-					Yii::app()->user->setFlash($flsh_id, $t_svc->getCategoryForTicket($ticket)->name . ' - referral closed');
+					Yii::app()->user->setFlash($flsh_id, $t_svc->getCategoryForTicket($ticket)->name . ' - ' . $ticket->patient->getHSCICName() . ' completed');
 				}
 
 			}
