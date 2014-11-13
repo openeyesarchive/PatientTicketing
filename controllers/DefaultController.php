@@ -61,7 +61,7 @@ class DefaultController extends \BaseModuleController
 	{
 		return array(
 			array('allow',
-				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert', 'autoSave'),
+				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert', 'autoSave', 'getFirmsForSubspecialty'),
 				'roles' => array('OprnViewClinical'),
 			),
 			array('allow',
@@ -625,6 +625,14 @@ class DefaultController extends \BaseModuleController
 		}
 
 		return true;
+	}
 
+	public function actionGetFirmsForSubspecialty()
+	{
+		if (!$subspecialty = \Subspecialty::model()->findByPk(@$_GET['subspecialty_id'])) {
+			throw new Exception("Subspecialty not found: ".@$_GET['subspecialty_id']);
+		}
+
+		echo \CHtml::dropDownList('firm-id', '', \Firm::model()->getList($subspecialty->id), array('empty'=>'All firms'));
 	}
 }
