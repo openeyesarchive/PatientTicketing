@@ -399,5 +399,22 @@
 			e.preventDefault();
 			$('#queueset-form').fadeTo(300, 0.0, function() {$(this).slideUp(); $('#queueset-select-toggle-wrapper').slideDown().fadeTo(300, 1.0)});
 		})
+
+		$(this).on('change', '#subspecialty-id', function(e) {
+			var subspecialty_id = $(this).val();
+
+			if (subspecialty_id == '') {
+				$('#firm-id').html('<option value="">All firms</option>');
+				$('#firm-id').attr('disabled','disabled');
+			} else {
+				$.ajax({
+					'type': 'GET',
+					'url': baseUrl+'/PatientTicketing/default/getFirmsForSubspecialty?subspecialty_id=' + subspecialty_id,
+					'success': function(html) {
+						$('#firm-id').replaceWith(html);
+					}
+				});
+			}
+		});
 	});
 }());
