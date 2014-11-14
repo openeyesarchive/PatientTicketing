@@ -46,7 +46,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 		<div class="large-12 column">
 			<div class="panel">
 				<div class="row">
-					<div class="large-9 column">
+					<div class="large-10 column">
 						<table class="grid">
 							<thead>
 							<tr>
