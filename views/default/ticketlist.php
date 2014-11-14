@@ -46,13 +46,13 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 		<div class="large-12 column">
 			<div class="panel">
 				<div class="row">
-					<div class="large-8 column">
+					<div class="large-10 column">
 						<table class="grid">
 							<thead>
 							<tr>
-								<th>Patient List:</th>
+								<th class="large-2">Patient List:</th>
 								<?php if ($queueset->filter_priority) {?>
-									<th>Priority:</th>
+									<th class="large-2">Priority:</th>
 								<?php }?>
 								<?php if ($queueset->filter_subspecialty) {?>
 									<th>Subspecialty:</th>
@@ -74,6 +74,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 								<td>
 									<?php
 									$this->widget('application.widgets.MultiSelectList', array(
+											'auto_data_order'=>true,
 											'field' => 'queue-ids',
 											'default_options' => @$_POST['queue-ids'],
 											'options' => CHtml::listData($qs_svc->getQueueSetQueues($queueset, false),'id','name'),
@@ -86,6 +87,7 @@ $can_process = $queueset && $qs_svc->isQueueSetPermissionedForUser($queueset, Yi
 								<?php if ($queueset->filter_priority) {?>
 								<td>
 									<?php $this->widget('application.widgets.MultiSelectList', array(
+													'auto_data_order'=>true,
 													'field' => 'priority-ids',
 													'default_options' => @$_POST['priority-ids'],
 													'options' => CHtml::listData(OEModule\PatientTicketing\models\Priority::model()->findAll(), 'id', 'name'),
