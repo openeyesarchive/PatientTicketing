@@ -30,14 +30,6 @@ $auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.
 		echo CHtml::dropDownList($this->form_name . '[outcome]', @$auto_save_data[$this->form_name]['outcome'], $outcomes['list_data'], array('empty' => '- Please select -', 'options' => $outcomes['options'], 'class' => 'outcome-select')); ?>
 	</div>
 </fieldset>
-<?php
-if(@$auto_save_data[$this->form_name]['outcome']){
-	$outcome = OEModule\PatientTicketing\models\TicketAssignOutcomeOption::model()->findByPk((int)$auto_save_data[$this->form_name]['outcome']);
-	if($outcome->followup) {
-		$this->hideFollowUp = false;
-	}
-}
-?>
 <span id="<?= $this->form_name ?>-followup"<?php if ($this->hideFollowUp) {?> style="display: none;"<?php } ?>>
 <fieldset class="field-row row">
 	<div class="large-<?= $this->label_width ?> column">

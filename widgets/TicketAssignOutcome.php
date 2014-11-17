@@ -39,6 +39,15 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 				}
 			}
 		}
+		else {
+			$auto_save_data = @\Yii::app()->session['pt_autosave'][$this->ticket->patient_id.'-'.$this->ticket->current_queue->id];
+			if(@$auto_save_data[$this->form_name]['outcome']){
+				$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$auto_save_data[$this->form_name]['outcome']);
+				if($outcome->followup) {
+					$this->hideFollowUp = false;
+				}
+			}
+		}
 
 		parent::run();
 	}
