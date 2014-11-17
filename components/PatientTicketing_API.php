@@ -34,6 +34,12 @@ class PatientTicketing_API extends \BaseAPI
 	public static $QUEUESETCATEGORY_SERVICE = 'PatientTicketing_QueueSetCategory';
 	public static $TICKET_SERVICE = 'PatientTicketing_Ticket';
 
+
+	/**
+	 * Returns the most recent followup value for a patient
+	 * @param $patient
+	 * @return array|bool followup value or false if not present
+	 */
 	public function getLatestFollowUp($patient)
 	{
 		$ticket_service = Yii::app()->service->getService(self::$TICKET_SERVICE);
@@ -46,6 +52,11 @@ class PatientTicketing_API extends \BaseAPI
 		return false;
 	}
 
+	/**
+	 * Returns a followup value from a patient ticket if present
+	 * @param $ticket_id
+	 * @return array|bool followup value or false if not present
+	 */
 	public function getFollowUp($ticket_id)
 	{
 		if (!$ticket = Ticket::model()->findByPk((int)$ticket_id)) {
@@ -57,19 +68,11 @@ class PatientTicketing_API extends \BaseAPI
 				$ticket_fields = json_decode($queue_assignment->details,true);
 				if($ticket_fields){
 					foreach($ticket_fields as $ticket_field){
-						if(isset($ticket_field['widget_name'])){
-							if($ticket_field['widget_name'] == "TicketAssignOutcome"){
-								if(isset($ticket_field['value'])){
-									if(isset($ticket_field['value']['outcome'])){
-										$ticket_outcome_option = TicketAssignOutcomeOption::model()->findByPk((int)$ticket_field['value']['outcome']);
-										if($ticket_outcome_option->followup == 1){
-											$followupValue = json_decode(json_encode($ticket_field['value']));
-											if(@$followupValue->followup_quantity==1 && @$followupValue->followup_period) {
-												$followupValue->followup_period = rtrim($followupValue->followup_period,'s');
-											}
-											return $followupValue;
-										}
-									}
+						if(@$ticket_field['widget_name'] == "TicketAssignOutcome"){
+							if(@isset($ticket_field['value']['outcome'])){
+								$ticket_outcome_option = TicketAssignOutcomeOption::model()->findByPk((int)$ticket_field['value']['outcome']);
+								if($ticket_outcome_option->followup == 1){
+									return $ticket_field['value'];
 								}
 							}
 						}
