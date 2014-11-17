@@ -52,7 +52,6 @@ $this->renderPartial('//elements/form_errors', array('errors' => $errors, 'botto
 		<?php echo $form->radioBoolean($queueset, 'filter_priority'); ?>
 		<?php echo $form->radioBoolean($queueset, 'filter_subspecialty'); ?>
 		<?php echo $form->radioBoolean($queueset, 'filter_firm'); ?>
-		<?php echo $form->radioBoolean($queueset, 'filter_my_tickets'); ?>
 		<?php echo $form->radioBoolean($queueset, 'filter_closed_tickets'); ?>
 	</div>
 

@@ -74,7 +74,8 @@ class TicketAssignAppointment extends BaseTicketAssignment {
 
 
 		$appointment_time = $form_data['appointment_time'];
-		if(!$this->isValidTimeValue($appointment_time)){
+		$time_validator = new \OETimeValidator();
+		if(!$time_validator->validateValue($appointment_time)){
 			$errs['appointment_time'] = 'Appointment time is not valid';
 		}
 
