@@ -55,7 +55,7 @@ if($outcome = $api->getFollowUp($this->ticket->id)){
 			)); ?>
 		</td>
 		<td>
-			<?php echo CHtml::textField($this->form_name . '[appointment_time]','')?>
+			<?php echo CHtml::textField($this->form_name . '[appointment_time]',@$auto_save_data[$this->form_name]['appointment_time'])?>
 		</td>
 
 	</tr>
