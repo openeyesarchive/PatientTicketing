@@ -19,15 +19,15 @@
 if ($queue) {?>
 	<div class="row">
 	<div class="large-6 column">
-		<?php foreach ($queue->getFormFields() as $fld) {
+		<?php
+		$form_fields = $queue->getFormFields();
+		$form_data = @Yii::app()->session['pt_autosave'][$this->patient_id.'-'.$current_queue_id];
 
-			if(@$_POST['from_queue_id']){
-				$form_data = $_POST;
-			}
-			else{
-				$form_data = @Yii::app()->session['pt_autosave'][$this->patient_id.'-'.$current_queue_id];
-			}
+		if(isset($_POST[$form_fields[0]['form_name']])){ // if post contains patient ticket data
+			$form_data = $_POST;
+		}
 
+		foreach ($form_fields as $fld) {
 			if (@$fld['type'] == 'widget') {
 				$this->widget('OEModule\PatientTicketing\widgets\\' . $fld['widget_name'], array(
 						'ticket' => $this->ticket,
