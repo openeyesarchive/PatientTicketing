@@ -56,6 +56,17 @@ class QueueAssign extends \CWidget {
 		else {
 			$queue = null;
 		}
-		$this->render('QueueAssign', array('queue' => $queue, 'current_queue_id' =>$this->current_queue_id));
+
+		$form_fields = $queue->getFormFields();
+
+		$auto_save = false;
+		if(isset($_POST[$form_fields[0]['form_name']])){ // if post contains patient ticket data
+			$form_data = $_POST;
+		}
+		else if($form_data = @Yii::app()->session['pt_autosave'][$this->patient_id.'-'.$this->current_queue_id]){
+			$auto_save=true;
+		}
+
+		$this->render('QueueAssign', array('queue' => $queue,'form_fields' => $form_fields, 'form_data' => $form_data, 'auto_save' => $auto_save));
 	}
 }

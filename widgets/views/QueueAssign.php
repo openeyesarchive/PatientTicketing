@@ -20,13 +20,6 @@ if ($queue) {?>
 	<div class="row">
 	<div class="large-6 column">
 		<?php
-		$form_fields = $queue->getFormFields();
-		$form_data = @Yii::app()->session['pt_autosave'][$this->patient_id.'-'.$current_queue_id];
-
-		if(isset($_POST[$form_fields[0]['form_name']])){ // if post contains patient ticket data
-			$form_data = $_POST;
-		}
-
 		foreach ($form_fields as $fld) {
 			if (@$fld['type'] == 'widget') {
 				$this->widget('OEModule\PatientTicketing\widgets\\' . $fld['widget_name'], array(
@@ -58,18 +51,16 @@ if ($queue) {?>
 			</fieldset>
 		<?php }
 		}
-		if(isset(Yii::app()->session['pt_autosave'][$this->patient_id.'-'.$current_queue_id]))
-		{
+		if($auto_save){
 			?>
 			<script>
 				$(document).ready(function(){
 					window.patientTicketChanged = true;
-					window.changedTickets[<?=$current_queue_id?>]=true;
+					window.changedTickets[<?=$this->current_queue_id?>]=true;
 				});
 			</script>
 		<?php
 		}
-
 		?>
 	</div>
 	<div class="large-6 column end">
@@ -79,7 +70,7 @@ if ($queue) {?>
 			<?php
 			foreach ($queue->event_types as $et) {
 				?>
-				<li><a href="<?= Yii::app()->baseURL?>/<?=$et->class_name?>/default/create?patient_id=<?= $this->patient_id ?>" class="button small event-type-link auto-save" data-queue="<?= $current_queue_id?>"><?= $et->name ?></a></li>
+				<li><a href="<?= Yii::app()->baseURL?>/<?=$et->class_name?>/default/create?patient_id=<?= $this->patient_id ?>" class="button small event-type-link auto-save" data-queue="<?= $this->current_queue_id?>"><?= $et->name ?></a></li>
 			<?php
 			}
 			?>
