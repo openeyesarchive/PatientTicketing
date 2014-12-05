@@ -18,7 +18,7 @@
  */
 
 namespace OEModule\PatientTicketing\widgets;
-
+use OEModule\PatientTicketing\components\AutoSaveTicket;
 use OEModule\PatientTicketing\models;
 
 class TicketAssignOutcome extends BaseTicketAssignment {
@@ -40,7 +40,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 			}
 		}
 		else {
-			$auto_save_data = @\Yii::app()->session['pt_autosave'][$this->ticket->patient_id.'-'.$this->ticket->current_queue->id];
+			$auto_save_data = AutoSaveTicket::getFormData($this->ticket->patient_id,$this->ticket->current_queue->id);
 			if(@$auto_save_data[$this->form_name]['outcome']){
 				$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$auto_save_data[$this->form_name]['outcome']);
 				if($outcome->followup) {
@@ -61,6 +61,11 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 		}
 		$res['list_data'] = \CHtml::listData($models, 'id', 'name');
 		return $res;
+	}
+
+	public function getAutoSaveData()
+	{
+		return AutoSaveTicket::getFormData($this->ticket->patient_id,$this->ticket->current_queue->id);
 	}
 
 	/**

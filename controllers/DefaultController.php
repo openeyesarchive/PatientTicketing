@@ -20,6 +20,7 @@
 namespace OEModule\PatientTicketing\controllers;
 use OEModule\PatientTicketing\models;
 use OEModule\PatientTicketing\services;
+use OEModule\PatientTicketing\components\AutoSaveTicket;
 use Yii;
 
 class DefaultController extends \BaseModuleController
@@ -61,7 +62,7 @@ class DefaultController extends \BaseModuleController
 	{
 		return array(
 			array('allow',
-				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert', 'autoSave', 'getFirmsForSubspecialty'),
+				'actions' => array('expandTicket', 'collapseTicket', 'getPatientAlert', 'navigateToEvent', 'getFirmsForSubspecialty'),
 				'roles' => array('OprnViewClinical'),
 			),
 			array('allow',
@@ -75,7 +76,7 @@ class DefaultController extends \BaseModuleController
 			// these will have additional checks in the action methods
 			// TODO: detemine cleaner way of defining this.
 			array('allow',
-				'actions' => array('moveTicket', 'getQueueAssignmentForm', 'takeTicket', 'releaseTicket', 'startTicketProcess'),
+				'actions' => array('moveTicket', 'navigateToEvent', 'getQueueAssignmentForm', 'takeTicket', 'releaseTicket', 'startTicketProcess'),
 				'roles' => array('OprnViewQueueSet'),
 			),
 		);
@@ -149,7 +150,7 @@ class DefaultController extends \BaseModuleController
 	{
 
 		unset(Yii::app()->session['patientticket_ticket_in_review']);
-		unset(Yii::app()->session['pt_autosave']);
+		AutoSaveTicket::clear();
 
 		if (!@$_GET['cat_id']) {
 			throw new \CHttpException(404, 'Category ID required');
@@ -328,7 +329,7 @@ class DefaultController extends \BaseModuleController
 				$transaction->commit();
 				$t_svc = Yii::app()->service->getService('PatientTicketing_Ticket');
 
-				unset(Yii::app()->session['pt_autosave']);
+				AutoSaveTicket::clear();
 
 				$flsh_id = 'patient-ticketing-';
 
@@ -356,6 +357,57 @@ class DefaultController extends \BaseModuleController
 		echo json_encode(array('redirectURL'=>"/PatientTicketing/default/?queueset_id=$queueset_id&cat_id=$queueset_category_id"));
 	}
 
+	/**
+	 * Handles the moving of a ticket to a new Queue.
+	 *
+	 * @param $id
+	 * @throws \CHttpException
+	 */
+	public function actionNavigateToEvent($id)
+	{
+		$data = $_POST;
+
+		$response = '1';
+
+		if (strpos(strtolower($data['href']), 'correspondence') !== FALSE){
+			if($errs = $this->validateForm($id)){
+				$response = json_encode(array("errors" => array_values($errs)));
+				}
+			else{
+				$data['validated'] = true;
+			}
+		}
+
+		$this->autoSaveTicket($data);
+
+		echo $response;
+
+	}
+
+	private static function autoSaveTicket ($data)
+	{
+		unset ($data['YII_CSRF_TOKEN']);
+		unset ($data['queue']);
+
+		AutoSaveTicket::saveFormData($_POST['patient_id'],$_POST['from_queue_id'],$data);
+	}
+
+
+	public function validateForm($ticket_id)
+	{
+		if (!$ticket = models\Ticket::model()->with('current_queue')->findByPk($ticket_id)) {
+			throw new \CHttpException(404, 'Invalid ticket id.');
+		}
+
+		if (!$to_queue = models\Queue::model()->active()->findByPk($_POST['to_queue_id'])) {
+			throw new \CHttpException(404, "Cannot find queue with id {$_POST['to_queue_id']}");
+		}
+
+		$api = Yii::app()->moduleAPI->get('PatientTicketing');
+		list($data, $errs) = $api->extractQueueData($to_queue, $_POST, true);
+
+		return $errs;
+	}
 
 	/**
 	 * Generate individual row for the given Ticket id
@@ -601,30 +653,6 @@ class DefaultController extends \BaseModuleController
 		}
 
 		$this->renderPartial('patientalert', array("patient" => $patient));
-	}
-
-
-	public function actionAutoSave()
-	{
-		$patient_id = $_POST['patient_id'];
-		$queue_id = $_POST['from_queue_id'];
-		$key = $patient_id.'-'.$queue_id;
-
-		$clear = 	@$_POST['clear'];
-		if($clear) {
-			unset(Yii::app()->session[$key]);
-		}
-		else	{
-			$auto_save_data = $_POST;
-			unset ($auto_save_data['YII_CSRF_TOKEN']);
-			unset ($auto_save_data['queue']);
-
-			$temp = Yii::app()->session['pt_autosave'];
-			$temp[$key] = $auto_save_data;
-			Yii::app()->session['pt_autosave'] = $temp;
-		}
-
-		return true;
 	}
 
 	public function actionGetFirmsForSubspecialty()

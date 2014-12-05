@@ -19,6 +19,7 @@
 
 namespace OEModule\PatientTicketing\widgets;
 use OEModule\PatientTicketing\models;
+use OEModule\PatientTicketing\components\AutoSaveTicket;
 use Yii;
 
 /**
@@ -58,12 +59,11 @@ class QueueAssign extends \CWidget {
 		}
 
 		$form_fields = $queue->getFormFields();
-
 		$auto_save = false;
 		if(isset($_POST[$form_fields[0]['form_name']])){ // if post contains patient ticket data
 			$form_data = $_POST;
 		}
-		else if($form_data = @Yii::app()->session['pt_autosave'][$this->patient_id.'-'.$this->current_queue_id]){
+		else if($form_data = AutoSaveTicket::getFormData($this->patient_id,$this->current_queue_id)){
 			$auto_save=true;
 		}
 
