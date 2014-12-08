@@ -204,11 +204,14 @@ class PatientTicketing_API extends \BaseAPI
 	}
 
 	/*
-	 * @param Ticket $ticket
+	 * @param Event $event
 	 * @param array $data
 	 */
-	public function updateTicketForEvent(Ticket $ticket)
+	public function updateTicketForEvent(\Event $event)
 	{
+		if (!$ticket = $this->getTicketForEvent($event)) {
+			throw new \Exception("Event has no ticket: $event->id");
+		}
 		$assignment = $ticket->initial_queue_assignment;
 
 		// regenerate the report field on the ticket.
