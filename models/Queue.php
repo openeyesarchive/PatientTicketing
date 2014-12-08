@@ -249,9 +249,9 @@ class Queue extends \BaseActiveRecordVersioned
 
 		// generate the report field on the ticket.
 		if ($this->report_definition) {
-			$report = $assignment->replaceAssignmentCodes($this->report_definition);
-			$assignment->report = Substitution::replace($report, $ticket->patient);
+			$assignment->generateReportText();
 		}
+
 		if (!$assignment->save()) {
 			throw new \Exception("Unable to save queue assignment");
 		}

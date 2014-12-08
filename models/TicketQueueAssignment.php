@@ -149,4 +149,10 @@ class TicketQueueAssignment extends \BaseActiveRecordVersioned
 			return $text;
 		}
 	}
+
+	/* Generate the report text */
+	public function generateReportText()
+	{
+		$this->report = \OEModule\PatientTicketing\components\Substitution::replace($this->replaceAssignmentCodes($this->queue->report_definition), $this->ticket->patient);
+	}
 }
