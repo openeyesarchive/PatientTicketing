@@ -390,6 +390,22 @@
 			ticketController.toggleHistory(ticketInfo);
 		});
 
+		$(this).on('click', '.undo-last-queue-step', function(e) {
+			var ticketInfo = $(this).closest('tr').data('ticket-info');
+
+			$.ajax({
+				'type': 'GET',
+				'url': baseUrl+'/PatientTicketing/default/undoLastStep/' + ticketInfo.id,
+				'success': function(resp) {
+					if (resp != "1") {
+						alert("Something went wrong trying to undo the last step.  Please try again or contact support for assistance.");
+					}
+
+					window.location.reload();
+				}
+			});
+		});
+
 		$(this).on('click', '#queueset-select-toggle', function(e) {
 			e.preventDefault();
 			$('#queueset-select-toggle-wrapper').fadeTo(300, 0.0, function() {$(this).slideUp(); $('#queueset-form').slideDown().fadeTo(300, 1.0)});

@@ -22,8 +22,15 @@ tr.disabled {
 	opacity: 0.6;
 }
 
-#ticket-list td {
-	vertical-align: top;
+#ticket-list {
+	td {
+		vertical-align: top;
+	}
+	.actions {
+		button {
+			margin-top: 5px;
+		}
+	}
 }
 
 #ticket-table{
