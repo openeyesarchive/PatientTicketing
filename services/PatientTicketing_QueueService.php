@@ -159,6 +159,8 @@ class PatientTicketing_QueueService extends \services\ModelService {
 				$this->model->deleteByPk($rid);
 			}
 
+			\Audit::add('admin', 'delete', $queue->id, null, array('module' => 'PatientTicketing', 'model' => $queue->getShortModelName()));
+
 			if ($transaction) {
 				$transaction->commit();
 			}
