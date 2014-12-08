@@ -161,11 +161,13 @@ class PatientTicketing_QueueSetService  extends \services\ModelService {
 		try {
 			$qs->permissioned_users = $users;
 			$qs->save();
+			\Audit::add('admin', 'set-permissions', $qs->id, null, array('module' => 'PatientTicketing', 'model' => $qs->getShortModelName()));
 
 			if ($role_item) {
 				foreach ($users as $user) {
 					if (!$role_item->getAssignment($user->id)) {
 						$role_item->assign($user->id);
+						\Audit::add('admin-User', 'assign-role', "{$user->id}:{$role_item->name}");
 					}
 				}
 			}
