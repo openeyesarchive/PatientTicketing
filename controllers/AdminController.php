@@ -43,7 +43,7 @@ class AdminController extends \ModuleAdminController {
 	 */
 	public function filters() {
 		$filters = parent::filters();
-		$filters[] = array('postOnly + activateQueue, deactivateQueue, deleteQueue');
+		$filters[] = 'postOnly + activateQueue, deactivateQueue, deleteQueue';
 		return $filters;
 	}
 
