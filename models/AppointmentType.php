@@ -21,8 +21,6 @@ namespace OEModule\PatientTicketing\models;
 
 class AppointmentType extends \BaseActiveRecordVersioned
 {
-	protected static $FIELD_PREFIX = "patientticketing_";
-
 	public function tableName()
 	{
 		return 'patientticketing_appointment_type';
