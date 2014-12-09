@@ -225,6 +225,7 @@ class DefaultController extends \BaseModuleController
 
 				// get tickets that match criteria
 				$tickets = models\Ticket::model()->findAll($criteria);
+				\Audit::add('queueset', 'view', $queueset->getId());
 			}
 		}
 
@@ -325,6 +326,7 @@ class DefaultController extends \BaseModuleController
 					$ticket->assignee_date = null;
 					$ticket->save();
 				}
+				$ticket->audit('ticket', 'move', $ticket->id);
 				$transaction->commit();
 				$t_svc = Yii::app()->service->getService('PatientTicketing_Ticket');
 
@@ -391,6 +393,7 @@ class DefaultController extends \BaseModuleController
 		if (!$ticket = models\Ticket::model()->with(array('queue_assignments', 'queue_assignments.queue'))->findByPk($id)) {
 			throw new \CHttpException(404, 'Invalid ticket id.');
 		}
+		$ticket->audit('ticket', 'view-history', $ticket->id);
 
 		$this->renderPartial('_ticketlist_history', array(
 					'ticket' => $ticket,
@@ -433,6 +436,7 @@ class DefaultController extends \BaseModuleController
 			$ticket->assignee_date = date('Y-m-d H:i:s');
 			if ($ticket->save()) {
 				$resp['status'] = 1;
+				$ticket->audit('ticket', 'take-ownership', $ticket->id);
 			}
 			else {
 				$resp['status'] = 0;
@@ -476,6 +480,7 @@ class DefaultController extends \BaseModuleController
 			$ticket->assignee_date = null;
 			if ($ticket->save()) {
 				$resp['status'] = 1;
+				$ticket->audit('ticket', 'release', $ticket->id);
 			}
 			else {
 				$resp['status'] = 0;
@@ -599,6 +604,7 @@ class DefaultController extends \BaseModuleController
 		if (!$patient = \Patient::model()->findByPk((int)$patient_id)) {
 			throw new \CHttpException(404, 'Invalid patient id.');
 		}
+		$patient->audit('patient', 'view-alert');
 
 		$this->renderPartial('patientalert', array("patient" => $patient));
 	}

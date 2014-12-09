@@ -223,6 +223,7 @@ class PatientTicketing_API extends \BaseAPI
 			$ticket->last_modified_user_id = $user->id;
 			$ticket->priority_id = $data['patientticketing__priority'];
 			$ticket->save();
+			$ticket->audit('ticket', 'create', $ticket->id);
 
 			$initial_queue->addTicket($ticket, $user, $firm, $data);
 			if ($transaction) {
