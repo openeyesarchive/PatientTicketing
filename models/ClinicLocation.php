@@ -19,11 +19,11 @@
 
 namespace OEModule\PatientTicketing\models;
 
-class AppointmentType extends \BaseActiveRecordVersioned
+class ClinicLocation extends \BaseActiveRecordVersioned
 {
 	public function tableName()
 	{
-		return 'patientticketing_appointment_type';
+		return 'patientticketing_clinic_location';
 	}
 
 	public function rules()
