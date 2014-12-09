@@ -30,7 +30,7 @@ $auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.
 		echo CHtml::dropDownList($this->form_name . '[outcome]', @$auto_save_data[$this->form_name]['outcome'], $outcomes['list_data'], array('empty' => '- Please select -', 'options' => $outcomes['options'], 'class' => 'outcome-select')); ?>
 	</div>
 </fieldset>
-<span id="<?= $this->form_name ?>-followup"<?php if ($this->hideFollowUp) {?> style="display: none;"<?php } ?>>
+<span id="<?= $this->form_name ?>-followup"<?php if ($this->hideFollowUp) {?> style="display: none;"<?php }?>>
 <fieldset class="field-row row">
 	<div class="large-<?= $this->label_width ?> column">
 		<label for="followup_quantity">Follow up:</label>
@@ -45,10 +45,10 @@ $auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.
 </fieldset>
 <fieldset class="field-row row">
 	<div class="large-<?= $this->label_width ?> column">
-		<label for="site">Site:</label>
+		<label for="site">Appointment type:</label>
 	</div>
 	<div class="large-<?= $this->data_width ?> column end">
-		<?php echo CHtml::dropDownList($this->form_name . '[site]', @$auto_save_data[$this->form_name]['site'], \CHtml::listData(\Institution::model()->getCurrent()->sites, 'name', 'name'), $html_options); ?>
+		<?php echo CHtml::dropDownList($this->form_name . '[appointment_type]', @$auto_save_data[$this->form_name]['appointment_type'], \CHtml::listData(OEModule\PatientTicketing\models\AppointmentType::model()->findAll(array('order' => 'display_order asc')),'name','name'), $html_options); ?>
 	</div>
 </fieldset>
 </span>
