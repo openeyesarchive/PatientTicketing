@@ -33,22 +33,22 @@ class PatientTicketing_QueueSetService extends \CDbTestCase
 
 	public function testgetQueueSetsForFirm()
 	{
-		$qs_svc = $this->getMockBuilder('OEModule\PatientTicketing\services\PatientTicketing_QueueSetService')
+		$service = $this->getMockBuilder('OEModule\PatientTicketing\services\PatientTicketing_QueueSetService')
 			->disableOriginalConstructor()
 			->setMethods(array('modelToResource'))
 			->getMock();
 
-		$qs_svc->expects($this->at(0))
+		$service->expects($this->at(0))
 			->method('modelToResource')
 			->with($this->queuesets('queueset1'));
 
-		$qs_svc->expects($this->at(1))
+		$service->expects($this->at(1))
 			->method('modelToResource')
 			->with($this->queuesets('queueset2'));
 
 		$firm = new \Firm();
 
-		$res = $qs_svc->getQueueSetsForFirm($firm);
+		$res = $service->getQueueSetsForFirm($firm);
 		$this->assertEquals(2, count($res));
 	}
 
@@ -67,27 +67,27 @@ class PatientTicketing_QueueSetService extends \CDbTestCase
 	public function testcanAddPatientToQueueSet($qs_name, $patient_name, $res, $msg)
 	{
 		$queueset = $this->queuesets($qs_name);
-		$qs_svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
-		$this->assertEquals($res, $qs_svc->canAddPatientToQueueSet($this->patients($patient_name), $queueset->id), $msg);
+		$service = Yii::app()->service->getService('PatientTicketing_QueueSet');
+		$this->assertEquals($res, $service->canAddPatientToQueueSet($this->patients($patient_name), $queueset->id), $msg);
 	}
 
 	public function testGetFilterSettingsAllOn()
 	{
-		$svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
-		$this->assertEquals($svc->read(1)->filter_priority,1);
-		$this->assertEquals($svc->read(1)->filter_subspecialty,1);
-		$this->assertEquals($svc->read(1)->filter_firm,1);
-		$this->assertEquals($svc->read(1)->filter_my_tickets,1);
-		$this->assertEquals($svc->read(1)->filter_closed_tickets,1);
+		$service = Yii::app()->service->getService('PatientTicketing_QueueSet');
+		$this->assertEquals($service->read(1)->filter_priority,1);
+		$this->assertEquals($service->read(1)->filter_subspecialty,1);
+		$this->assertEquals($service->read(1)->filter_firm,1);
+		$this->assertEquals($service->read(1)->filter_my_tickets,1);
+		$this->assertEquals($service->read(1)->filter_closed_tickets,1);
 	}
 
 	public function testGetFilterSettingsAllOff()
 	{
-		$svc = Yii::app()->service->getService('PatientTicketing_QueueSet');
-		$this->assertEquals($svc->read(2)->filter_priority,0);
-		$this->assertEquals($svc->read(2)->filter_subspecialty,0);
-		$this->assertEquals($svc->read(2)->filter_firm,0);
-		$this->assertEquals($svc->read(2)->filter_my_tickets,0);
-		$this->assertEquals($svc->read(2)->filter_closed_tickets,0);
+		$service = Yii::app()->service->getService('PatientTicketing_QueueSet');
+		$this->assertEquals($service->read(2)->filter_priority,0);
+		$this->assertEquals($service->read(2)->filter_subspecialty,0);
+		$this->assertEquals($service->read(2)->filter_firm,0);
+		$this->assertEquals($service->read(2)->filter_my_tickets,0);
+		$this->assertEquals($service->read(2)->filter_closed_tickets,0);
 	}
 }

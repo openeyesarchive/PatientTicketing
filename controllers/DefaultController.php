@@ -79,6 +79,10 @@ class DefaultController extends \BaseModuleController
 				'actions' => array('moveTicket', 'navigateToEvent', 'getQueueAssignmentForm', 'takeTicket', 'releaseTicket', 'startTicketProcess'),
 				'roles' => array('OprnViewQueueSet'),
 			),
+			array('allow',
+				'actions' => array('undoLastStep'),
+				'roles' => array('OprnUndoTicketLastStep'),
+			),
 		);
 	}
 
@@ -662,5 +666,21 @@ class DefaultController extends \BaseModuleController
 		}
 
 		echo \CHtml::dropDownList('firm-id', '', \Firm::model()->getList($subspecialty->id), array('empty'=>'All firms'));
+	}
+
+	public function actionUndoLastStep($id)
+	{
+		if (!$ticket = models\Ticket::model()->findByPk($id)) {
+			throw new \Exception("Ticket not found: $id");
+		}
+
+		$queue_assignments = $ticket->queue_assignments;
+		$last_assignment = array_pop($queue_assignments);
+
+		if (!$last_assignment->delete()) {
+			throw new \Exception("Unable to remove ticket queue assignment: ".print_r($last_assignment->errors,true));
+		}
+
+		echo "1";
 	}
 }

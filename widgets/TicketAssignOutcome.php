@@ -91,7 +91,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 	public function extractFormData($form_data)
 	{
 		$res = array();
-		foreach (array('outcome', 'followup_quantity', 'followup_period', 'site') as $k) {
+		foreach (array('outcome', 'followup_quantity', 'followup_period', 'clinic_location') as $k) {
 			$res[$k] = @$form_data[$k];
 		}
 		return $res;
@@ -116,7 +116,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 			foreach (array(
 				 'followup_quantity' => 'follow up quantity',
 				 'followup_period' => 'follow up period',
-				 'site' => 'site') as $k => $v) {
+				 'clinic_location' => 'clinic location') as $k => $v) {
 				if (!@$form_data[$k]) {
 					$errs[$k] = "Please select {$v}";
 				}
@@ -136,7 +136,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 	{
 		$res = $data['outcome'];
 		if (@$data['followup_quantity']) {
-			$res .= " in " . $data['followup_quantity']  . " " . $data['followup_period'] . " at " . $data['site'];
+			$res .= " in " . $data['followup_quantity']  . " " . $data['followup_period'] . " at " . $data['clinic_location'];
 		}
 
 		return $res;
@@ -182,7 +182,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 					$data['followup_period'] = rtrim($data['followup_period'],'s');
 				}
 				$res .= " in " . @$data['followup_quantity'] . " " . @$data['followup_period'];
-				$res .= " at " . @$data['site'];
+				$res .= " at " . @$data['clinic_location'];
 			}
 		}
 		return $res;

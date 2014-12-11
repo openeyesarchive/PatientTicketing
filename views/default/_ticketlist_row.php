@@ -35,7 +35,7 @@
 	<!-- Ownership functionality not required at the moment.
 	<td><?= $ticket->assignee ? $ticket->assignee->getFullName() : "-"?></td>
 	 -->
-	<td nowrap>
+	<td class="actions">
 		<?php
 		if ($can_process) {
 			if (!$ticket->is_complete()) {
@@ -58,6 +58,9 @@
 		}?>
 		<?php if ($ticket->hasHistory()) {?>
 			<button class="tiny ticket-history">History</button>
+			<?php if ($this->checkAccess('Patient Tickets admin')) {?>
+				<button class="tiny undo-last-queue-step">Undo last step</button>
+			<?php }?>
 		<?php }?>
 	</td>
 </tr>

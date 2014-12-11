@@ -467,4 +467,9 @@ class AdminController extends \ModuleAdminController {
 		$qs->delete($qr->getId());
 		echo 1;
 	}
+
+	public function actionAppointmentTypes()
+	{
+		$this->genericAdmin('Appointment types','OEModule\PatientTicketing\models\AppointmentType');
+	}
 }
