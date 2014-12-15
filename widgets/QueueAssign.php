@@ -69,6 +69,7 @@ class QueueAssign extends \CWidget {
 
 		//if this is the outcome widget and a correspondence has been created
 		//display the print letter button
+		$print_letter_event = false;
 		foreach ($form_fields as $fld) {
 			if($fld['widget_name']='TicketAssignOutcome'){
 				if($api = \Yii::app()->moduleAPI->get('OphCoCorrespondence')){
