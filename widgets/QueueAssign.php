@@ -67,6 +67,22 @@ class QueueAssign extends \CWidget {
 			$auto_save=true;
 		}
 
-		$this->render('QueueAssign', array('queue' => $queue,'form_fields' => $form_fields, 'form_data' => $form_data, 'auto_save' => $auto_save));
+		//if this is the outcome widget and a correspondence has been created
+		//display the print letter button
+		foreach ($form_fields as $fld) {
+			if($fld['widget_name']='TicketAssignOutcome'){
+				if($api = \Yii::app()->moduleAPI->get('OphCoCorrespondence')){
+					if($episode = $this->ticket->patient->getEpisodeForCurrentSubspecialty()){
+						if($event = $api->getLatestEvent($episode)){
+							if($event->created_date > $this->ticket->created_date){
+								$print_letter_event=$event;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$this->render('QueueAssign', array('queue' => $queue,'form_fields' => $form_fields, 'form_data' => $form_data, 'auto_save' => $auto_save, 'print_letter_event' => $print_letter_event));
 	}
 }
