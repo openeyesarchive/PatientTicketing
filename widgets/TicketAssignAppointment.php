@@ -20,6 +20,7 @@
 namespace OEModule\PatientTicketing\widgets;
 
 use OEModule\PatientTicketing\models;
+use OEModule\PatientTicketing\components;
 
 class TicketAssignAppointment extends BaseTicketAssignment {
 	/**
@@ -84,7 +85,7 @@ class TicketAssignAppointment extends BaseTicketAssignment {
 
 	public function getAutoSaveData()
 	{
-		return AutoSaveTicket::getFormData($this->ticket->patient_id,$this->ticket->current_queue->id);
+		return components\AutoSaveTicket::getFormData($this->ticket->patient_id,$this->ticket->current_queue->id);
 	}
 
 	/**
