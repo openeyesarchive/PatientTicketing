@@ -45,7 +45,7 @@ $auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.
 </fieldset>
 <fieldset class="field-row row">
 	<div class="large-<?= $this->label_width ?> column">
-		<label for="site">Appointment type:</label>
+		<label for="site">Clinic location:</label>
 	</div>
 	<div class="large-<?= $this->data_width ?> column end">
 		<?php echo CHtml::dropDownList($this->form_name . '[clinic_location]', @$auto_save_data[$this->form_name]['clinic_location'], \CHtml::listData(OEModule\PatientTicketing\models\ClinicLocation::model()->findAll(array('order' => 'display_order asc')),'name','name'), $html_options); ?>
