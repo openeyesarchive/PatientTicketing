@@ -140,15 +140,13 @@ class PatientTicketing_APITest extends CDbTestCase
 
 		$assignment = $this->getMockBuilder('OEModule\PatientTicketing\models\TicketQueueAssignment')
 			->disableOriginalConstructor()
-			->setMethods(array('replaceAssignmentCodes','save'))
+			->setMethods(array('generateReportText','save'))
 			->getMock();
 
 		$assignment->queue = $queue;
 
 		$assignment->expects($this->once())
-			->method('replaceAssignmentCodes')
-			->with('test4141')
-			->will($this->returnValue('hedge'));
+			->method('generateReportText');
 
 		$assignment->expects($this->once())
 			->method('save')
@@ -166,7 +164,7 @@ class PatientTicketing_APITest extends CDbTestCase
 			->will($this->returnValue($ticket));
 
 		$api->updateTicketForEvent($event);
-	} 
+	}
 }
 
 class ServiceManagerWrapper extends \services\ServiceManager

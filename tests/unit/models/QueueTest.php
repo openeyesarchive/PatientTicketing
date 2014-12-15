@@ -140,6 +140,7 @@ class QueueTest extends \CDbTestCase
 		}
 
 		$queue = new models\Queue;
+		$queue->auto_update_relations = false;
 		$queue->outcome_queues = $queues;
 
 		$this->assertEquals($event_types, $queue->getRelatedEventTypes(false));

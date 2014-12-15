@@ -51,7 +51,7 @@ return array(
 		'queue_id' => 13,
 		'assignment_date' => '2014-09-02',
 	),
-	'ass6' => array(
+	'ass7' => array(
 		'ticket_id' => 5,
 		'queue_id' => 12,
 		'report' => 'Follow up in 2 weeks at Boots Opticians',
