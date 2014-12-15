@@ -70,7 +70,7 @@ if ($queue) {?>
 					<li><a href="<?= Yii::app()->baseURL?>/<?=$et->class_name?>/default/create?patient_id=<?= $this->patient_id ?>" class="button small event-type-link auto-save" data-queue="<?= $this->current_queue_id?>"><?= $et->name ?></a></li>
 				<?php }
 				if ($print_letter_event) {?>
-					<li><a href="<?= Yii::app()->baseURL?>/<?=$print_letter_event->eventType->class_name?>/default/view/<?=$print_letter_event->id?>" class="button small event-type-link auto-save" data-queue="<?= $this->current_queue_id?>">Print Letter</a></li>
+					<li><a href="<?= Yii::app()->baseURL?>/<?=$print_letter_event->eventType->class_name?>/default/doPrintAndView/<?=$print_letter_event->id?>?all=1" class="button small event-type-link auto-save" data-queue="<?= $this->current_queue_id?>">Print Letter</a></li>
 				<?php } ?>
 			</ul>
 		<?php }	?>
