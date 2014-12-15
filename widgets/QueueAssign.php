@@ -71,7 +71,7 @@ class QueueAssign extends \CWidget {
 		//display the print letter button
 		$print_letter_event = false;
 		foreach ($form_fields as $fld) {
-			if($fld['widget_name']='TicketAssignOutcome'){
+			if($fld['widget_name']='TicketAssignAppointment'){
 				if($api = \Yii::app()->moduleAPI->get('OphCoCorrespondence')){
 					if($episode = $this->ticket->patient->getEpisodeForCurrentSubspecialty()){
 						if($event = $api->getLatestEvent($episode)){
