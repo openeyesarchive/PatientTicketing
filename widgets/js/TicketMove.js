@@ -156,8 +156,9 @@
 					errors.show();
 				} else {
 					//this.reloadPatientAlert();
-					if(response.redirectURL){
-					window.location = response.redirectURL;
+					if (response.redirectURL){
+						window.patientTicketChanged = false;
+						window.location = response.redirectURL;
 					}
 				}
 			}.bind(this),
