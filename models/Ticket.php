@@ -97,7 +97,7 @@ class Ticket extends \BaseActiveRecordVersioned
 			'reversed_queue_assignments' => array(self::HAS_MANY, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'reversed_queue_assignments.assignment_date desc'),
 			'initial_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'initial_queue_assignment.assignment_date'),
 			'current_queue_assignment' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\TicketQueueAssignment', 'ticket_id', 'order' => 'current_queue_assignment.assignment_date desc'),
-			'initial_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'intiial_queue_assignment'),
+			'initial_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'initial_queue_assignment'),
 			'current_queue' => array(self::HAS_ONE, 'OEModule\PatientTicketing\models\Queue', 'queue_id', 'through' => 'current_queue_assignment'),
 		);
 	}
