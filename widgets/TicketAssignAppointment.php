@@ -82,6 +82,11 @@ class TicketAssignAppointment extends BaseTicketAssignment {
 		return $errs;
 	}
 
+	public function getAutoSaveData()
+	{
+		return AutoSaveTicket::getFormData($this->ticket->patient_id,$this->ticket->current_queue->id);
+	}
+
 	/**
 	 * Generate string from the widget captured data
 	 *

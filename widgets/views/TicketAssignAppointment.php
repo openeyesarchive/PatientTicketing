@@ -17,7 +17,7 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
 
-$auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.'-'.$this->ticket->current_queue->id];
+$auto_save_data = $this->getAutoSaveData();
 $api = Yii::app()->moduleAPI->get('PatientTicketing');
 if($outcome = $api->getFollowUp($this->ticket->id)){
 ?>

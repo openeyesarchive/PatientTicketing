@@ -24,6 +24,7 @@ use OEModule\PatientTicketing\models\Queue;
 use OEModule\PatientTicketing\models\Ticket;
 use OEModule\PatientTicketing\models\TicketAssignOutcomeOption;
 use OEModule\PatientTicketing\widgets;
+use OEModule\PatientTicketing\components\AutoSaveTicket;
 use Yii;
 
 class PatientTicketing_API extends \BaseAPI
@@ -44,12 +45,27 @@ class PatientTicketing_API extends \BaseAPI
 	{
 		$ticket_service = Yii::app()->service->getService(self::$TICKET_SERVICE);
 		$tickets = $ticket_service->getTicketsForPatient($patient);
-		foreach ($tickets as $ticket) {
-			if ($follow_up = $this->getFollowUp($ticket->id)) {
+
+		foreach($tickets as $ticket){
+			if($follow_up = $this->getFollowUpFromAutoSave($patient->id,$ticket->current_queue->id)){
+				return $follow_up;
+			}
+			else if($follow_up = $this->getFollowUp($ticket->id)){
 				return $follow_up;
 			}
 		}
 		return false;
+	}
+
+	public function getFollowUpFromAutoSave($patient_id,$current_queue_id)
+	{
+		if($data =	AutoSaveTicket::getFormData($patient_id,$current_queue_id)){
+			if($data['validated']){
+				if(isset ($data['patientticketing_glreview'])){
+					return $data['patientticketing_glreview'];
+				}
+			}
+		}
 	}
 
 	/**

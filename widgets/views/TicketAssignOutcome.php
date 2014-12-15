@@ -16,8 +16,7 @@
  * @copyright Copyright (c) 2011-2014, OpenEyes Foundation
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
-
-$auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.'-'.$this->ticket->current_queue->id];
+$auto_save_data = $this->getAutoSaveData();
 ?>
 
 <fieldset class="field-row row" data-formName="<?=$this->form_name ?>">
