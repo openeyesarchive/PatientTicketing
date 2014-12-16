@@ -468,8 +468,8 @@ class AdminController extends \ModuleAdminController {
 		echo 1;
 	}
 
-	public function actionAppointmentTypes()
+	public function actionClinicLocations()
 	{
-		$this->genericAdmin('Appointment types','OEModule\PatientTicketing\models\AppointmentType');
+		$this->genericAdmin('Clinic locations','OEModule\PatientTicketing\models\ClinicLocation');
 	}
 }
