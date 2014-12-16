@@ -373,7 +373,7 @@ class DefaultController extends \BaseModuleController
 
 		$response = '1';
 
-		if (strpos(strtolower($data['href']), 'correspondence') !== FALSE){
+		if (strpos(strtolower($data['href']), 'ophcocorrespondence/default/create') !== FALSE){
 			if($errs = $this->validateForm($id)){
 				$response = json_encode(array("errors" => array_values($errs)));
 				}
