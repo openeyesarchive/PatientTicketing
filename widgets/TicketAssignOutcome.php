@@ -26,6 +26,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 	const FOLLOWUP_Q_MIN = 1;
 	const FOLLOWUP_Q_MAX = 12;
 	public $hideFollowUp = true;
+	public $form_data;
 
 	public function run()
 	{

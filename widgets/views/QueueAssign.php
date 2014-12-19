@@ -26,7 +26,8 @@ if ($queue) {?>
 						'ticket' => $this->ticket,
 						'label_width' => $this->label_width,
 						'data_width' => $this->data_width,
-						'form_name' => $fld['form_name']
+						'form_name' => $fld['form_name'],
+						'form_data' => $form_data,
 					));
 			}
 			else { ?>

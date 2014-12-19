@@ -37,7 +37,6 @@ class QueueAssign extends \CWidget {
 	public $data_width = 8;
 	public $queue_select_label = 'Queue';
 	public $patient_id;
-
 	public $assetFolder;
 	public $shortName;
 
@@ -57,6 +56,7 @@ class QueueAssign extends \CWidget {
 		else {
 			$queue = null;
 		}
+
 
 		$form_fields = $queue->getFormFields();
 		$auto_save = false;

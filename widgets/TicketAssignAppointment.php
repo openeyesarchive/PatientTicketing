@@ -22,7 +22,9 @@ namespace OEModule\PatientTicketing\widgets;
 use OEModule\PatientTicketing\models;
 use OEModule\PatientTicketing\components;
 
+
 class TicketAssignAppointment extends BaseTicketAssignment {
+	public $form_data;
 	/**
 	 * Extract form data for storing in assignment table
 	 *
