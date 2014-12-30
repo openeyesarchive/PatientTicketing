@@ -30,25 +30,14 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 
 	public function run()
 	{
-		if (\Yii::app()->request->isPostRequest) {
-			if (isset($_POST[$this->form_name])) {
-				if ($outcome_id = @$_POST[$this->form_name]['outcome']) {
+		if (isset($this->form_data[$this->form_name])) {
+				if ($outcome_id = @$this->form_data[$this->form_name]['outcome']) {
 					$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$outcome_id);
 					if ($outcome->followup) {
 						$this->hideFollowUp = false;
 					}
 				}
 			}
-		}
-		else {
-			$auto_save_data = AutoSaveTicket::getFormData($this->ticket->patient_id,$this->ticket->current_queue->id);
-			if(@$auto_save_data[$this->form_name]['outcome']){
-				$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$auto_save_data[$this->form_name]['outcome']);
-				if($outcome->followup) {
-					$this->hideFollowUp = false;
-				}
-			}
-		}
 
 		parent::run();
 	}
