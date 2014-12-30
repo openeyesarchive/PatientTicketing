@@ -43,7 +43,7 @@ class AdminController extends \ModuleAdminController {
 	 */
 	public function filters() {
 		$filters = parent::filters();
-		$filters[] = array('postOnly + activateQueue, deactivateQueue, deleteQueue');
+		$filters[] = 'postOnly + activateQueue, deactivateQueue, deleteQueue';
 		return $filters;
 	}
 
@@ -119,6 +119,7 @@ class AdminController extends \ModuleAdminController {
 					$queueset->initial_queue_id = $queue->id;
 					$queueset->setScenario('insert');
 					$queueset->save();
+					\Audit::add('admin', 'create', $queueset->id, null, array('module' => 'PatientTicketing', 'model' => $queueset->getShortModelName()));
 
 					$transaction->commit();
 					$resp = array(
@@ -187,6 +188,7 @@ class AdminController extends \ModuleAdminController {
 				$transaction = Yii::app()->db->beginTransaction();
 				try {
 					$queueset->save();
+					\Audit::add('admin', 'update', $queueset->id, null, array('module' => 'PatientTicketing', 'model' => $queueset->getShortModelName()));
 					$transaction->commit();
 					$resp = array(
 						'success' => true,
@@ -330,6 +332,7 @@ class AdminController extends \ModuleAdminController {
 		else {
 			$transaction = Yii::app()->db->beginTransaction();
 			try {
+				$action = $queue->isNewRecord ? 'create' : 'update';
 				$queue->save();
 				if ($parent) {
 					$outcome = new models\QueueOutcome();
@@ -337,6 +340,7 @@ class AdminController extends \ModuleAdminController {
 					$outcome->outcome_queue_id = $queue->id;
 					$outcome->save();
 				}
+				\Audit::add('admin', $action, $queue->id, null, array('module' => 'PatientTicketing', 'model' => $queue->getShortModelName()));
 
 				$transaction->commit();
 				$resp = array(
@@ -392,6 +396,7 @@ class AdminController extends \ModuleAdminController {
 		if (!$queue->save()) {
 			throw new \CHttpException(500, "Could not change queue state");
 		}
+		\Audit::add('admin', 'update', $queue->id, null, array('module' => 'PatientTicketing', 'model' => $queue->getShortModelName()));
 		echo 1;
 	}
 
@@ -432,6 +437,7 @@ class AdminController extends \ModuleAdminController {
 			}
 		}
 		$queue->save();
+		\Audit::add('admin', 'update', $queue->id, null, array('module' => 'PatientTicketing', 'model' => $queue->getShortModelName()));
 	}
 
 	/**
