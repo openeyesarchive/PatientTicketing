@@ -17,7 +17,6 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
 
-$auto_save_data = @Yii::app()->session['pt_autosave'][$this->ticket->patient_id.'-'.$this->ticket->current_queue->id];
 $api = Yii::app()->moduleAPI->get('PatientTicketing');
 if($outcome = $api->getFollowUp($this->ticket->id)){
 ?>
@@ -39,7 +38,7 @@ if($outcome = $api->getFollowUp($this->ticket->id)){
 	<tr>
 		<td>
 			<?php
-			$value = @$auto_save_data[$this->form_name]['appointment_date'];
+			$value = @$this->form_data[$this->form_name]['appointment_date'];
 			$this->widget('zii.widgets.jui.CJuiDatePicker', array(
 				'name'=>$this->form_name . '[appointment_date]',
 				'id'=>$this->form_name . '_appointment_date',
@@ -55,7 +54,7 @@ if($outcome = $api->getFollowUp($this->ticket->id)){
 			)); ?>
 		</td>
 		<td>
-			<?php echo CHtml::textField($this->form_name . '[appointment_time]',@$auto_save_data[$this->form_name]['appointment_time'])?>
+			<?php echo CHtml::textField($this->form_name . '[appointment_time]',@$this->form_data[$this->form_name]['appointment_time'])?>
 		</td>
 
 	</tr>

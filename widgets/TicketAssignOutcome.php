@@ -18,7 +18,7 @@
  */
 
 namespace OEModule\PatientTicketing\widgets;
-
+use OEModule\PatientTicketing\components\AutoSaveTicket;
 use OEModule\PatientTicketing\models;
 
 class TicketAssignOutcome extends BaseTicketAssignment {
@@ -26,28 +26,18 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 	const FOLLOWUP_Q_MIN = 1;
 	const FOLLOWUP_Q_MAX = 12;
 	public $hideFollowUp = true;
+	public $form_data;
 
 	public function run()
 	{
-		if (\Yii::app()->request->isPostRequest) {
-			if (isset($_POST[$this->form_name])) {
-				if ($outcome_id = @$_POST[$this->form_name]['outcome']) {
+		if (isset($this->form_data[$this->form_name])) {
+				if ($outcome_id = @$this->form_data[$this->form_name]['outcome']) {
 					$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$outcome_id);
 					if ($outcome->followup) {
 						$this->hideFollowUp = false;
 					}
 				}
 			}
-		}
-		else {
-			$auto_save_data = @\Yii::app()->session['pt_autosave'][$this->ticket->patient_id.'-'.$this->ticket->current_queue->id];
-			if(@$auto_save_data[$this->form_name]['outcome']){
-				$outcome = models\TicketAssignOutcomeOption::model()->findByPk((int)$auto_save_data[$this->form_name]['outcome']);
-				if($outcome->followup) {
-					$this->hideFollowUp = false;
-				}
-			}
-		}
 
 		parent::run();
 	}
@@ -61,6 +51,11 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 		}
 		$res['list_data'] = \CHtml::listData($models, 'id', 'name');
 		return $res;
+	}
+
+	public function getAutoSaveData()
+	{
+		return AutoSaveTicket::getFormData($this->ticket->patient_id,$this->ticket->current_queue->id);
 	}
 
 	/**
@@ -86,7 +81,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 	public function extractFormData($form_data)
 	{
 		$res = array();
-		foreach (array('outcome', 'followup_quantity', 'followup_period', 'site') as $k) {
+		foreach (array('outcome', 'followup_quantity', 'followup_period', 'clinic_location') as $k) {
 			$res[$k] = @$form_data[$k];
 		}
 		return $res;
@@ -111,7 +106,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 			foreach (array(
 				 'followup_quantity' => 'follow up quantity',
 				 'followup_period' => 'follow up period',
-				 'site' => 'site') as $k => $v) {
+				 'clinic_location' => 'clinic location') as $k => $v) {
 				if (!@$form_data[$k]) {
 					$errs[$k] = "Please select {$v}";
 				}
@@ -131,7 +126,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 	{
 		$res = $data['outcome'];
 		if (@$data['followup_quantity']) {
-			$res .= " in " . $data['followup_quantity']  . " " . $data['followup_period'] . " at " . $data['site'];
+			$res .= " in " . $data['followup_quantity']  . " " . $data['followup_period'] . " at " . $data['clinic_location'];
 		}
 
 		return $res;
@@ -177,7 +172,7 @@ class TicketAssignOutcome extends BaseTicketAssignment {
 					$data['followup_period'] = rtrim($data['followup_period'],'s');
 				}
 				$res .= " in " . @$data['followup_quantity'] . " " . @$data['followup_period'];
-				$res .= " at " . @$data['site'];
+				$res .= " at " . @$data['clinic_location'];
 			}
 		}
 		return $res;

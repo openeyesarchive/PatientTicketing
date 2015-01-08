@@ -210,30 +210,30 @@ class Queue extends \BaseActiveRecordVersioned
 	 */
 	public function addTicket(Ticket $ticket, $user, \Firm $firm, $data)
 	{
-		$ass = new TicketQueueAssignment();
-		$ass->queue_id = $this->id;
-		$ass->ticket_id = $ticket->id;
-		$ass->assignment_user_id = $user->id;
-		$ass->assignment_firm_id = $firm->id;
-		$ass->assignment_date = date('Y-m-d H:i:s');
-		$ass->notes = @$data[self::$FIELD_PREFIX . '_notes'];
+		$assignment = new TicketQueueAssignment();
+		$assignment->queue_id = $this->id;
+		$assignment->ticket_id = $ticket->id;
+		$assignment->assignment_user_id = $user->id;
+		$assignment->assignment_firm_id = $firm->id;
+		$assignment->assignment_date = date('Y-m-d H:i:s');
+		$assignment->notes = @$data[self::$FIELD_PREFIX . '_notes'];
 
 		// store the assignment field values to the assignment object.
-		if ($ass_flds = $this->getAssignmentFieldDefinitions()) {
+		if ($assignment_fields = $this->getAssignmentFieldDefinitions()) {
 			$details = array();
-			foreach ($ass_flds as $ass_fld) {
-				if ($val = @$data[$ass_fld['form_name']]) {
-					$store = array('id' => $ass_fld['id']);
-					if (@$ass_fld['type'] == 'widget') {
+			foreach ($assignment_fields as $assignment_field) {
+				if ($val = @$data[$assignment_field['form_name']]) {
+					$store = array('id' => $assignment_field['id']);
+					if (@$assignment_field['type'] == 'widget') {
 						// store the widget for later data manipulation
-						$store['widget_name'] = $ass_fld['widget_name'];
+						$store['widget_name'] = $assignment_field['widget_name'];
 						// post processing handling
-						$cls_name = "OEModule\\PatientTicketing\\widgets\\" . $ass_fld['widget_name'];
-						$widget = new $cls_name;
+						$class_name = "OEModule\\PatientTicketing\\widgets\\" . $assignment_field['widget_name'];
+						$widget = new $class_name;
 						$widget->processAssignmentData($ticket, $val);
 					}
-					else if (@$ass_fld['choices']) {
-						foreach ($ass_fld['choices'] as $k => $v) {
+					else if (@$assignment_field['choices']) {
+						foreach ($assignment_field['choices'] as $k => $v) {
 							if ($k == $val) {
 								$val = $v;
 								break;
@@ -244,15 +244,15 @@ class Queue extends \BaseActiveRecordVersioned
 					$details[] = $store;
 				}
 			}
-			$ass->details = json_encode($details);
+			$assignment->details = json_encode($details);
 		}
 
 		// generate the report field on the ticket.
 		if ($this->report_definition) {
-			$report = $ass->replaceAssignmentCodes($this->report_definition);
-			$ass->report = Substitution::replace($report, $ticket->patient);
+			$assignment->generateReportText();
 		}
-		if (!$ass->save()) {
+
+		if (!$assignment->save()) {
 			throw new \Exception("Unable to save queue assignment");
 		}
 		return true;

@@ -19,6 +19,7 @@
 
 namespace OEModule\PatientTicketing\widgets;
 use OEModule\PatientTicketing\models;
+use OEModule\PatientTicketing\components\AutoSaveTicket;
 use Yii;
 
 /**
@@ -36,7 +37,6 @@ class QueueAssign extends \CWidget {
 	public $data_width = 8;
 	public $queue_select_label = 'Queue';
 	public $patient_id;
-
 	public $assetFolder;
 	public $shortName;
 
@@ -57,16 +57,33 @@ class QueueAssign extends \CWidget {
 			$queue = null;
 		}
 
-		$form_fields = $queue->getFormFields();
 
+		$form_fields = $queue->getFormFields();
 		$auto_save = false;
 		if(isset($_POST[$form_fields[0]['form_name']])){ // if post contains patient ticket data
 			$form_data = $_POST;
 		}
-		else if($form_data = @Yii::app()->session['pt_autosave'][$this->patient_id.'-'.$this->current_queue_id]){
+		else if($form_data = AutoSaveTicket::getFormData($this->patient_id,$this->current_queue_id)){
 			$auto_save=true;
 		}
 
-		$this->render('QueueAssign', array('queue' => $queue,'form_fields' => $form_fields, 'form_data' => $form_data, 'auto_save' => $auto_save));
+		//if this is the outcome widget and a correspondence has been created
+		//display the print letter button
+		$print_letter_event = false;
+		foreach ($form_fields as $fld) {
+			if(@$fld['widget_name'] == 'TicketAssignAppointment'){
+				if($api = \Yii::app()->moduleAPI->get('OphCoCorrespondence')){
+					if($episode = $this->ticket->patient->getEpisodeForCurrentSubspecialty()){
+						if($event = $api->getLatestEvent($episode)){
+							if($event->created_date > $this->ticket->created_date){
+								$print_letter_event=$event;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$this->render('QueueAssign', array('queue' => $queue,'form_fields' => $form_fields, 'form_data' => $form_data, 'auto_save' => $auto_save, 'print_letter_event' => $print_letter_event));
 	}
 }

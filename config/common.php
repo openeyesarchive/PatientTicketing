@@ -30,6 +30,7 @@ return array(
 					),
 			),
 			'admin_menu' => array(
+				'Clinic locations' => '/PatientTicketing/admin/clinicLocations',
 				'Queue Set Categories' => '/PatientTicketing/admin/queueSetCategories',
 				'Queue Sets' => '/PatientTicketing/admin/',
 				'Outcome Options' => '/PatientTicketing/admin/ticketAssignOutcomes'

@@ -24,6 +24,7 @@ use OEModule\PatientTicketing\models\Queue;
 use OEModule\PatientTicketing\models\Ticket;
 use OEModule\PatientTicketing\models\TicketAssignOutcomeOption;
 use OEModule\PatientTicketing\widgets;
+use OEModule\PatientTicketing\components\AutoSaveTicket;
 use Yii;
 
 class PatientTicketing_API extends \BaseAPI
@@ -44,12 +45,27 @@ class PatientTicketing_API extends \BaseAPI
 	{
 		$ticket_service = Yii::app()->service->getService(self::$TICKET_SERVICE);
 		$tickets = $ticket_service->getTicketsForPatient($patient);
+
 		foreach($tickets as $ticket){
-			if($follow_up = $this->getFollowUp($ticket->id)){
+			if($follow_up = $this->getFollowUpFromAutoSave($patient->id,$ticket->current_queue->id)){
+				return $follow_up;
+			}
+			else if($follow_up = $this->getFollowUp($ticket->id)){
 				return $follow_up;
 			}
 		}
 		return false;
+	}
+
+	public function getFollowUpFromAutoSave($patient_id,$current_queue_id)
+	{
+		if($data =	AutoSaveTicket::getFormData($patient_id,$current_queue_id)){
+			if($data['validated']){
+				if(isset ($data['patientticketing_glreview'])){
+					return $data['patientticketing_glreview'];
+				}
+			}
+		}
 	}
 
 	/**
@@ -63,16 +79,17 @@ class PatientTicketing_API extends \BaseAPI
 			return false;
 		};
 
-		if($queue_assignments = $ticket->queue_assignments){
-			foreach($queue_assignments as $queue_assignment){
+		if ($queue_assignments = $ticket->queue_assignments) {
+			foreach ($queue_assignments as $queue_assignment) {
 				$ticket_fields = json_decode($queue_assignment->details,true);
-				if($ticket_fields){
-					foreach($ticket_fields as $ticket_field){
-						if(@$ticket_field['widget_name'] == "TicketAssignOutcome"){
-							if(@isset($ticket_field['value']['outcome'])){
-								$ticket_outcome_option = TicketAssignOutcomeOption::model()->findByPk((int)$ticket_field['value']['outcome']);
-								if($ticket_outcome_option->followup == 1){
-									return $ticket_field['value'];
+				if ($ticket_fields) {
+					foreach ($ticket_fields as $ticket_field) {
+						if (@$ticket_field['widget_name'] == "TicketAssignOutcome") {
+							if (@isset($ticket_field['value']['outcome'])) {
+								if ($ticket_outcome_option = TicketAssignOutcomeOption::model()->findByPk((int)$ticket_field['value']['outcome'])) {
+									if ($ticket_outcome_option->followup == 1) {
+										return $ticket_field['value'];
+									}
 								}
 							}
 						}
@@ -131,27 +148,28 @@ class PatientTicketing_API extends \BaseAPI
 	 */
 	public function extractQueueData(Queue $queue, $data, $validate = false)
 	{
-		$res = array();
-		$errs = array();
+		$result = array();
+		$errors = array();
 		$p = new \CHtmlPurifier();
 
 		foreach ($queue->getFormFields() as $field) {
 			$field_name = $field['form_name'];
 			if (@$field['type'] == 'widget') {
-				$cls_name = "OEModule\\PatientTicketing\\widgets\\" . $field['widget_name'];
-				$widget = new $cls_name;
-				if(isset($data[$field['form_name']])){ // if widget is missing don't validate
-					$res[$field_name] = $widget->extractFormData($data[$field['form_name']]);
+				$class_name = "OEModule\\PatientTicketing\\widgets\\" . $field['widget_name'];
+				$widget = new $class_name;
+
+				if (isset($data[$field['form_name']])) { // if widget is missing don't validate
+					$result[$field_name] = $widget->extractFormData($data[$field['form_name']]);
 					if ($validate) {
-						$errs = array_merge($errs, $widget->validate($data[$field['form_name']]));
+						$errors = array_merge($errors, $widget->validate($data[$field['form_name']]));
 					}
 				}
 			}
 			else {
-				$res[$field_name] = $p->purify(@$data[$field_name]);
+				$result[$field_name] = $p->purify(@$data[$field_name]);
 				if ($validate) {
 					if ($field['required'] && !@$data[$field_name]) {
-						$errs[$field_name] = $field['label'] . " is required";
+						$errors[$field_name] = $field['label'] . " is required";
 					}
 					elseif (@$field['choices'] && @$data[$field_name]) {
 						$match = false;
@@ -162,7 +180,7 @@ class PatientTicketing_API extends \BaseAPI
 							}
 						}
 						if (!$match) {
-							$errs[$field_name] = $field['label'] .": invalid choice";
+							$errors[$field_name] = $field['label'] .": invalid choice";
 						}
 					}
 				}
@@ -170,10 +188,10 @@ class PatientTicketing_API extends \BaseAPI
 		}
 
 		if ($validate) {
-			return array($res, $errs);
+			return array($result, $errors);
 		}
 		else {
-			return $res;
+			return $result;
 		}
 	}
 
@@ -199,6 +217,26 @@ class PatientTicketing_API extends \BaseAPI
 		}
 
 		return $ticket;
+	}
+
+	/*
+	 * @param Event $event
+	 * @param array $data
+	 */
+	public function updateTicketForEvent(\Event $event)
+	{
+		if (!$ticket = $this->getTicketForEvent($event)) {
+			throw new \Exception("Event has no ticket: $event->id");
+		}
+		$assignment = $ticket->initial_queue_assignment;
+
+		// regenerate the report field on the ticket.
+		if ($assignment->queue->report_definition) {
+			$assignment->generateReportText();
+		}
+		if (!$assignment->save()) {
+			throw new \Exception("Unable to save queue assignment");
+		}
 	}
 
 	/**

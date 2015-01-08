@@ -25,18 +25,22 @@ tr.disabled {
   opacity: 0.6;
 }
 
-/* line 25, ../sass/components/_ticket_table.scss */
+/* line 26, ../sass/components/_ticket_table.scss */
 #ticket-list td {
   vertical-align: top;
 }
+/* line 30, ../sass/components/_ticket_table.scss */
+#ticket-list .actions button {
+  margin-top: 5px;
+}
 
-/* line 29, ../sass/components/_ticket_table.scss */
+/* line 36, ../sass/components/_ticket_table.scss */
 #ticket-table {
   table-layout: fixed;
   width: 100%;
 }
 
-/* line 34, ../sass/components/_ticket_table.scss */
+/* line 41, ../sass/components/_ticket_table.scss */
 .forceNoWrap {
   word-wrap: break-word;
 }

@@ -96,6 +96,75 @@ class PatientTicketing_APITest extends CDbTestCase
 		$this->assertEquals('test return', $this->api->canAddPatientToQueue($patient, $queue), "Should be passing through return value from service method");
 	}
 
+	public function testUpdateTicketForEvent_NoReportDefinition()
+	{
+		$event = new \Event;
+		$ticket = new models\Ticket;
+		$queue = new models\Queue;
+
+		$assignment = $this->getMockBuilder('OEModule\PatientTicketing\models\TicketQueueAssignment')
+			->disableOriginalConstructor()
+			->setMethods(array('save'))
+			->getMock();
+
+		$assignment->queue = $queue;
+
+		$assignment->expects($this->once())
+			->method('save')
+			->will($this->returnValue(true));
+
+		$assignment->expects($this->never())
+			->method('replaceAssignmentCodes');
+
+		$ticket->initial_queue_assignment = $assignment;
+
+		$api = $this->getMockBuilder('OEModule\PatientTicketing\components\PatientTicketing_API')
+			->disableOriginalConstructor()
+			->setMethods(array('getTicketForEvent'))
+			->getMock();
+
+		$api->expects($this->once())
+			->method('getTicketForEvent')
+			->will($this->returnValue($ticket));
+
+		$api->updateTicketForEvent($event);
+	}
+
+	public function testUpdateTicketForEvent_WithReportDefinition()
+	{
+		$event = new \Event;
+		$ticket = new models\Ticket;
+		$queue = new models\Queue;
+
+		$queue->report_definition = 'test4141';
+
+		$assignment = $this->getMockBuilder('OEModule\PatientTicketing\models\TicketQueueAssignment')
+			->disableOriginalConstructor()
+			->setMethods(array('generateReportText','save'))
+			->getMock();
+
+		$assignment->queue = $queue;
+
+		$assignment->expects($this->once())
+			->method('generateReportText');
+
+		$assignment->expects($this->once())
+			->method('save')
+			->will($this->returnValue(true));
+
+		$ticket->initial_queue_assignment = $assignment;
+
+		$api = $this->getMockBuilder('OEModule\PatientTicketing\components\PatientTicketing_API')
+			->disableOriginalConstructor()
+			->setMethods(array('getTicketForEvent'))
+			->getMock();
+
+		$api->expects($this->once())
+			->method('getTicketForEvent')
+			->will($this->returnValue($ticket));
+
+		$api->updateTicketForEvent($event);
+	}
 }
 
 class ServiceManagerWrapper extends \services\ServiceManager

@@ -473,4 +473,9 @@ class AdminController extends \ModuleAdminController {
 		$qs->delete($qr->getId());
 		echo 1;
 	}
+
+	public function actionClinicLocations()
+	{
+		$this->genericAdmin('Clinic locations','OEModule\PatientTicketing\models\ClinicLocation');
+	}
 }

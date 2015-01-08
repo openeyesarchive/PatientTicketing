@@ -13,6 +13,7 @@
 		formClass: '.PatientTicketing-moveTicket',
 		queueAssignmentPlaceholderSelector: "#PatientTicketing-queue-assignment",
 		ticketMoveURI: "/PatientTicketing/default/moveTicket/",
+		ticketNavigateToEventURI: "/PatientTicketing/default/navigateToEvent/",
 		patientAlertSelector: "#patient-alert-patientticketing"
 	}
 
@@ -80,6 +81,52 @@
 		});
 	};
 
+	TicketMoveController.prototype.navigateToEvent = function(form, href)
+	{
+		disableButtons(this.options.formSelector);
+		var errors = form.find('.alert-box');
+
+		if (!form.find('[name=to_queue_id]').val()) {
+			errors.text('Please select a destination queue').show()
+			return;
+		}
+
+		var ticket_id = form.find('input[name="ticket_id"]').val();
+		var patient = encodeURIComponent($('#patient-alert-patientticketing').data('patient-id'));
+
+		errors.hide();
+
+		$.ajax({
+			url: this.options.ticketNavigateToEventURI + ticket_id,
+			data: form.serialize()+'&patient_id='+patient+'&href='+href,
+			type: 'POST',
+			dataType: 'json',
+
+			success: function (response) {
+				if (response.errors) {
+					errors.text('');
+					for (var i in response.errors) errors.append(response.errors[i] + "<br>");
+					errors.show();
+					enableButtons(this.options.formSelector);
+				}
+				else{
+					if(!window.formHasChanged) {
+						$(window).off('beforeunload');
+					}
+					window.location.href = href;
+				}
+			}.bind(this),
+			error: function(jqXHR, status, error) {
+				//this.reloadPatientAlert();
+				new OpenEyes.UI.Dialog.Alert({content: 'Could not move ticket'}).open();
+			}.bind(this),
+			complete: function() {
+				enableButtons(this.options.formSelector);
+			}.bind(this)
+		})
+	}
+
+
 	/**
 	 * process the Ticket Move form
 	 */
@@ -109,8 +156,9 @@
 					errors.show();
 				} else {
 					//this.reloadPatientAlert();
-					if(response.redirectURL){
-					window.location = response.redirectURL;
+					if (response.redirectURL){
+						window.patientTicketChanged = false;
+						window.location = response.redirectURL;
 					}
 				}
 			}.bind(this),
@@ -129,7 +177,6 @@
 
 		$(document).on('click', ticketMoveController.options.formClass + ' .ok', function(e) {
 			e.preventDefault();
-			clearAutoSave($(this).data('queue'));
 			ticketMoveController.submitForm($(this).parents('form'));
 		});
 
@@ -142,28 +189,10 @@
 			window.location = "/PatientTicketing/default/?queueset_id=" + queueset_id + "&cat_id=" + category_id;
 		});
 
-	  function clearAutoSave(queue)
-		{
-			var patient = encodeURIComponent($('#patient-alert-patientticketing').data('patient-id'));
-			$.ajax({
-				url: "/PatientTicketing/default/autoSave/",
-				data: 'clear=1&patient_id='+patient+'&from_queue_id='+queue+'&YII_CSRF_TOKEN='+YII_CSRF_TOKEN,
-				type: 'POST',
-				dataType: 'json',
-				success: function (response) {
-					delete window.changedTickets[queue];
-					if(Object.keys(window.changedTickets).length==0) 	window.patientTicketChanged = false;
-				}.bind(this),
-				error: function() {
-					new OpenEyes.UI.Dialog.Alert({content: 'An error occurred'}).open();
-				}.bind(this)
-			});
-		}
-		$(document).on('change', ticketMoveController.options.formClass + ' select[name="to_queue_id"]', function(e) {
-			ticketMoveController.setQueueAssForm($(this).parents('form'), $(e.target).val());
+		$(document).on('click', '.auto-save', function(e) {
+			e.preventDefault();
+			ticketMoveController.navigateToEvent(($(this).parents('form')), $(this).attr('href'));
 		});
-
-
 	});
 
 })();
