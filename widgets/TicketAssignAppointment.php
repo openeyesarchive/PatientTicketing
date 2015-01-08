@@ -54,10 +54,6 @@ class TicketAssignAppointment extends BaseTicketAssignment {
 			$errs['appointment_date'] = "Please enter an appointment date";
 		}
 
-		if (!@$form_data['appointment_time']) {
-			$errs['appointment_time'] = "Please enter an appointment time";
-		}
-
 		$appointment_date = \Helper::convertNHS2MySQL($form_data['appointment_date']);
 		$date_validator = new \OEDateValidator();
 		if(!$date_validator->validateValue($appointment_date)){
@@ -76,10 +72,11 @@ class TicketAssignAppointment extends BaseTicketAssignment {
 		}
 
 
-		$appointment_time = $form_data['appointment_time'];
-		$time_validator = new \OETimeValidator();
-		if(!$time_validator->validateValue($appointment_time)){
-			$errs['appointment_time'] = 'Appointment time is not valid';
+		if($appointment_time = @$form_data['appointment_time']) {
+			$time_validator = new \OETimeValidator();
+			if(!$time_validator->validateValue($appointment_time)){
+				$errs['appointment_time'] = 'Appointment time is not valid';
+			}
 		}
 
 		return $errs;
@@ -98,7 +95,10 @@ class TicketAssignAppointment extends BaseTicketAssignment {
 	 */
 	public function getReportString($data)
 	{
-		$res = "Follow-up appointment booked for " . @$data['appointment_date'] . " at " . @$data['appointment_time'];
+		$res = "Follow-up appointment booked for " . @$data['appointment_date'];
+		if(@$data['appointment_time']) {
+			$res .= " at " . $data['appointment_time'];
+		}
 		return $res;
 	}
 
